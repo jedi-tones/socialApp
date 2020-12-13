@@ -13,11 +13,12 @@ class AnimationCustomView: UIView {
     
     let animationView = AnimationView()
     
-    convenience init(name: String, loopMode: LottieLoopMode, contentMode: UIView.ContentMode) {
+    convenience init(name: String, loopMode: LottieLoopMode, contentMode: UIView.ContentMode, isHidden: Bool = false) {
         self.init()
         animationView.animation = Animation.named(name)
         animationView.loopMode = loopMode
         animationView.contentMode = contentMode
+        self.isHidden = isHidden
         
         setup()
         setupConstraints()
@@ -36,6 +37,7 @@ class AnimationCustomView: UIView {
     }
     
     private func setup() {
+        backgroundColor = .myWhiteColor()
         animationView.animationSpeed = 1
         animationView.backgroundBehavior = .pauseAndRestore
     }

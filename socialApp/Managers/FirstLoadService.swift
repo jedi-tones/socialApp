@@ -127,18 +127,20 @@ extension FirstLoadService {
                                                                                     switch result {
                                                                                     
                                                                                     case .success(_):
+                                                                                        subscribeToPushNotification()
                                                                                         //check active subscribtion
                                                                                         PurchasesService.shared.checkSubscribtion(currentPeople: currentUser) { result in
                                                                                             
                                                                                             switch result {
                                                                                             //if check success, load Controllers with status updated people
                                                                                             case .success(let updatedPeople):
+                                                                                                
                                                                                                 complition(.success(updatedPeople))
                                                                                             //if check failure, load Controllers with previus premium status people
                                                                                             case .failure(_):
                                                                                                 complition(.success(currentUser))
                                                                                             }
-                                                                                            subscribeToPushNotification()
+                                                                                            
                                                                                             
                                                                                         }
                                                                                     case .failure(let error):

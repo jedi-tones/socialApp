@@ -129,6 +129,35 @@ extension FirestoreService {
         }
     }
     
+    func getAllMessagesInChat(currentUserID: String, chat: MChat, complition: @escaping (Result<[MMessage],Error>)-> Void) {
+        let reference = usersReference
+            .document(currentUserID)
+            .collection(MFirestorCollection.acceptChats.rawValue)
+            .document(chat.friendId)
+            .collection(MFirestorCollection.messages.rawValue)
+        
+        var messages: [MMessage] = []
+        
+        reference.getDocuments { querySnapshot, error in
+            if let error = error {
+                complition(.failure(error))
+            } else {
+                querySnapshot?.documents.forEach({ queryDocumentSnapshot in
+                    guard var message = MMessage(documentSnap: queryDocumentSnapshot) else {
+                        complition(.failure(MessageError.getMessageData))
+                        return
+                    }
+                    //need set image, for change message type in MMessage
+                    if message.imageURL != nil {
+                        message.image = #imageLiteral(resourceName: "imageSend")
+                    }
+                    messages.append(message)
+                })
+                complition(.success(messages))
+            }
+        }
+    }
+    
     //MARK: getDislikes
     func getDislikes(userID: String, complition: @escaping(Result<[MDislike],Error>)->Void) {
         let reference = usersReference.document(userID).collection(MFirestorCollection.dislikePeople.rawValue)

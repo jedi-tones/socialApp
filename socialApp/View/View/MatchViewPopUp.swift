@@ -54,7 +54,7 @@ class MatchViewPopUp: UIView {
         if let imageURL = URL(string: chat.friendUserImageString) {
             friendPhoto.sd_setImage(with: imageURL, completed: nil)
         }
-        aboutFriend.text = "У тебя связь с \(chat.friendUserName)"
+        aboutFriend.text = "У тебя пара с \(chat.friendUserName)"
     }
     
     private func setupButton() {

@@ -21,6 +21,23 @@ class MessagesDataProvider: MessageListenerDelegate {
 
 extension MessagesDataProvider {
     
+    func getAllMessages(currentUserId: String, chat: MChat, complition: @escaping (Result<[MMessage], Error>) -> Void) {
+        FirestoreService.shared.getAllMessagesInChat(currentUserID: currentUserId,
+                                                     chat: chat) {[unowned self] result in
+            switch result {
+            
+            case .success(let newMessages):
+                self.messages = newMessages
+                self.messages.sort { lhs, rhs -> Bool in
+                    lhs.sentDate < rhs.sentDate
+                }
+                complition(.success(newMessages))
+            case .failure(let error):
+                complition(.failure(error))
+            }
+        }
+    }
+    
     func setupListener(chat: MChat) {
         
         ListenerService.shared.messageListener(chat: chat) {[weak self] result in

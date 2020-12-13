@@ -31,12 +31,14 @@ class EditProfileViewController: UIViewController {
                                            selectTags: [],
                                            headerText: "Интересы",
                                            headerFont: .avenirRegular(size: 16),
-                                           headerColor: .myGrayColor())
+                                           headerColor: .myGrayColor(),
+                                           textFieldPlaceholder: "Новый интерес...")
     let desireTags = TagsCollectionView(unselectTags: [],
                                            selectTags: [],
                                            headerText: "Твои желания",
                                            headerFont: .avenirRegular(size: 16),
-                                           headerColor: .myGrayColor())
+                                           headerColor: .myGrayColor(),
+                                           textFieldPlaceholder: "Новое желание...")
     let advertTextView = UITextView(text: "",
                                     isEditable: true)
     

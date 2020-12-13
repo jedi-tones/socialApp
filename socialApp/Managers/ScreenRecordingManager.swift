@@ -19,6 +19,7 @@ class ScreenRecordingManager {
     func setupListner(isCaptured: ((Bool)-> Void)?) {
         self.isCaptured = isCaptured
         NotificationCenter.default.addObserver(self, selector: #selector(captureStart), name: UIScreen.capturedDidChangeNotification, object: nil)
+        captureStart()
     }
     
     func removeListner() {

@@ -10,4 +10,5 @@ import Foundation
 
 enum MAnimamationName: String {
     case loading = "loading_square"
+    case messageLetter = "newsletter"
 }

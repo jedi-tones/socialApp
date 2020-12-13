@@ -15,6 +15,10 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
     
     private let currentPeople:MPeople
     private var chat:MChat
+    private let loadingMessagesImage = AnimationCustomView(name: MAnimamationName.loading.rawValue,
+                                                   loopMode: .loop,
+                                                   contentMode: .scaleAspectFit,
+                                                   isHidden: false)
     weak var acceptChatDelegate: AcceptChatListenerDelegate?
     weak var messageDelegate: MessageListenerDelegate?
     weak var reportDelegate: ReportsListnerDelegate?
@@ -48,6 +52,7 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
     
     deinit {
         removeMessageListner()
+        removeListners()
         acceptChatDelegate?.selectedChat = nil
     }
     
@@ -66,8 +71,9 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
         configure()
         configureInputBar()
         configureCameraBar()
+        setupConstraints()
         
-        addMessageListener()
+        getAllMessages()
         addListners()
         readAllMessageInChat()
         showTimerPopUp()
@@ -81,6 +87,14 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: true)
+    }
+    
+    override func didMove(toParent parent: UIViewController?) {
+        super.didMove(toParent: parent)
+        
+        if parent == nil {
+            navigationController?.popToRootViewController(animated: true)
+        }
     }
     
     //MARK: addMessageListener
@@ -107,7 +121,7 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
     private func configure() {
         showMessageTimestampOnSwipeLeft = true
         acceptChatDelegate?.selectedChat = chat
-        
+    
         messagesCollectionView.backgroundColor = .myWhiteColor()
         //delete avatar from message
         if let layout = messagesCollectionView.collectionViewLayout as? MessagesCollectionViewFlowLayout {
@@ -122,17 +136,6 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
                                             target: self,
                                             action: #selector(chatSettingsTapped))
         navigationItem.rightBarButtonItem = barButtonItem
-        navigationController?.setNavigationBarHidden(false, animated: true)
-        
-        
-    }
-    
-    override func didMove(toParent parent: UIViewController?) {
-        super.didMove(toParent: parent)
-        
-        if parent == nil {
-            navigationController?.popToRootViewController(animated: true)
-        }
     }
     
     
@@ -156,6 +159,47 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
     private func removeListners() {
         NotificationCenter.default.removeObserver(self)
         ScreenRecordingManager.shared.removeListner()
+    }
+    
+    //MARK: getAllMessages
+    private func getAllMessages() {
+        
+        loadingMessagesImage.play()
+        messageDelegate?.getAllMessages(currentUserId: currentPeople.senderId,
+                                        chat: chat,
+                                        complition: {[weak self] result in
+                                            switch result {
+                                            
+                                            case .success(_):
+                                                self?.messagesCollectionView.reloadData()
+                                                self?.messagesCollectionView.scrollToBottom()
+                                                self?.addMessageListener()
+                                                UIView.animate(withDuration: 1) {
+                                                    self?.loadingMessagesImage.layer.opacity = 0
+                                                } completion: { isComplite in
+                                                    if isComplite {
+                                                        self?.loadingMessagesImage.stop()
+                                                        self?.loadingMessagesImage.isHidden = true
+                                                        self?.loadingMessagesImage.layer.opacity = 1
+                                                        
+                                                    }
+                                                }
+
+                                        
+                                            case .failure(_):
+                                                PopUpService.shared.showInfo(text: "Ошибка загрузки сообщений")
+                                            }
+                                        })
+
+    }
+    
+    //MARK: newMessage
+    func newMessage() {
+        messagesCollectionView.reloadData()
+        
+        DispatchQueue.main.async {
+            self.messagesCollectionView.scrollToBottom(animated: true)
+        }
     }
     
     //MARK: configureInputBar
@@ -199,15 +243,6 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
         messageInputBar.setStackViewItems([cameraItem], forStack: .left, animated: false)
     }
     
-    
-    //MARK: newMessage
-    func newMessage() {
-        messagesCollectionView.reloadData()
-        
-        DispatchQueue.main.async {
-            self.messagesCollectionView.scrollToBottom(animated: true)
-        }
-    }
     
     //MARK: showTimerPopUp
     private func showTimerPopUp() {
@@ -435,11 +470,15 @@ extension ChatViewController: MessagesDataSource {
     
     func messageForItem(at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> MessageType {
         guard let messageDelegate = messageDelegate else { fatalError("Can' get messageDelegate") }
-        return messageDelegate.messages[indexPath.section]
+        return messageDelegate.messages[indexPath.row]
         
     }
     
     func numberOfSections(in messagesCollectionView: MessagesCollectionView) -> Int {
+        1
+    }
+    
+    func numberOfItems(inSection section: Int, in messagesCollectionView: MessagesCollectionView) -> Int {
         return messageDelegate?.messages.count ?? 0
     }
     
@@ -449,12 +488,12 @@ extension ChatViewController: MessagesDataSource {
                                                       attributes: [NSAttributedString.Key.font : UIFont.avenirRegular(size: 12),
                                                                    NSAttributedString.Key.foregroundColor : UIColor.myGrayColor()])
         
-        if indexPath.section == 0 {
+        if indexPath.row == 0 {
             return attributedDateString
         } else {
             guard let messageDelegate = messageDelegate else { return nil }
             //if from previus message more then 10 minets show time
-            let timeDifference = messageDelegate.messages[indexPath.section - 1].sentDate.distance(to: message.sentDate) / 600
+            let timeDifference = messageDelegate.messages[indexPath.row - 1].sentDate.distance(to: message.sentDate) / 600
             
             if timeDifference > 1 {
                 return attributedDateString
@@ -482,12 +521,12 @@ extension ChatViewController: MessagesLayoutDelegate {
     }
     
     func cellTopLabelHeight(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> CGFloat {
-        if indexPath.section == 0 {
+        if indexPath.row == 0 {
             return 30
         } else {
             guard let messageDelegate = messageDelegate else { return 0 }
             //if from previus message more then 10 minets set new height
-            let timeDifference = messageDelegate.messages[indexPath.section - 1].sentDate.distance(to: message.sentDate) / 600
+            let timeDifference = messageDelegate.messages[indexPath.row - 1].sentDate.distance(to: message.sentDate) / 600
             if timeDifference > 1 {
                 return 30
             }
@@ -584,6 +623,7 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
                                                               toUserID: strongChat,
                                                               header: strongUser.displayName,
                                                               text: text)
+              
             case .failure(_):
                 //no document to update
                 break
@@ -593,4 +633,16 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
     }
 }
 
-
+extension ChatViewController {
+    private func setupConstraints() {
+        loadingMessagesImage.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(loadingMessagesImage)
+        
+        NSLayoutConstraint.activate([
+            loadingMessagesImage.topAnchor.constraint(equalTo: view.topAnchor),
+            loadingMessagesImage.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            loadingMessagesImage.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            loadingMessagesImage.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+    }
+}
