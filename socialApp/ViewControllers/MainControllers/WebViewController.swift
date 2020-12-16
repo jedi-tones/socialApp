@@ -11,8 +11,8 @@ import WebKit
 
 class WebViewController: UIViewController {
 
-    let webView = WKWebView()
-    let urlToOpen: URL
+    private let webView = WKWebView()
+    private let urlToOpen: URL
     
     init(urlToOpen: URL) {
         self.urlToOpen = urlToOpen

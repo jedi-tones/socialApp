@@ -12,55 +12,55 @@ import FirebaseAuth
 
 class RegisterEmailViewController: UIViewController {
     
-    let loginLabel = UILabel(labelText: "Проверь mail почту",
+    private let loginLabel = UILabel(labelText: "Проверь mail почту",
                              textFont: .avenirBold(size: 16),
                              opacity: 0,
                              linesCount: 0)
-    let emailInstructionLabel = UILabel(labelText: "Пройди по ссылке в письме для активации",
+    private let emailInstructionLabel = UILabel(labelText: "Пройди по ссылке в письме для активации",
                                         textFont: .avenirRegular(size: 16),
                                         textColor: .myGrayColor(),
                                         opacity:  0,
                                         linesCount: 0)
-    let emailLabelHeader = UILabel(labelText: "Твоя почта:",
+    private let emailLabelHeader = UILabel(labelText: "Твоя почта:",
                              textFont: .avenirBold(size: 24),
                              textColor: .myLabelColor(),
                              opacity: 1)
     
-    let emailLabel = UILabel(labelText: "mail@jedi-tones.art",
+    private let emailLabel = UILabel(labelText: "mail@jedi-tones.art",
                              textFont: .avenirRegular(size: 16),
                              textColor: .myGrayColor(),
                              opacity: 1)
     
-    let passwordLabel = UILabel(labelText: "Придумай к ней пароль",
+    private let passwordLabel = UILabel(labelText: "Придумай к ней пароль",
                                 textFont: .avenirRegular(size: 16),
                                 textColor: .myGrayColor(),
                                 opacity: 1)
-    let confirmPasswordLabel = UILabel(labelText: "Повтори пароль",
+    private let confirmPasswordLabel = UILabel(labelText: "Повтори пароль",
                                        textFont: .avenirRegular(size: 16),
                                        textColor: .myGrayColor(),
                                        opacity: 1)
     
-    let passwordTextField = OneLineTextField(isSecureText: true,
+    private let passwordTextField = OneLineTextField(isSecureText: true,
                                              tag: 1,
                                              opacity: 1,
                                              isEnable: true)
-    let confirmPasswordTextField = OneLineTextField(isSecureText: true,
+    private let confirmPasswordTextField = OneLineTextField(isSecureText: true,
                                                     tag: 2,
                                                     opacity: 1,
                                                     isEnable: true)
     
-    let signUpButton = RoundButton(newBackgroundColor: .myLabelColor(),
+    private let signUpButton = RoundButton(newBackgroundColor: .myLabelColor(),
                                 newBorderColor: .myLabelColor(),
                                 title: "Продолжить",
                                 titleColor: .myWhiteColor())
     
-    let checkMailButton = RoundButton(newBackgroundColor: .myLabelColor(),
+    private let checkMailButton = RoundButton(newBackgroundColor: .myLabelColor(),
                                    newBorderColor: .myLabelColor(),
                                    title: "Проверить активацию",
                                    titleColor: .myWhiteColor(),
                                    isHidden: true)
 
-    var email:String?
+    private var email:String?
     weak var navigationDelegate: NavigationDelegate?
     
     init(email: String?, navigationDelegate: NavigationDelegate?){

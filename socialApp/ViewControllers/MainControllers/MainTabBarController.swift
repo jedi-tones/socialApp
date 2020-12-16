@@ -12,9 +12,9 @@ import ApphudSDK
 
 class MainTabBarController: UITabBarController{
     
-    var currentUser: MPeople
-    var isNewLogin: Bool
-    var firstLoadService: FirstLoadService
+    private var currentUser: MPeople
+    private var isNewLogin: Bool
+    private var firstLoadService: FirstLoadService
     
     init(currentUser: MPeople, isNewLogin: Bool) {
         self.isNewLogin = isNewLogin

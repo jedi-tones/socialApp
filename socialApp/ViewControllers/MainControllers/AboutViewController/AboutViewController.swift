@@ -10,7 +10,7 @@ import UIKit
 
 class AboutViewController: UIViewController {
     
-    let aboutView = AboutView()
+    private let aboutView = AboutView()
     
     override func viewDidLoad() {
         super.viewDidLoad()

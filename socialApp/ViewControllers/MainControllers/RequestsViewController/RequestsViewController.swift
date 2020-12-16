@@ -13,7 +13,7 @@ import FirebaseAuth
 
 class RequestsViewController: UIViewController {
     
-    var collectionView: UICollectionView?
+    private var collectionView: UICollectionView?
    
     var peopleDelegate: PeopleListenerDelegate
     var requestChatDelegate: RequestChatListenerDelegate

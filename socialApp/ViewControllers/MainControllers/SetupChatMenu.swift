@@ -10,8 +10,8 @@ import UIKit
 
 class SetupChatMenu: UniversalTableView {
     
-    let currentUser: MPeople
-    var chat: MChat
+    private let currentUser: MPeople
+    private var chat: MChat
     weak var messageControllerDelegate: MessageControllerDelegate?
     weak var reportDelegate: ReportsListnerDelegate?
     weak var peopleDelegate: PeopleListenerDelegate?

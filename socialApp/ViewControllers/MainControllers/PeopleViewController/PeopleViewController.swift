@@ -13,7 +13,7 @@ import FirebaseFirestore
 
 class PeopleViewController: UIViewController, UICollectionViewDelegate {
     
-    var currentPeople: MPeople
+    private var currentPeople: MPeople
     weak var peopleDelegate: PeopleListenerDelegate?
     weak var requestChatDelegate: RequestChatListenerDelegate?
     weak var likeDislikeDelegate: LikeDislikeListenerDelegate?

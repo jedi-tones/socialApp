@@ -50,9 +50,6 @@ class InterestsTagsViewController: UIViewController {
                                                          target: self,
                                                          action: #selector(saveButtonTapped)),
                                          animated: false)
-        
-        
-    
     }
 }
 

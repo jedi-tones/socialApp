@@ -12,36 +12,36 @@ import ApphudSDK
 
 class PurchasesViewController: UIViewController {
     
-    let currentPeople: MPeople
-    let scrollView = UIScrollView()
-    let loadingView = LoadingView(name: "wallet", isHidden: true, contentMode: .scaleAspectFit)
-    let header = UILabel(labelText: "Перейти на Flava premium",
+    private let currentPeople: MPeople
+    private let scrollView = UIScrollView()
+    private let loadingView = LoadingView(name: "wallet", isHidden: true, contentMode: .scaleAspectFit)
+    private let header = UILabel(labelText: "Перейти на Flava premium",
                          textFont: .avenirBold(size: 18))
     
-    let closeButton = UIButton(image: UIImage(systemName: "xmark")?.withConfiguration(UIImage.SymbolConfiguration(font: .avenirBold(size: 16))) ?? #imageLiteral(resourceName: "reject"),
+    private let closeButton = UIButton(image: UIImage(systemName: "xmark")?.withConfiguration(UIImage.SymbolConfiguration(font: .avenirBold(size: 16))) ?? #imageLiteral(resourceName: "reject"),
                                tintColor: .myLabelColor(),
                                backgroundColor: .myWhiteColor())
     
-    let infoAboutSubscribe = UILabel(labelText: MLabels.subscriptionsAbout.rawValue,
+    private let infoAboutSubscribe = UILabel(labelText: MLabels.subscriptionsAbout.rawValue,
                                      textFont: .avenirRegular(size: 12),
                                      textColor: .myGrayColor(),
                                      linesCount: 0)
-    let restorePurchaseButton = UIButton(newBackgroundColor: .myWhiteColor(),
+    private let restorePurchaseButton = UIButton(newBackgroundColor: .myWhiteColor(),
                                          title: "Восстановить покупки",
                                          titleColor: .myLabelColor(),
                                          font: .avenirRegular(size: 12))
-    let termsOfServiceButton = UIButton(newBackgroundColor: .myWhiteColor(),
+    private let termsOfServiceButton = UIButton(newBackgroundColor: .myWhiteColor(),
                                         title: "Условия и положения",
                                         titleColor: .myLabelColor(),
                                         font: .avenirRegular(size: 12))
-    let privacyPolicyButton = UIButton(newBackgroundColor: .myWhiteColor(),
+    private let privacyPolicyButton = UIButton(newBackgroundColor: .myWhiteColor(),
                                        title: "Политика конфиденциальности",
                                        titleColor: .myLabelColor(),
                                        font: .avenirRegular(size: 12))
-    let sevenDayButton = PurchaseButton()
-    let oneMonthButton = PurchaseButton()
-    let threeMonthButton = PurchaseButton()
-    let oneYearButton = PurchaseButton()
+    private let sevenDayButton = PurchaseButton()
+    private let oneMonthButton = PurchaseButton()
+    private let threeMonthButton = PurchaseButton()
+    private let oneYearButton = PurchaseButton()
     
     init(currentPeople: MPeople) {
         self.currentPeople = currentPeople

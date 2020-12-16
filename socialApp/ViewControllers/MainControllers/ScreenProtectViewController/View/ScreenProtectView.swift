@@ -10,8 +10,8 @@ import UIKit
 
 class ScreenProtectView: UIView {
     
-    let header = UILabel(labelText: "Мы защищаем конфиденциальность", textFont: .avenirBold(size: 24), linesCount: 0)
-    let text = UILabel(labelText: "Cкрыли экран, пока у тебя идет запись",
+    private let header = UILabel(labelText: "Мы защищаем конфиденциальность", textFont: .avenirBold(size: 24), linesCount: 0)
+    private let text = UILabel(labelText: "Cкрыли экран, пока у тебя идет запись",
                        textFont: .avenirRegular(size: 16),
                        textColor: .myGrayColor(),
                        linesCount: 0)

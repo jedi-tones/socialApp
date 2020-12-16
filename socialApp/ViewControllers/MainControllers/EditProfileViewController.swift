@@ -14,45 +14,45 @@ import MapKit
 
 class EditProfileViewController: UIViewController {
     
-    let scrollView = UIScrollView()
-    let gelleryScrollView = GalleryView(profileImage: "", gallery: [:], showPrivate: true, showProtectButton: true)
-    let nameLabel = UILabel(labelText: "Вымышленное имя:",
+    private let scrollView = UIScrollView()
+    private let gelleryScrollView = GalleryView(profileImage: "", gallery: [:], showPrivate: true, showProtectButton: true)
+    private let nameLabel = UILabel(labelText: "Вымышленное имя:",
                             textFont: .avenirRegular(size: 16),
                             textColor: .myGrayColor())
-    let aboutLabel = UILabel(labelText: "Обо мне:",
+    private let aboutLabel = UILabel(labelText: "Обо мне:",
                              textFont: .avenirRegular(size: 16),
                              textColor: .myGrayColor())
-    let genderButton = OneLineButtonWithHeader(header: "Гендер", info: "")
-    let sexualityButton = OneLineButtonWithHeader(header: "Сексуальная ориентация", info: "")
-    let nameTextField = OneLineTextField(isSecureText: false,
+    private let genderButton = OneLineButtonWithHeader(header: "Гендер", info: "")
+    private let sexualityButton = OneLineButtonWithHeader(header: "Сексуальная ориентация", info: "")
+    private let nameTextField = OneLineTextField(isSecureText: false,
                                          tag: 1,
                                          placeHoledText: "")
-    let interestsTags = TagsCollectionView(unselectTags: [],
+    private let interestsTags = TagsCollectionView(unselectTags: [],
                                            selectTags: [],
                                            headerText: "Интересы",
                                            headerFont: .avenirRegular(size: 16),
                                            headerColor: .myGrayColor(),
                                            textFieldPlaceholder: "Новый интерес...")
-    let desireTags = TagsCollectionView(unselectTags: [],
+    private let desireTags = TagsCollectionView(unselectTags: [],
                                            selectTags: [],
                                            headerText: "Твои желания",
                                            headerFont: .avenirRegular(size: 16),
                                            headerColor: .myGrayColor(),
                                            textFieldPlaceholder: "Новое желание...")
-    let advertTextView = UITextView(text: "",
+    private let advertTextView = UITextView(text: "",
                                     isEditable: true)
     
-    let editPhotosButton = RoundButton(newBackgroundColor: UIColor.myFirstButtonColor().withAlphaComponent(0.5),
+    private let editPhotosButton = RoundButton(newBackgroundColor: UIColor.myFirstButtonColor().withAlphaComponent(0.5),
                                        title: "Редактировать",
                                        titleColor: .myFirstButtonLabelColor())
-    let incognitoLabel = UILabel(labelText: "Инкогнито",
+    private let incognitoLabel = UILabel(labelText: "Инкогнито",
                                 textFont: .avenirRegular(size: 16),
                                 textColor: .mySecondSatColor())
-    let incognitoAboutLabel = UILabel(labelText: "Тебя не увидят другие пользователи, пока ты не поставишь им лайк",
+    private let incognitoAboutLabel = UILabel(labelText: "Тебя не увидят другие пользователи, пока ты не поставишь им лайк",
                                 textFont: .avenirRegular(size: 16),
                                 textColor: .mySecondColor(),
                                 linesCount: 0)
-    let incognitoSwitch = UISwitch()
+    private let incognitoSwitch = UISwitch()
     
     private var selectedVisibleYValue: CGFloat?
     private var keybordMinYValue:CGFloat?

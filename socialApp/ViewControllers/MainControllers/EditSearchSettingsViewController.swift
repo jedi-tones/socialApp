@@ -10,31 +10,31 @@ import UIKit
 
 class EditSearchSettingsViewController: UIViewController {
     
-    var currentPeople: MPeople
+    private var currentPeople: MPeople
     weak var peopleListnerDelegate: PeopleListenerDelegate?
     weak var likeDislikeDelegate: LikeDislikeListenerDelegate?
     weak var acceptChatsDelegate: AcceptChatListenerDelegate?
     weak var reportsDelegate: ReportsListnerDelegate?
     
-    let distanceLabel = UILabel(labelText: "Максимальное расстояние поиска:",
+    private let distanceLabel = UILabel(labelText: "Максимальное расстояние поиска:",
                                 textFont: .avenirRegular(size: 16),
                                 textColor: .myGrayColor())
-    let ageRangeLabel = UILabel(labelText: "Возрастной диапозон:",
+    private let ageRangeLabel = UILabel(labelText: "Возрастной диапозон:",
                                 textFont: .avenirRegular(size: 16),
                                 textColor: .myGrayColor())
-    let onlyActiveLabel = UILabel(labelText: "Недавно активные",
+    private let onlyActiveLabel = UILabel(labelText: "Недавно активные",
                                 textFont: .avenirRegular(size: 16),
                                 textColor: .mySecondSatColor())
-    let onlyActiveAboutLabel = UILabel(labelText: "Показывать пользователей, которые были активны в течении недели",
+    private let onlyActiveAboutLabel = UILabel(labelText: "Показывать пользователей, которые были активны в течении недели",
                                 textFont: .avenirRegular(size: 16),
                                 textColor: .mySecondColor(),
                                 linesCount: 0)
-    let onlyActiveSwitch = UISwitch()
-    let distanceSlider = UISlider()
-    let ageRangePicker = UIPickerView()
-    let lookingForButton = OneLineButtonWithHeader(header: "Ищу", info: "")
-    let currentLocationButton = OneLineButtonWithHeader(header: "Локация", info: "")
-    let scrollView = UIScrollView()
+    private let onlyActiveSwitch = UISwitch()
+    private let distanceSlider = UISlider()
+    private let ageRangePicker = UIPickerView()
+    private let lookingForButton = OneLineButtonWithHeader(header: "Ищу", info: "")
+    private let currentLocationButton = OneLineButtonWithHeader(header: "Локация", info: "")
+    private let scrollView = UIScrollView()
     
     init(currentPeople: MPeople,
          peopleListnerDelegate: PeopleListenerDelegate?,

@@ -14,10 +14,10 @@ class InfoCell: UICollectionViewCell {
     
     static let reuseID = "InfoCell"
     
-    let infoLabel = UILabel(labelText: "",
+    private let infoLabel = UILabel(labelText: "",
                             textFont: .avenirBold(size: 16),
                             textColor: .myLabelColor())
-    let subInfoLabel = UILabel(labelText: "",
+    private let subInfoLabel = UILabel(labelText: "",
                                textFont: .avenirRegular(size: 16),
                                textColor: .myGrayColor())
     

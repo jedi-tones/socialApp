@@ -10,14 +10,14 @@ import UIKit
 
 class GenderSelectionViewController: UIViewController {
 
-    var userID: String
+    private var userID: String
     
-    let headerLabel = UILabel(labelText: MLabels.genderSelectionHeader.rawValue, textFont: .avenirBold(size: 24),linesCount: 0)
-    let genderSelectionButton = OneLineButtonWithHeader(header: "Гендер", info: "Парень")
-    let sexualitySelectionButton = OneLineButtonWithHeader(header: "Сексуальность", info: "Гетеро")
-    let lookingForSelectionButton = OneLineButtonWithHeader(header: "Кого ты ищешь", info: "Девушку")
-    let nameLabel = UILabel(labelText: "Вымышленное имя", textFont: .avenirRegular(size: 16), textColor: .myGrayColor())
-    let nameTextField = OneLineTextField(isSecureText: false, tag: 1)
+    private let headerLabel = UILabel(labelText: MLabels.genderSelectionHeader.rawValue, textFont: .avenirBold(size: 24),linesCount: 0)
+    private let genderSelectionButton = OneLineButtonWithHeader(header: "Гендер", info: "Парень")
+    private let sexualitySelectionButton = OneLineButtonWithHeader(header: "Сексуальность", info: "Гетеро")
+    private let lookingForSelectionButton = OneLineButtonWithHeader(header: "Кого ты ищешь", info: "Девушку")
+    private let nameLabel = UILabel(labelText: "Вымышленное имя", textFont: .avenirRegular(size: 16), textColor: .myGrayColor())
+    private let nameTextField = OneLineTextField(isSecureText: false, tag: 1)
 
     init(userID: String){
         self.userID = userID

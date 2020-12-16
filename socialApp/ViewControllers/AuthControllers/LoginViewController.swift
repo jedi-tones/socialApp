@@ -13,33 +13,33 @@ import Lottie
 
 class LoginViewController: UIViewController {
     
-    let signInLogo = AnimationCustomView(name: "logo_eye", loopMode: .loop, contentMode: .scaleAspectFill)
+    private let signInLogo = AnimationCustomView(name: "logo_eye", loopMode: .loop, contentMode: .scaleAspectFill)
     
-    let loginButton = RoundButton(newBackgroundColor: .myLabelColor(),
+    private let loginButton = RoundButton(newBackgroundColor: .myLabelColor(),
                                   newBorderColor: .myLabelColor(),
                                   title: "Далее",
                                   titleColor: .myWhiteColor())
 
-    let backButton = UIButton(newBackgroundColor: nil,
+    private let backButton = UIButton(newBackgroundColor: nil,
                               title: "Выбрать другой метод входа",
                               titleColor: .myGrayColor(),
                               font: .avenirRegular(size: 16))
     
-    let emailTextField = OneLineTextField(isSecureText: false,
+    private let emailTextField = OneLineTextField(isSecureText: false,
                                           tag: 1)
-    let passwordTextField = OneLineTextField(isSecureText: true,
+    private let passwordTextField = OneLineTextField(isSecureText: true,
                                              tag: 2,
                                              opacity: 0,
                                              isEnable: false)
     
-    let emailLabel = UILabel(labelText: "Напиши свою почту",
+    private let emailLabel = UILabel(labelText: "Напиши свою почту",
                              textFont: .avenirRegular(size: 16),
                              textColor: .myGrayColor())
     let correctEmailLabel = UILabel(labelText: "Неправильно введена почта",
                                     textFont: .avenirRegular(size: 16),
                                     textColor: .mySecondSatColor(),
                                     opacity: 0)
-    let passwordLabel = UILabel(labelText: "Пароль",
+    private let passwordLabel = UILabel(labelText: "Пароль",
                                 textFont: .avenirRegular(size: 16),
                                 textColor: .myGrayColor(),
                                 opacity: 0)
@@ -90,7 +90,7 @@ extension LoginViewController {
 
 extension LoginViewController {
     //MARK:  emailEnterComplite
-    @objc func emailEnterComplite() {
+    @objc private func emailEnterComplite() {
         
         guard let email = emailTextField.text, email != "" else { return }
         
@@ -139,7 +139,7 @@ extension LoginViewController {
     }
     
     //MARK: - loginButtonPressed
-    @objc func loginButtonPressed() {
+    @objc private func loginButtonPressed() {
         
         switch passwordTextField.isEnabled {
         case true:

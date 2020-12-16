@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		C8C2ED28CC875473954C8551 /* Pods_socialApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 519929C6363CDB8EE7F5AFE7 /* Pods_socialApp.framework */; };
+		FB03C4CC258A4FF10000B8D3 /* CurrentPeopleDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB03C4CB258A4FF10000B8D3 /* CurrentPeopleDataProvider.swift */; };
 		FB09108024FA93E2006B72D5 /* UITextViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB09107F24FA93E2006B72D5 /* UITextViewExtension.swift */; };
 		FB1062D824AE494A0012C4D4 /* OneLineTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB1062D724AE494A0012C4D4 /* OneLineTextField.swift */; };
 		FB1062DA24AE69250012C4D4 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB1062D924AE69240012C4D4 /* LoginViewController.swift */; };
@@ -245,6 +246,7 @@
 		519929C6363CDB8EE7F5AFE7 /* Pods_socialApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_socialApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A864411375E48564A6F68A6B /* Pods-socialApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-socialApp.release.xcconfig"; path = "Target Support Files/Pods-socialApp/Pods-socialApp.release.xcconfig"; sourceTree = "<group>"; };
 		BE11C4154A14226A757830CC /* Pods-socialApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-socialApp.debug.xcconfig"; path = "Target Support Files/Pods-socialApp/Pods-socialApp.debug.xcconfig"; sourceTree = "<group>"; };
+		FB03C4CB258A4FF10000B8D3 /* CurrentPeopleDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentPeopleDataProvider.swift; sourceTree = "<group>"; };
 		FB09107F24FA93E2006B72D5 /* UITextViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextViewExtension.swift; sourceTree = "<group>"; };
 		FB1062D724AE494A0012C4D4 /* OneLineTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneLineTextField.swift; sourceTree = "<group>"; };
 		FB1062D924AE69240012C4D4 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -883,6 +885,7 @@
 			isa = PBXGroup;
 			children = (
 				FBB26ED2254AFD110081CF2C /* AcceptChatDataProvider.swift */,
+				FB03C4CB258A4FF10000B8D3 /* CurrentPeopleDataProvider.swift */,
 				FBB26EDD254B0E960081CF2C /* PeopleDataProvider.swift */,
 				FBB26ED7254B014A0081CF2C /* LikeDislikeChatDataProvider.swift */,
 				FB78FEDF2577CA9D004DA53E /* ReportsDataProvider.swift */,
@@ -1502,6 +1505,7 @@
 				FBB33FD6256C0D4A00A597BF /* MLinks.swift in Sources */,
 				FBE5A1092559D87000060D97 /* UNNotificationAttachment.swift in Sources */,
 				FBD301B42580240F00D38AE9 /* ContactsViewController.swift in Sources */,
+				FB03C4CC258A4FF10000B8D3 /* CurrentPeopleDataProvider.swift in Sources */,
 				FBD301B0257FF62500D38AE9 /* AuthViewControllerDelegate.swift in Sources */,
 				FB78FE6B2572739F004DA53E /* EmptyView.swift in Sources */,
 				FB79DA992530E86D00A7AA56 /* SectionEditPhotos.swift in Sources */,

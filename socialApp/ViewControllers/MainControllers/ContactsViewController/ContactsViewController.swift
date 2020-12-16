@@ -10,7 +10,7 @@ import UIKit
 
 class ContactsViewController: UIViewController {
     
-    let contactsView = ContactsView()
+    private let contactsView = ContactsView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
