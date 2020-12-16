@@ -166,7 +166,6 @@ class AuthService {
     func reAuthentificate(credential: AuthCredential?, email: String?, password: String?, complition: @escaping (Result<User,Error>) -> Void) {
         let user = Auth.auth().currentUser
 
-        //if dont have credential, login with email to get them
         if let newCredential = credential {
             user?.reauthenticate(with: newCredential) { arg, error   in
                 if let error = error {
@@ -178,6 +177,7 @@ class AuthService {
                 }
             }
         } else {
+            //if dont have credential, login with email to get them
             guard let email = email else { complition(.failure(AuthError.invalidEmail)); return }
             guard let password = password else { complition(.failure(AuthError.invalidPassword)); return }
             Auth.auth().signIn(withEmail: email, password: password) { result, error in

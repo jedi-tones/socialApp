@@ -10,14 +10,14 @@ import UIKit
 
 class SetupChatMenu: UniversalTableView {
     
-    private let currentUser: MPeople
     private var chat: MChat
+    weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     weak var messageControllerDelegate: MessageControllerDelegate?
     weak var reportDelegate: ReportsListnerDelegate?
     weak var peopleDelegate: PeopleListenerDelegate?
     weak var requestDelegate: RequestChatListenerDelegate?
     
-    init(currentUser:MPeople,
+    init(currentPeopleDelegate: CurrentPeopleDataDelegate?,
          chat: MChat,
          reportDelegate: ReportsListnerDelegate?,
          peopleDelegate: PeopleListenerDelegate?,
@@ -25,7 +25,7 @@ class SetupChatMenu: UniversalTableView {
          messageControllerDelegate: MessageControllerDelegate?
         ) {
         
-        self.currentUser = currentUser
+        self.currentPeopleDelegate = currentPeopleDelegate
         self.chat = chat
         self.reportDelegate = reportDelegate
         self.peopleDelegate = peopleDelegate
@@ -115,6 +115,8 @@ extension SetupChatMenu {
     
     //MARK: didSelectRowAt
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil in SetupChatVC")}
+        
         guard let menu = MChatSettings(rawValue: indexPath.row)  else { fatalError("Unknown menu index")}
         
         switch menu {
@@ -126,7 +128,7 @@ extension SetupChatMenu {
             unMatchAlert(pressedIndexPath: indexPath)
             
         case .reportUser:
-            let reportVC = ReportViewController(currentUserID: currentUser.senderId,
+            let reportVC = ReportViewController(currentUserID: currentPeopleDelegate.currentPeople.senderId,
                                                 reportUserID: chat.friendId,
                                                 isFriend: true,
                                                 reportDelegate: reportDelegate,
@@ -145,9 +147,10 @@ extension SetupChatMenu {
     
     //MARK: changeDethTimerSwitch
     @objc func changeDethTimerSwitch(sender: Any?) {
-       
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil in SetupChatVC")}
+        
         guard let sender = sender as? UISwitch else { fatalError("Unknown sender") }
-        FirestoreService.shared.deactivateChatTimer(currentUser: currentUser,
+        FirestoreService.shared.deactivateChatTimer(currentUser: currentPeopleDelegate.currentPeople,
                                                     chat: chat) {[weak self] result in
             switch result {
             
@@ -175,7 +178,8 @@ extension SetupChatMenu {
     
     //MARK:  unMatchAlert
     private func unMatchAlert(pressedIndexPath: IndexPath) {
-        let strongCurrentUser = currentUser
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil in SetupChatVC")}
+        
         let strongChat = chat
         let alert = UIAlertController(title: "Удалить собеседника из пар?",
                                       message: "Восстановить будет невозможно, а так же он не будет появляться в результатах поиска",
@@ -183,7 +187,8 @@ extension SetupChatMenu {
         
         let okAction = UIAlertAction(title: "Удалить",
                                      style: .destructive) {[weak self] _ in
-            FirestoreService.shared.unMatch(currentUserID: strongCurrentUser.senderId, chat: strongChat) {[weak self] result in
+            FirestoreService.shared.unMatch(currentUserID: currentPeopleDelegate.currentPeople.senderId,
+                                            chat: strongChat) {[weak self] result in
                 switch result {
                 
                 case .success(_):

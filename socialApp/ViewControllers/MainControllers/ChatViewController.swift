@@ -13,12 +13,12 @@ import InputBarAccessoryView
 
 class ChatViewController: MessagesViewController, MessageControllerDelegate  {
     
-    private let currentPeople:MPeople
     private var chat:MChat
     private let loadingMessagesImage = AnimationCustomView(name: MAnimamationName.loading.rawValue,
                                                    loopMode: .loop,
                                                    contentMode: .scaleAspectFit,
                                                    isHidden: false)
+    weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     weak var acceptChatDelegate: AcceptChatListenerDelegate?
     weak var messageDelegate: MessageListenerDelegate?
     weak var reportDelegate: ReportsListnerDelegate?
@@ -27,7 +27,7 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
     
     lazy var isInitiateDeleteChat = false
     
-    init(people: MPeople,
+    init(currentPeopleDelegate: CurrentPeopleDataDelegate?,
          chat: MChat,
          messageDelegate: MessageListenerDelegate?,
          acceptChatDelegate: AcceptChatListenerDelegate?,
@@ -35,7 +35,7 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
          peopleDelegate: PeopleListenerDelegate?,
          requestDelegate: RequestChatListenerDelegate?) {
         
-        self.currentPeople = people
+        self.currentPeopleDelegate = currentPeopleDelegate
         self.chat = chat
         self.messageDelegate = messageDelegate
         self.acceptChatDelegate = acceptChatDelegate
@@ -113,7 +113,8 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
     }
     
     private func readAllMessageInChat() {
-        FirestoreService.shared.readAllMessageInChat(userID: currentPeople.senderId, chat: chat) { _ in
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("CurrentPeopleDelegate is nil in ChatVC")}
+        FirestoreService.shared.readAllMessageInChat(userID: currentPeopleDelegate.currentPeople.senderId, chat: chat) { _ in
         }
     }
     
@@ -163,9 +164,10 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
     
     //MARK: getAllMessages
     private func getAllMessages() {
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("CurrentPeopleDelegate is nil in ChatVC")}
         
         loadingMessagesImage.play()
-        messageDelegate?.getAllMessages(currentUserId: currentPeople.senderId,
+        messageDelegate?.getAllMessages(currentUserId: currentPeopleDelegate.currentPeople.senderId,
                                         chat: chat,
                                         complition: {[weak self] result in
                                             switch result {
@@ -190,7 +192,6 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
                                                 PopUpService.shared.showInfo(text: "Ошибка загрузки сообщений")
                                             }
                                         })
-
     }
     
     //MARK: newMessage
@@ -246,12 +247,13 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
     
     //MARK: showTimerPopUp
     private func showTimerPopUp() {
-        let strongUser = currentPeople
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("CurrentPeopleDelegate is nil in ChatVC")}
+        
         let strongChat = chat
         var messageText = ""
         var okButtonText = ""
         let timeToDeleteChat = chat.createChatDate.getPeriodToDate(periodMinuteCount: MChat.getDefaultPeriodMinutesOfLifeChat())
-        if strongUser.isGoldMember || strongUser.isTestUser {
+        if currentPeopleDelegate.currentPeople.isGoldMember || currentPeopleDelegate.currentPeople.isTestUser {
             messageText = "У тебя Flava premium, можешь остановить таймер удаления без подтверждения собеседника"
             okButtonText = "Остановить таймер"
         } else {
@@ -265,7 +267,7 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
                                               cancelButtonText: "Позже",
                                               okButtonText: okButtonText,
                                               font: .avenirBold(size: 14)) {
-                FirestoreService.shared.deactivateChatTimer(currentUser: strongUser, chat: strongChat) { _  in }
+                FirestoreService.shared.deactivateChatTimer(currentUser: currentPeopleDelegate.currentPeople, chat: strongChat) { _  in }
             }
         } else if !chat.friendIsWantStopTimer {
             PopUpService.shared.showInfo(text: """
@@ -277,26 +279,27 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
     
     //MARK: sendImage
     private func sendImage(image: UIImage) {
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("CurrentPeopleDelegate is nil in ChatVC")}
+        
         StorageService.shared.uploadChatImage(image: image,
-                                              currentUserID: currentPeople.senderId,
+                                              currentUserID: currentPeopleDelegate.currentPeople.senderId,
                                               chat: chat) {[weak self] result in
             switch result {
             
             case .success(let url):
-                guard let sender = self?.currentPeople else { return }
                 guard let chat = self?.chat else { return }
-                var imageMessage = MMessage(user: sender, image: image)
+                var imageMessage = MMessage(user: currentPeopleDelegate.currentPeople, image: image)
                 imageMessage.imageURL = url
                 FirestoreService.shared.sendMessage(chat: chat,
-                                                    currentUser: sender,
+                                                    currentUser: currentPeopleDelegate.currentPeople,
                                                     message: imageMessage) { result in
                     switch result {
                     
                     case .success():
                         //send notification to friend
-                        PushMessagingService.shared.sendMessageToUser(currentUser: sender,
+                        PushMessagingService.shared.sendMessageToUser(currentUser: currentPeopleDelegate.currentPeople,
                                                                       toUserID: chat,
-                                                                      header: sender.displayName,
+                                                                      header: currentPeopleDelegate.currentPeople.displayName,
                                                                       text: "Фото")
                     case .failure(let error):
                         fatalError(error.localizedDescription)
@@ -336,17 +339,17 @@ extension ChatViewController {
     
     //MARK: screenshotTaken
     @objc private func screenshotTaken(){
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("CurrentPeopleDelegate is nil in ChatVC")}
         
-        let text = currentPeople.displayName + MLabels.screenshotTaken.rawValue
+        let text = currentPeopleDelegate.currentPeople.displayName + MLabels.screenshotTaken.rawValue
         
-        FirestoreService.shared.sendAdminMessage(currentUser: currentPeople,
+        FirestoreService.shared.sendAdminMessage(currentUser: currentPeopleDelegate.currentPeople,
                                                  chat: chat,
                                                  text: text) { [weak self] _ in
             
             //send notification to friend
-            guard let currentPeople = self?.currentPeople else { return }
             guard let chat = self?.chat else { return }
-            PushMessagingService.shared.sendMessageToUser(currentUser: currentPeople,
+            PushMessagingService.shared.sendMessageToUser(currentUser: currentPeopleDelegate.currentPeople,
                                                           toUserID: chat,
                                                           header: MAdmin.displayName.rawValue,
                                                           text: text)
@@ -355,17 +358,17 @@ extension ChatViewController {
     
     //MARK: screenIsCaptured
     @objc private func screenIsCaptured(){
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("CurrentPeopleDelegate is nil in ChatVC")}
         
-        let text = currentPeople.displayName + MLabels.isCapturedScreen.rawValue
+        let text = currentPeopleDelegate.currentPeople.displayName + MLabels.isCapturedScreen.rawValue
         
-        FirestoreService.shared.sendAdminMessage(currentUser: currentPeople,
+        FirestoreService.shared.sendAdminMessage(currentUser: currentPeopleDelegate.currentPeople,
                                                  chat: chat,
                                                  text: text) { [weak self] _ in
             
             //send notification to friend
-            guard let currentPeople = self?.currentPeople else { return }
             guard let chat = self?.chat else { return }
-            PushMessagingService.shared.sendMessageToUser(currentUser: currentPeople,
+            PushMessagingService.shared.sendMessageToUser(currentUser: currentPeopleDelegate.currentPeople,
                                                           toUserID: chat,
                                                           header: MAdmin.displayName.rawValue,
                                                           text: text)
@@ -374,7 +377,9 @@ extension ChatViewController {
     
     //MARK: profileTapped
     @objc private func profileTapped() {
-        let profileVC = PeopleInfoViewController(currentPeople: currentPeople,
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("CurrentPeopleDelegate is nil in ChatVC")}
+        
+        let profileVC = PeopleInfoViewController(currentPeopleDelegate: currentPeopleDelegate,
                                                  peopleID: chat.friendId,
                                                  isFriend: true,
                                                  requestChatsDelegate: requestDelegate,
@@ -386,8 +391,9 @@ extension ChatViewController {
     
     //MARK: profileTapped
     @objc private func chatSettingsTapped() {
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("CurrentPeopleDelegate is nil in ChatVC")}
         
-        let settingsVC = SetupChatMenu(currentUser: currentPeople,
+        let settingsVC = SetupChatMenu(currentUser: currentPeopleDelegate.currentPeople,
                                        chat: chat,
                                        reportDelegate: reportDelegate,
                                        peopleDelegate: peopleDelegate,
@@ -465,7 +471,8 @@ extension ChatViewController: UINavigationControllerDelegate {
 //MARK: MessagesDataSource
 extension ChatViewController: MessagesDataSource {
     func currentSender() -> SenderType {
-        currentPeople
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("CurrentPeopleDelegate is nil in ChatVC")}
+        return currentPeopleDelegate.currentPeople
     }
     
     func messageForItem(at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> MessageType {
@@ -608,20 +615,23 @@ extension ChatViewController: MessageCellDelegate {
 extension ChatViewController: InputBarAccessoryViewDelegate {
     
     func inputBar(_ inputBar: InputBarAccessoryView, didPressSendButtonWith text: String) {
-        let sender = MSender(senderId: currentPeople.senderId, displayName: currentPeople.displayName)
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("CurrentPeopleDelegate is nil in ChatVC")}
+        
+        let sender = MSender(senderId: currentPeopleDelegate.currentPeople.senderId,
+                             displayName: currentPeopleDelegate.currentPeople.displayName)
         let message = MMessage(user: sender, content: text)
         let strongChat = chat
-        let strongUser = currentPeople
+        
         FirestoreService.shared.sendMessage(chat: chat,
-                                            currentUser: currentPeople,
+                                            currentUser: currentPeopleDelegate.currentPeople,
                                             message: message) { result in
             switch result {
             
             case .success():
                 //send notification to friend
-                PushMessagingService.shared.sendMessageToUser(currentUser: strongUser,
+                PushMessagingService.shared.sendMessageToUser(currentUser: currentPeopleDelegate.currentPeople,
                                                               toUserID: strongChat,
-                                                              header: strongUser.displayName,
+                                                              header: currentPeopleDelegate.currentPeople.displayName,
                                                               text: text)
               
             case .failure(_):

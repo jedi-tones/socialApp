@@ -10,7 +10,7 @@ import UIKit
 
 class EditSearchSettingsViewController: UIViewController {
     
-    private var currentPeople: MPeople
+    weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     weak var peopleListnerDelegate: PeopleListenerDelegate?
     weak var likeDislikeDelegate: LikeDislikeListenerDelegate?
     weak var acceptChatsDelegate: AcceptChatListenerDelegate?
@@ -36,17 +36,18 @@ class EditSearchSettingsViewController: UIViewController {
     private let currentLocationButton = OneLineButtonWithHeader(header: "Локация", info: "")
     private let scrollView = UIScrollView()
     
-    init(currentPeople: MPeople,
+    init(currentPeopleDelegate: CurrentPeopleDataDelegate?,
          peopleListnerDelegate: PeopleListenerDelegate?,
          likeDislikeDelegate: LikeDislikeListenerDelegate?,
          acceptChatsDelegate: AcceptChatListenerDelegate?,
          reportsDelegate: ReportsListnerDelegate?) {
         
+        self.currentPeopleDelegate = currentPeopleDelegate
         self.peopleListnerDelegate = peopleListnerDelegate
         self.likeDislikeDelegate = likeDislikeDelegate
         self.acceptChatsDelegate = acceptChatsDelegate
         self.reportsDelegate = reportsDelegate
-        self.currentPeople = currentPeople
+
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -112,7 +113,9 @@ class EditSearchSettingsViewController: UIViewController {
     
     //MARK: setupData
     private func setupData() {
-        if let distance = currentPeople.searchSettings[MSearchSettings.distance.rawValue]{
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currnetPeopleDelegate is nil")}
+        
+        if let distance = currentPeopleDelegate.currentPeople.searchSettings[MSearchSettings.distance.rawValue]{
             distanceSlider.value = Float(distance)
             let defaultDistance = Int(MSearchSettings.distance.defaultValue)
             if distance == Int(distanceSlider.maximumValue) || distance == defaultDistance {
@@ -121,8 +124,8 @@ class EditSearchSettingsViewController: UIViewController {
                 distanceLabel.text = "Максимальное расстояние: \(distance) км"
             }
         }
-        if let minRange = currentPeople.searchSettings[MSearchSettings.minRange.rawValue] {
-            if let maxRange = currentPeople.searchSettings[MSearchSettings.maxRange.rawValue] {
+        if let minRange = currentPeopleDelegate.currentPeople.searchSettings[MSearchSettings.minRange.rawValue] {
+            if let maxRange = currentPeopleDelegate.currentPeople.searchSettings[MSearchSettings.maxRange.rawValue] {
                 let componentForMin = minRange - MSearchSettings.minRange.defaultValue
                 let componentForMax = maxRange - MSearchSettings.minRange.defaultValue - 1
                 ageRangePicker.selectRow(componentForMin, inComponent: 0, animated: true)
@@ -130,15 +133,15 @@ class EditSearchSettingsViewController: UIViewController {
             }
         }
         
-        if let location = currentPeople.searchSettings[MSearchSettings.currentLocation.rawValue] {
+        if let location = currentPeopleDelegate.currentPeople.searchSettings[MSearchSettings.currentLocation.rawValue] {
             if let locationName = MVirtualLocation(rawValue: location) {
                 currentLocationButton.infoLabel.text = locationName.description()
             }
     
-            lookingForButton.infoLabel.text = currentPeople.lookingFor
+            lookingForButton.infoLabel.text = currentPeopleDelegate.currentPeople.lookingFor
         }
         
-        if let onlyActive = currentPeople.searchSettings[MSearchSettings.onlyActive.rawValue] {
+        if let onlyActive = currentPeopleDelegate.currentPeople.searchSettings[MSearchSettings.onlyActive.rawValue] {
             onlyActiveSwitch.isOn = onlyActive == 0 ? false : true
         } else {
             let defaultValue = MSearchSettings.onlyActive.defaultValue
@@ -148,6 +151,8 @@ class EditSearchSettingsViewController: UIViewController {
     
     //MARK: saveData
     private func saveData() {
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currnetPeopleDelegate is nil")}
+        
         var distance = 5
         if distanceSlider.value == distanceSlider.maximumValue {
              distance = Int(MSearchSettings.distance.defaultValue)
@@ -160,7 +165,7 @@ class EditSearchSettingsViewController: UIViewController {
         let currentLocationIndex = MVirtualLocation.index(location: newLocation)
         guard let virtualLocation = MVirtualLocation(rawValue: currentLocationIndex) else { return }
         
-        LocationService.shared.getCoordinate(userID: currentPeople.senderId,
+        LocationService.shared.getCoordinate(userID: currentPeopleDelegate.currentPeople.senderId,
                                              virtualLocation: virtualLocation) { [weak self] isAllowPermission in
            //if permission deniy, open settings
             if !isAllowPermission {
@@ -171,7 +176,7 @@ class EditSearchSettingsViewController: UIViewController {
         
         let minRange = ageRangePicker.selectedRow(inComponent: 0) + MSearchSettings.minRange.defaultValue
         let maxRange = ageRangePicker.selectedRow(inComponent: 1) + MSearchSettings.minRange.defaultValue + 1
-        FirestoreService.shared.saveSearchSettings(id: currentPeople.senderId,
+        FirestoreService.shared.saveSearchSettings(id: currentPeopleDelegate.currentPeople.senderId,
                                                    distance: distance,
                                                    minRange: minRange,
                                                    maxRange: maxRange,
@@ -257,13 +262,15 @@ extension EditSearchSettingsViewController {
     }
     
     @objc private func switchChanged() {
-        if !PurchasesService.shared.checkActiveSubscribtionWithApphud() && !currentPeople.isTestUser {
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currnetPeopleDelegate is nil")}
+        
+        if !PurchasesService.shared.checkActiveSubscribtionWithApphud() && !currentPeopleDelegate.currentPeople.isTestUser {
             PopUpService.shared.bottomPopUp(header: "Только активные пользователи",
                                             text: "Данный фильтр доступен с подпиской Flava premium",
                                             image: nil,
                                             okButtonText: "Перейти на Flava premium") { [weak self] in
-                guard let currentPeople = self?.currentPeople else { return }
-                let purchasVC = PurchasesViewController(currentPeople: currentPeople)
+                
+                let purchasVC = PurchasesViewController(currentPeople: currentPeopleDelegate.currentPeople)
                 purchasVC.modalPresentationStyle = .fullScreen
                 self?.present(purchasVC, animated: true, completion: nil)
             }
@@ -272,10 +279,7 @@ extension EditSearchSettingsViewController {
     }
     
     @objc private func premiumIsUpdated() {
-        if let updatedUser = UserDefaultsService.shared.getMpeople() {
-            self.currentPeople = updatedUser
-            setupData()
-        }
+        setupData()
     }
 }
 

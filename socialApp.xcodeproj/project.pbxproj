@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		C8C2ED28CC875473954C8551 /* Pods_socialApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 519929C6363CDB8EE7F5AFE7 /* Pods_socialApp.framework */; };
 		FB03C4CC258A4FF10000B8D3 /* CurrentPeopleDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB03C4CB258A4FF10000B8D3 /* CurrentPeopleDataProvider.swift */; };
+		FB03C4D0258A5B020000B8D3 /* CurrentPeopleDataDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB03C4CF258A5B020000B8D3 /* CurrentPeopleDataDelegate.swift */; };
 		FB09108024FA93E2006B72D5 /* UITextViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB09107F24FA93E2006B72D5 /* UITextViewExtension.swift */; };
 		FB1062D824AE494A0012C4D4 /* OneLineTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB1062D724AE494A0012C4D4 /* OneLineTextField.swift */; };
 		FB1062DA24AE69250012C4D4 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB1062D924AE69240012C4D4 /* LoginViewController.swift */; };
@@ -247,6 +248,7 @@
 		A864411375E48564A6F68A6B /* Pods-socialApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-socialApp.release.xcconfig"; path = "Target Support Files/Pods-socialApp/Pods-socialApp.release.xcconfig"; sourceTree = "<group>"; };
 		BE11C4154A14226A757830CC /* Pods-socialApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-socialApp.debug.xcconfig"; path = "Target Support Files/Pods-socialApp/Pods-socialApp.debug.xcconfig"; sourceTree = "<group>"; };
 		FB03C4CB258A4FF10000B8D3 /* CurrentPeopleDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentPeopleDataProvider.swift; sourceTree = "<group>"; };
+		FB03C4CF258A5B020000B8D3 /* CurrentPeopleDataDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentPeopleDataDelegate.swift; sourceTree = "<group>"; };
 		FB09107F24FA93E2006B72D5 /* UITextViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextViewExtension.swift; sourceTree = "<group>"; };
 		FB1062D724AE494A0012C4D4 /* OneLineTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneLineTextField.swift; sourceTree = "<group>"; };
 		FB1062D924AE69240012C4D4 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -994,6 +996,7 @@
 				FB78FF20257A6DBE004DA53E /* ReportPeopleButton.swift */,
 				FB78FEEB257840A3004DA53E /* ReportViewDelegate.swift */,
 				FBD301AF257FF62500D38AE9 /* AuthViewControllerDelegate.swift */,
+				FB03C4CF258A5B020000B8D3 /* CurrentPeopleDataDelegate.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -1491,6 +1494,7 @@
 				FB2346E624F69B2B00FEE1EF /* PeopleCell.swift in Sources */,
 				FBEF608C24A8F4000005F947 /* UIButtonExtension.swift in Sources */,
 				FBB33FED256D10D700A597BF /* TagsCollectionView.swift in Sources */,
+				FB03C4D0258A5B020000B8D3 /* CurrentPeopleDataDelegate.swift in Sources */,
 				FB61A76F251CB97D005DCC78 /* DataSourceError.swift in Sources */,
 				FBF6289524F678C300DCD4AC /* SectionsChats.swift in Sources */,
 				FBA2AA392552FCE300A471F6 /* MChatSettings.swift in Sources */,

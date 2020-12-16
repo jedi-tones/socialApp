@@ -50,7 +50,7 @@ extension MainTabBarController {
 //MARK: setupControllers
 extension MainTabBarController {
     private func setupControllers(){
-        firstLoadService.loadData { updatedPeople,
+        firstLoadService.loadData { currentPeopleDelegate,
                                     acceptChatsDelegate,
                                     requestChatsDelegate,
                                     peopleDelegate,
@@ -70,14 +70,14 @@ extension MainTabBarController {
                 tabBar.unselectedItemTintColor = .myLightGrayColor()
                 tabBar.tintColor = .myLabelColor()
                 
-                let profileVC = ProfileViewController(currentPeople: updatedPeople,
+                let profileVC = ProfileViewController(currentPeopleDelegate: currentPeopleDelegate,
                                                       peopleListnerDelegate: peopleDelegate,
                                                       likeDislikeDelegate: likeDislikeDelegate,
                                                       acceptChatsDelegate: acceptChatsDelegate,
                                                       requestChatsDelegate: requestChatsDelegate,
                                                       reportsDelegate: reportsDelegate)
                 
-                let peopleVC = PeopleViewController(currentPeople: updatedPeople,
+                let peopleVC = PeopleViewController(currentPeopleDelegate: currentPeopleDelegate,
                                                     peopleDelegate: peopleDelegate,
                                                     requestChatDelegate: requestChatsDelegate,
                                                     likeDislikeDelegate: likeDislikeDelegate,
@@ -86,7 +86,7 @@ extension MainTabBarController {
                 
                 peopleDelegate.peopleCollectionViewDelegate = peopleVC
                 
-                let requsetsVC = RequestsViewController(currentPeople: updatedPeople,
+                let requsetsVC = RequestsViewController(currentPeopleDelegate: currentPeopleDelegate,
                                                         likeDislikeDelegate: likeDislikeDelegate,
                                                         requestChatDelegate: requestChatsDelegate,
                                                         peopleNearbyDelegate: peopleDelegate,
@@ -95,7 +95,7 @@ extension MainTabBarController {
                 
                 requestChatsDelegate.requestChatCollectionViewDelegate = requsetsVC
                 
-                let chatsVC = ChatsViewController(currentPeople: updatedPeople,
+                let chatsVC = ChatsViewController(currentPeopleDelegate: currentPeopleDelegate,
                                                   acceptChatDelegate: acceptChatsDelegate,
                                                   likeDislikeDelegate: likeDislikeDelegate,
                                                   messageDelegate: messageDelegate,

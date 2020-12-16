@@ -10,26 +10,27 @@ import ApphudSDK
 
 class FirstLoadService {
     
-    private let currentUser: MPeople
+    //private let currentUser: MPeople
     private var acceptChatsDelegate: AcceptChatListenerDelegate
     private var requestChatsDelegate: RequestChatListenerDelegate
     private var peopleDelegate: PeopleListenerDelegate
     private var likeDislikeDelegate: LikeDislikeListenerDelegate
     private var messageDelegate: MessageListenerDelegate
     private var reportsDelegate: ReportsListnerDelegate
+    private var currentPeopleDelegate: CurrentPeopleDataDelegate
     
     init(currentUser: MPeople) {
-        self.currentUser = currentUser
+        //  self.currentUser = currentUser
         likeDislikeDelegate = LikeDislikeChatDataProvider(userID: currentUser.senderId)
         requestChatsDelegate = RequestChatDataProvider(userID: currentUser.senderId)
         acceptChatsDelegate = AcceptChatDataProvider(userID: currentUser.senderId)
         peopleDelegate = PeopleDataProvider(userID: currentUser.senderId)
         messageDelegate = MessagesDataProvider(userID: currentUser.senderId)
         reportsDelegate = ReportsDataProvider(userID: currentUser.senderId)
-        
+        currentPeopleDelegate = CurrentPeopleDataProvider(currentPeople: currentUser)
     }
     
-    func loadData(complition: @escaping(_ people: MPeople,
+    func loadData(complition: @escaping(_ currentPeopleDelegate: CurrentPeopleDataDelegate,
                                         _ acceptChatsDelegate: AcceptChatListenerDelegate,
                                         _ requestChatsDelegate: RequestChatListenerDelegate,
                                         _ peopleDelegate: PeopleListenerDelegate,
@@ -41,8 +42,8 @@ class FirstLoadService {
         getPeopleData { [unowned self]  result in
             switch result {
             
-            case .success(let updatedPeople):
-                complition(updatedPeople,
+            case .success():
+                complition(currentPeopleDelegate,
                            acceptChatsDelegate,
                            requestChatsDelegate,
                            peopleDelegate,
@@ -61,7 +62,6 @@ extension FirstLoadService {
     
     private func setup() {
         //update current user in UserDefault
-        UserDefaultsService.shared.saveMpeople(people: currentUser)
         
         PopUpService.shared.setupDelegate(acceptChatsDelegate: acceptChatsDelegate,
                                           requestChatsDelegate: requestChatsDelegate,
@@ -74,21 +74,24 @@ extension FirstLoadService {
     
     private func subscribeToPushNotification() {
         //subscribe to all pushNotification from chats after relogin
-        PushMessagingService.shared.logInSubscribe(currentUserID: currentUser.senderId,
+        PushMessagingService.shared.logInSubscribe(currentUserID: currentPeopleDelegate.currentPeople.senderId,
                                                    acceptChats: acceptChatsDelegate.acceptChats,
                                                    likeChats: likeDislikeDelegate.likePeople)
         
     }
     
     private func setupApphud() {
-        Apphud.start(apiKey: "app_LDXecjNbEuvUBtpd3J9kw75A6cH14n", userID: currentUser.senderId, observerMode: false)
+        Apphud.start(apiKey: "app_LDXecjNbEuvUBtpd3J9kw75A6cH14n",
+                     userID: currentPeopleDelegate.currentPeople.senderId,
+                     observerMode: false)
     }
     
     //MARK: getPeopleData, location
-    private func getPeopleData(complition:@escaping(Result<MPeople,Error>) -> Void) {
+    private func getPeopleData(complition:@escaping(Result<(),Error>) -> Void) {
         
-        if let virtualLocation = MVirtualLocation(rawValue: currentUser.searchSettings[MSearchSettings.currentLocation.rawValue] ?? 0) {
-            LocationService.shared.getCoordinate(userID: currentUser.senderId,
+        let people = currentPeopleDelegate.currentPeople
+        if let virtualLocation = MVirtualLocation(rawValue: people.searchSettings[MSearchSettings.currentLocation.rawValue] ?? 0) {
+            LocationService.shared.getCoordinate(userID: people.senderId,
                                                  virtualLocation: virtualLocation) {[unowned self] isAllowPermission in
                 //if geo is denied, show alert and go to settings
                 if !isAllowPermission {
@@ -119,7 +122,8 @@ extension FirstLoadService {
                                                     switch result {
                                                     
                                                     case .success(_):
-                                                        peopleDelegate.getPeople(currentPeople: currentUser,
+                                                        
+                                                        peopleDelegate.getPeople(currentPeople: people,
                                                                                  likeDislikeDelegate: likeDislikeDelegate,
                                                                                  acceptChatsDelegate: acceptChatsDelegate,
                                                                                  reportsDelegate: reportsDelegate,
@@ -129,19 +133,17 @@ extension FirstLoadService {
                                                                                     case .success(_):
                                                                                         subscribeToPushNotification()
                                                                                         //check active subscribtion
-                                                                                        PurchasesService.shared.checkSubscribtion(currentPeople: currentUser) { result in
+                                                                                        PurchasesService.shared.checkSubscribtion(currentPeople: people) { _ in
                                                                                             
-                                                                                            switch result {
-                                                                                            //if check success, load Controllers with status updated people
-                                                                                            case .success(let updatedPeople):
+                                                                                            currentPeopleDelegate.updatePeopleDataFromFirestore { result in
+                                                                                                switch result {
                                                                                                 
-                                                                                                complition(.success(updatedPeople))
-                                                                                            //if check failure, load Controllers with previus premium status people
-                                                                                            case .failure(_):
-                                                                                                complition(.success(currentUser))
+                                                                                                case .success(_):
+                                                                                                    complition(.success(()))
+                                                                                                case .failure(let error):
+                                                                                                    complition(.failure(error))
+                                                                                                }
                                                                                             }
-                                                                                            
-                                                                                            
                                                                                         }
                                                                                     case .failure(let error):
                                                                                         complition(.failure(error))

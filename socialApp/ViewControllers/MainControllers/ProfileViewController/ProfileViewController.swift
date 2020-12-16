@@ -11,6 +11,7 @@ import FirebaseAuth
 
 class ProfileViewController: UIViewController {
     
+    weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     weak var peopleListnerDelegate: PeopleListenerDelegate?
     weak var likeDislikeDelegate: LikeDislikeListenerDelegate?
     weak var acceptChatsDelegate: AcceptChatListenerDelegate?
@@ -19,17 +20,16 @@ class ProfileViewController: UIViewController {
     
     private var collectionView: UICollectionView!
     private var dataSource: UICollectionViewDiffableDataSource<SectionsProfile, MProfileSettings>?
-    private var currentPeople: MPeople
     private var refreshControl = UIRefreshControl()
     
-    init(currentPeople: MPeople,
+    init(currentPeopleDelegate: CurrentPeopleDataDelegate?,
          peopleListnerDelegate: PeopleListenerDelegate?,
          likeDislikeDelegate: LikeDislikeListenerDelegate?,
          acceptChatsDelegate: AcceptChatListenerDelegate?,
          requestChatsDelegate: RequestChatListenerDelegate?,
          reportsDelegate: ReportsListnerDelegate) {
         
-        self.currentPeople = currentPeople
+        self.currentPeopleDelegate = currentPeopleDelegate
         self.peopleListnerDelegate = peopleListnerDelegate
         self.likeDislikeDelegate = likeDislikeDelegate
         self.acceptChatsDelegate = acceptChatsDelegate
@@ -187,13 +187,13 @@ extension ProfileViewController {
                 case .profile:
                     guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfileCell.reuseID, for: indexpath) as? ProfileCell else { fatalError("Can't dequeue cell type ProfileCell")}
                     
-                    cell.configure(people: self?.currentPeople)
+                    cell.configure(people: self?.currentPeopleDelegate?.currentPeople)
                     cell.layoutIfNeeded()
                     return cell
                     
                 case .premium:
                     guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PremiumCell.reuseID, for: indexpath) as? PremiumCell else { fatalError("Can't dequeue cell type PremiumCell")}
-                    guard let currentPeople = self?.currentPeople else { fatalError("current people is nil")}
+                    guard let currentPeople = self?.currentPeopleDelegate?.currentPeople else { fatalError("current people is nil")}
                     
                     cell.configure(currentUser: currentPeople, tapSelector: #selector(self?.tapPremiumCell), delegate: self)
                     return cell
@@ -212,10 +212,6 @@ extension ProfileViewController {
     
     //MARK: updateProfileSection
     @objc private func updateSections() {
-       
-        guard let currentPeople = UserDefaultsService.shared.getMpeople() else { return }
-        
-        self.currentPeople = currentPeople
         
         guard var snapshot = dataSource?.snapshot() else { return }
         snapshot.reloadSections([ .profile, .premium])
@@ -225,6 +221,8 @@ extension ProfileViewController {
     
     //MARK: updateDataSource
     private func updateDataSource() {
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil on ProfileViewController")}
+        
         var snapshot = NSDiffableDataSourceSnapshot<SectionsProfile, MProfileSettings>()
         snapshot.appendSections([.profile, .premium, .settings])
         snapshot.appendItems([MProfileSettings.profileInfo], toSection: .profile)
@@ -235,7 +233,7 @@ extension ProfileViewController {
                               MProfileSettings.contacts,
                               MProfileSettings.aboutInformation],
                              toSection: .settings)
-        if currentPeople.isAdmin {
+        if currentPeopleDelegate.currentPeople.isAdmin {
             snapshot.appendItems([MProfileSettings.adminPanel], toSection: .settings)
         }
         dataSource?.apply(snapshot)
@@ -258,18 +256,19 @@ extension ProfileViewController: UICollectionViewDelegate {
         case .settings:
             let firstIndexOfSettingsInProfileSettings = 2
             guard let cell = MProfileSettings(rawValue: indexPath.item + firstIndexOfSettingsInProfileSettings) else { fatalError("unknown cell")}
+            guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil on ProfileViewController")}
             
             switch cell {
             
             case .setupProfile:
-                let vc = EditProfileViewController(currentPeople: currentPeople)
+                let vc = EditProfileViewController(currentPeople: currentPeopleDelegate.currentPeople)
                 vc.hidesBottomBarWhenPushed = true
                 navigationController?.pushViewController(vc, animated: true)
                 
                 collectionView.deselectItem(at: indexPath, animated: true)
                 
             case .setupSearch:
-                let vc = EditSearchSettingsViewController(currentPeople: currentPeople,
+                let vc = EditSearchSettingsViewController(currentPeopleDelegate: currentPeopleDelegate,
                                                           peopleListnerDelegate: peopleListnerDelegate,
                                                           likeDislikeDelegate: likeDislikeDelegate,
                                                           acceptChatsDelegate: acceptChatsDelegate,
@@ -280,7 +279,7 @@ extension ProfileViewController: UICollectionViewDelegate {
                 collectionView.deselectItem(at: indexPath, animated: true)
                 
             case .appSettings:
-                let vc = AppSettingsViewController(currentPeople: currentPeople,
+                let vc = AppSettingsViewController(currentPeople: currentPeopleDelegate.currentPeople,
                                                    acceptChatDelegate: acceptChatsDelegate,
                                                    requestChatDelegate: requestChatsDelegate)
                 vc.hidesBottomBarWhenPushed = true
@@ -314,14 +313,12 @@ extension ProfileViewController: UICollectionViewDelegate {
 //MARK: objc
 extension ProfileViewController {
     @objc private func refresh() {
-        FirestoreService.shared.getUserData(userID: currentPeople.senderId) {[weak self] result in
+        currentPeopleDelegate?.updatePeopleDataFromFirestore(complition: {[weak self] result in
             switch result {
             
-            case .success(let mPeople):
+            case .success(let updatedCurrentPeople):
                 self?.collectionView.refreshControl?.endRefreshing()
-                self?.currentPeople = mPeople
-                UserDefaultsService.shared.saveMpeople(people: mPeople)
-                PurchasesService.shared.checkSubscribtion(currentPeople: mPeople) { result in
+                PurchasesService.shared.checkSubscribtion(currentPeople: updatedCurrentPeople) { result in
                     switch result {
                     
                     case .success(_):
@@ -331,15 +328,16 @@ extension ProfileViewController {
                     PopUpService.shared.showInfo(text: "Ошибка: \(error.localizedDescription)")
                     }
                 }
-                
-            case .failure(_):
-                break
+            case .failure(let error):
+                PopUpService.shared.showInfo(text: "Ошибка: \(error.localizedDescription)")
             }
-        }
+        })
     }
     
     @objc private func tapPremiumCell() {
-        let purchasVC = PurchasesViewController(currentPeople: currentPeople)
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil on ProfileViewController")}
+        
+        let purchasVC = PurchasesViewController(currentPeople: currentPeopleDelegate.currentPeople)
         purchasVC.modalPresentationStyle = .fullScreen
         present(purchasVC, animated: true, completion: nil)
     }

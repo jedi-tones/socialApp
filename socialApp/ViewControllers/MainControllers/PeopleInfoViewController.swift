@@ -12,23 +12,23 @@ class PeopleInfoViewController: UIViewController {
     
     private var peopleID: String
     private var isFriend: Bool
-    private var currentPeople: MPeople
     private var people: MPeople?
     private let peopleView = PeopleView()
     private let loadingView = LoadingView(name: MAnimamationName.loading.rawValue, isHidden: false)
     
+    weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     weak var requestChatsDelegate: RequestChatListenerDelegate?
     weak var peopleDelegate: PeopleListenerDelegate?
     weak var reportDelegate: ReportsListnerDelegate?
     
-    init(currentPeople: MPeople,
+    init(currentPeopleDelegate: CurrentPeopleDataDelegate?,
          peopleID: String,
          isFriend: Bool,
          requestChatsDelegate: RequestChatListenerDelegate?,
          peopleDelegate: PeopleListenerDelegate?,
          reportDelegate: ReportsListnerDelegate?) {
         
-        self.currentPeople = currentPeople
+        self.currentPeopleDelegate = currentPeopleDelegate
         self.peopleID = peopleID
         self.isFriend = isFriend
         self.requestChatsDelegate = requestChatsDelegate
@@ -75,18 +75,20 @@ class PeopleInfoViewController: UIViewController {
     }
     
     func configure() {
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate in PeopleInfoVC is nil")}
+        
         FirestoreService.shared.getUserData(userID: peopleID, complition: { [weak self] result in
             switch result {
             
             case .success(let mPeople):
-                guard let currentPeople = self?.currentPeople else { return }
                 //calculate distance to this people
-                let distance = LocationService.shared.getDistance(currentPeople: currentPeople, newPeople: mPeople)
+                let distance = LocationService.shared.getDistance(currentPeople: currentPeopleDelegate.currentPeople,
+                                                                  newPeople: mPeople)
                 var peopleWithDistanceInfo = mPeople
                 peopleWithDistanceInfo.distance = distance
                 self?.people = peopleWithDistanceInfo
                 self?.peopleView.configure(with: peopleWithDistanceInfo,
-                                           currentPeople: currentPeople,
+                                           currentPeople: currentPeopleDelegate.currentPeople,
                                            showPrivatePhoto: true,
                                            buttonDelegate: self) {
                     self?.loadingView.hide()
@@ -103,13 +105,14 @@ class PeopleInfoViewController: UIViewController {
 extension PeopleInfoViewController: PeopleButtonTappedDelegate {
     
     func timeTapped() {
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate in PeopleInfoVC is nil")}
+        
         PopUpService.shared.bottomPopUp(header: "Хочешь видеть время последней активности пользователя?",
                                         text: "Последняя активность, и многое другое с подпиской Flava Premium",
                                         image: nil,
                                         okButtonText: "Перейти на Flava premium") { [ weak self] in
             
-            guard let currentPeople = self?.currentPeople else { return }
-            let purchasVC = PurchasesViewController(currentPeople: currentPeople)
+            let purchasVC = PurchasesViewController(currentPeople: currentPeopleDelegate.currentPeople)
             purchasVC.modalPresentationStyle = .fullScreen
             self?.present(purchasVC, animated: true, completion: nil)
         }
@@ -120,9 +123,10 @@ extension PeopleInfoViewController: PeopleButtonTappedDelegate {
         guard let requestChatsDelegate = requestChatsDelegate else { fatalError("Can't get requestChatsDelegate") }
         guard let peopleDelegate = peopleDelegate else {  fatalError("Can't get peopleDelegate")  }
         guard let reportDelegate = reportDelegate else {  fatalError("Can't get peopleDelegate")  }
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate in PeopleInfoVC is nil")}
         
         //save like to firestore
-        FirestoreService.shared.likePeople(currentPeople: currentPeople,
+        FirestoreService.shared.likePeople(currentPeople: currentPeopleDelegate.currentPeople,
                                            likePeople: people,
                                            requestChats: requestChatsDelegate.requestChats ) {[weak self] result, isMatch in
             switch result {
@@ -143,11 +147,11 @@ extension PeopleInfoViewController: PeopleButtonTappedDelegate {
                                           scrollToFirst: false)
                 
                 if isMatch {
-                    guard let currentPeople = self?.currentPeople else { return }
-                    PopUpService.shared.showMatchPopUP(currentPeople: currentPeople,
+                    
+                    PopUpService.shared.showMatchPopUP(currentPeople: currentPeopleDelegate.currentPeople,
                                                        chat: likeChat) { messageDelegate, acceptChatDelegate in
                         
-                        let chatVC = ChatViewController(people: currentPeople,
+                        let chatVC = ChatViewController(currentPeopleDelegate: currentPeopleDelegate,
                                                         chat: likeChat,
                                                         messageDelegate: messageDelegate,
                                                         acceptChatDelegate: acceptChatDelegate,
@@ -172,8 +176,10 @@ extension PeopleInfoViewController: PeopleButtonTappedDelegate {
         
         guard let requestChatsDelegate = requestChatsDelegate else { fatalError("Can't get requestChatsDelegate") }
         guard let peopleDelegate = peopleDelegate else {  fatalError("Can't get peopleDelegate")  }
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate in PeopleInfoVC is nil")}
+        
         //save dislike from firestore
-        FirestoreService.shared.dislikePeople(currentPeople: currentPeople,
+        FirestoreService.shared.dislikePeople(currentPeople: currentPeopleDelegate.currentPeople,
                                               dislikeForPeopleID: people.senderId,
                                               requestChats: requestChatsDelegate.requestChats,
                                               viewControllerDelegate: self) {[weak self] result in
@@ -196,8 +202,9 @@ extension PeopleInfoViewController: PeopleButtonTappedDelegate {
     }
     
     func reportTapped(people: MPeople) {
-        print("report \(people.displayName)")
-        let reportVC = ReportViewController(currentUserID: currentPeople.senderId,
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate in PeopleInfoVC is nil")}
+        
+        let reportVC = ReportViewController(currentUserID: currentPeopleDelegate.currentPeople.senderId,
                                             reportUserID: people.senderId,
                                             isFriend: isFriend,
                                             reportDelegate: reportDelegate,

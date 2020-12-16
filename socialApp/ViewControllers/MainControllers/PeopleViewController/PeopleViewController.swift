@@ -13,7 +13,8 @@ import FirebaseFirestore
 
 class PeopleViewController: UIViewController, UICollectionViewDelegate {
     
-    private var currentPeople: MPeople
+  //  private var currentPeople: MPeople?
+    weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     weak var peopleDelegate: PeopleListenerDelegate?
     weak var requestChatDelegate: RequestChatListenerDelegate?
     weak var likeDislikeDelegate: LikeDislikeListenerDelegate?
@@ -32,18 +33,18 @@ class PeopleViewController: UIViewController, UICollectionViewDelegate {
     private var dataSource: UICollectionViewDiffableDataSource<SectionsPeople, MPeople>?
 
     
-    init(currentPeople: MPeople,
+    init(currentPeopleDelegate: CurrentPeopleDataDelegate?,
          peopleDelegate: PeopleListenerDelegate?,
          requestChatDelegate: RequestChatListenerDelegate?,
          likeDislikeDelegate: LikeDislikeListenerDelegate?,
          acceptChatDelegate: AcceptChatListenerDelegate?,
          reportDelegate: ReportsListnerDelegate?) {
         
+        self.currentPeopleDelegate = currentPeopleDelegate
         self.peopleDelegate = peopleDelegate
         self.requestChatDelegate = requestChatDelegate
         self.likeDislikeDelegate = likeDislikeDelegate
         self.acceptChatDelegate = acceptChatDelegate
-        self.currentPeople = currentPeople
         self.reportDelegate = reportDelegate
         
         super.init(nibName: nil, bundle: nil)
@@ -98,8 +99,9 @@ class PeopleViewController: UIViewController, UICollectionViewDelegate {
         guard let likeDislikeDelegate = likeDislikeDelegate else { fatalError("Can't get likeDislikeDelegate")}
         guard let acceptChatDelegate = acceptChatDelegate else { fatalError("Can't get acceptChatDelegate")}
         guard let reportDelegate = reportDelegate else { fatalError("Can't get reportDelegate")}
+        guard let currentPeople = currentPeopleDelegate else { fatalError("Can't get currentPeopleDelegate")}
         
-        peopleDelegate?.getPeople(currentPeople: currentPeople,
+        peopleDelegate?.getPeople(currentPeople: currentPeople.currentPeople,
                                   likeDislikeDelegate: likeDislikeDelegate,
                                   acceptChatsDelegate: acceptChatDelegate,
                                   reportsDelegate: reportDelegate,
@@ -180,7 +182,7 @@ class PeopleViewController: UIViewController, UICollectionViewDelegate {
                 switch section {
                 case .main:
                     guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PeopleCell.reuseID, for: indexPath) as? PeopleCell else { fatalError("Can't dequeue cell type PeopleCell")}
-                    if let currentPeople = self?.currentPeople {
+                    if let currentPeople = self?.currentPeopleDelegate?.currentPeople {
                         cell.configure(with: people, currentPeople: currentPeople, buttonDelegate: self)
                         {
                            // cell.setNeedsLayout()
@@ -211,9 +213,15 @@ extension PeopleViewController {
 extension PeopleViewController {
     //MARK: updateCurrentPeople
     @objc private func updateCurrentPeople() {
-        if let people = UserDefaultsService.shared.getMpeople() {
-            currentPeople = people
-        }
+        currentPeopleDelegate?.updatePeopleDataFromUserDefaults(complition: { result in
+            switch result {
+            
+            case .success(_):
+                break
+            case .failure(let error):
+                PopUpService.shared.showInfo(text: "Ошибка: \(error.localizedDescription)")
+            }
+        })
     }
     
     //MARK: premiumIsUpdated
@@ -225,15 +233,14 @@ extension PeopleViewController {
         guard let likeDislikeDelegate = likeDislikeDelegate else { fatalError("likeDislikeDelegate is nil") }
         guard let acceptChatDelegate = acceptChatDelegate else { fatalError("acceptChatDelegate is nil") }
         guard let reportDelegate = reportDelegate else { fatalError("reportDelegate is nil") }
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil") }
         
-        if let people = UserDefaultsService.shared.getMpeople() {
-            currentPeople = people
-            peopleDelegate?.getPeople(currentPeople: people,
-                                      likeDislikeDelegate: likeDislikeDelegate,
-                                      acceptChatsDelegate: acceptChatDelegate,
-                                      reportsDelegate: reportDelegate,
-                                      complition: { _ in })
-        }
+        peopleDelegate?.getPeople(currentPeople: currentPeopleDelegate.currentPeople,
+                                  likeDislikeDelegate: likeDislikeDelegate,
+                                  acceptChatsDelegate: acceptChatDelegate,
+                                  reportsDelegate: reportDelegate,
+                                  complition: { _ in })
+        
     }
     
     //MARK: checkPeopleNearbyIsEmpty
@@ -251,7 +258,7 @@ extension PeopleViewController {
     //MARK: changeSearchTapped
     @objc private func changeSearchTapped() {
         
-        let searchVC = EditSearchSettingsViewController(currentPeople: currentPeople,
+        let searchVC = EditSearchSettingsViewController(currentPeopleDelegate: currentPeopleDelegate,
                                                         peopleListnerDelegate: peopleDelegate,
                                                         likeDislikeDelegate: likeDislikeDelegate,
                                                         acceptChatsDelegate: acceptChatDelegate,
@@ -323,11 +330,13 @@ extension PeopleViewController {
     
     //MARK: checkLikeIsAvalible
     private func checkLikeIsAvalible(complition: @escaping() -> Void) {
-        FirestoreService.shared.addLikeCount(currentPeople: currentPeople) {[weak self] result in
+        
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil") }
+        
+        FirestoreService.shared.addLikeCount(currentPeople: currentPeopleDelegate.currentPeople) {[weak self] result in
             switch result {
             
-            case .success(let mPeople):
-                self?.currentPeople = mPeople
+            case .success(_):
                 complition()
             case .failure(let error):
                 //if error of count likes
@@ -337,8 +346,7 @@ extension PeopleViewController {
                                                     image: nil,
                                                     okButtonText: "Перейти на Flava premium") { [ weak self] in
                         
-                        guard let currentPeople = self?.currentPeople else { return }
-                        let purchasVC = PurchasesViewController(currentPeople: currentPeople)
+                        let purchasVC = PurchasesViewController(currentPeople: currentPeopleDelegate.currentPeople)
                         purchasVC.modalPresentationStyle = .fullScreen
                         self?.present(purchasVC, animated: true, completion: nil)
                     }
@@ -355,14 +363,14 @@ extension PeopleViewController {
         guard let reportDelegate = reportDelegate else { fatalError("reportDelegate is nil") }
         guard let peopleDelegate = peopleDelegate else { fatalError("peopleDelegate is nil") }
         guard let requestChatDelegate = requestChatDelegate else { fatalError("requestChatDelegate is nil") }
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil") }
         
-        FirestoreService.shared.likePeople(currentPeople: currentPeople,
+        FirestoreService.shared.likePeople(currentPeople: currentPeopleDelegate.currentPeople,
                                            likePeople: people,
                                            requestChats: requestChatDelegate.requestChats) {[weak self] result, isMatch  in
             switch result {
             
             case .success(let likeChat):
-                
                 
                 //add to local likePeople collection only when, current like is not match
                 if !isMatch {
@@ -371,12 +379,11 @@ extension PeopleViewController {
                 
                 self?.peopleDelegate?.deletePeople(peopleID: likeChat.friendId)
                 
-                
-                
                 if isMatch {
-                    guard let currentPeople = self?.currentPeople else { return }
-                    PopUpService.shared.showMatchPopUP(currentPeople: currentPeople, chat: likeChat) { messageDelegate, acceptChatDelegate in
-                        let chatVC = ChatViewController(people: currentPeople,
+                   
+                    PopUpService.shared.showMatchPopUP(currentPeople: currentPeopleDelegate.currentPeople,
+                                                       chat: likeChat) { messageDelegate, acceptChatDelegate in
+                        let chatVC = ChatViewController(currentPeopleDelegate: currentPeopleDelegate,
                                                         chat: likeChat,
                                                         messageDelegate: messageDelegate,
                                                         acceptChatDelegate: acceptChatDelegate,
@@ -398,13 +405,15 @@ extension PeopleViewController {
 extension PeopleViewController: PeopleButtonTappedDelegate {
     
     func timeTapped() {
+        
+        
         PopUpService.shared.bottomPopUp(header: "Хочешь видеть время последней активности пользователя?",
                                         text: "Последняя активность, безлимитные лайки и многое другое с подпиской Flava Premium",
                                         image: nil,
-                                        okButtonText: "Перейти на Flava premium") { [ weak self] in
+                                        okButtonText: "Перейти на Flava premium") { [weak self] in
             
-            guard let currentPeople = self?.currentPeople else { return }
-            let purchasVC = PurchasesViewController(currentPeople: currentPeople)
+            guard let currentPeopleDelegate = self?.currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil") }
+            let purchasVC = PurchasesViewController(currentPeople: currentPeopleDelegate.currentPeople)
             purchasVC.modalPresentationStyle = .fullScreen
             self?.present(purchasVC, animated: true, completion: nil)
         }
@@ -418,8 +427,9 @@ extension PeopleViewController: PeopleButtonTappedDelegate {
     }
     
     func dislikePeople(people: MPeople) {
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil") }
         //save dislike to firestore
-        FirestoreService.shared.dislikePeople(currentPeople: currentPeople,
+        FirestoreService.shared.dislikePeople(currentPeople: currentPeopleDelegate.currentPeople,
                                               dislikeForPeopleID: people.senderId,
                                               requestChats: requestChatDelegate?.requestChats ?? [],
                                               viewControllerDelegate: self) {[weak self] result in
@@ -439,8 +449,9 @@ extension PeopleViewController: PeopleButtonTappedDelegate {
     }
     
     func reportTapped(people: MPeople) {
-        print("report \(people.displayName)")
-        let reportVC = ReportViewController(currentUserID: currentPeople.senderId,
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil") }
+        
+        let reportVC = ReportViewController(currentUserID: currentPeopleDelegate.currentPeople.senderId,
                                             reportUserID: people.senderId,
                                             isFriend: false,
                                             reportDelegate: reportDelegate,

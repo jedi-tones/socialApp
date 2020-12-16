@@ -15,14 +15,14 @@ class ChatsViewController: UIViewController {
     
     private var collectionView: UICollectionView?
     private var dataSource: UICollectionViewDiffableDataSource<SectionsChats, MChat>?
-    private var currentPeople: MPeople
     private var emptyView = EmptyView(imageName: "newsletter",
                                       header: MLabels.emptyAcceptChatHeader.rawValue,
                                       text: MLabels.emptyAcceptChatText.rawValue,
                                       buttonText: MLabels.emptyAcceptChatButton.rawValue,
                                       delegate: self,
                                       selector: #selector(emptyButtonTapped))
-        
+    
+    weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     weak var acceptChatDelegate: AcceptChatListenerDelegate?
     weak var likeDislikeDelegate: LikeDislikeListenerDelegate?
     weak var messageDelegate: MessageListenerDelegate?
@@ -30,7 +30,7 @@ class ChatsViewController: UIViewController {
     weak var peopleDelegate: PeopleListenerDelegate?
     weak var reportDelegate: ReportsListnerDelegate?
     
-    init(currentPeople: MPeople,
+    init(currentPeopleDelegate: CurrentPeopleDataDelegate?,
          acceptChatDelegate: AcceptChatListenerDelegate?,
          likeDislikeDelegate: LikeDislikeListenerDelegate?,
          messageDelegate: MessageListenerDelegate?,
@@ -38,7 +38,7 @@ class ChatsViewController: UIViewController {
          peopleDelegate: PeopleListenerDelegate?,
          reportDelegate: ReportsListnerDelegate?) {
         
-        self.currentPeople = currentPeople
+        self.currentPeopleDelegate = currentPeopleDelegate
         self.acceptChatDelegate = acceptChatDelegate
         self.likeDislikeDelegate = likeDislikeDelegate
         self.messageDelegate = messageDelegate
@@ -71,13 +71,11 @@ class ChatsViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        updateCurrentPeople()
         tabBarController?.tabBar.isHidden = false
     }
     
     private func setupListeners() {
         acceptChatDelegate?.setupAcceptChatListener()
-        NotificationCenter.addObsorverToCurrentUser(observer: self, selector: #selector(updateCurrentPeople))
         NotificationCenter.addObsorverToPremiumUpdate(observer: self, selector: #selector(premiumIsUpdated))
     }
     
@@ -113,12 +111,6 @@ class ChatsViewController: UIViewController {
     }
     
     //MARK: objc
-    
-    @objc private func updateCurrentPeople() {
-        if let people = UserDefaultsService.shared.getMpeople() {
-            currentPeople = people
-        }
-    }
     
     @objc private func premiumIsUpdated() {
         // reloadDataSource(changeType: .update)
@@ -255,7 +247,8 @@ extension ChatsViewController {
     
     //MARK:  setupDataSource
     private func setupDataSource(){
-        let strongCurrentPeople = currentPeople
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("Current people is nil in ChatsVC")}
+        
         guard let collectionView = collectionView else { fatalError("CollectionView is nil")}
         dataSource = UICollectionViewDiffableDataSource<SectionsChats, MChat>(
             collectionView: collectionView,
@@ -268,13 +261,13 @@ extension ChatsViewController {
                 switch section {
                 case .activeChats:
                     return self?.configure(cellType: ActiveChatsCell.self,
-                                           currentUser: strongCurrentPeople,
+                                           currentUser: currentPeopleDelegate.currentPeople,
                                            value: chat,
                                            indexPath: indexPath)
                     
                 case .newChats:
                     return self?.configure(cellType: NewChatsCell.self,
-                                           currentUser: strongCurrentPeople,
+                                           currentUser: currentPeopleDelegate.currentPeople,
                                            value: chat,
                                            indexPath: indexPath)
                 }
@@ -392,11 +385,12 @@ extension ChatsViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let section = SectionsChats(rawValue: indexPath.section) else { fatalError("Unknow section index")}
         guard let item = dataSource?.itemIdentifier(for: indexPath) else { fatalError(DataSourceError.unknownChatIdentificator.localizedDescription)}
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("Current people is nil in ChatsVC")}
         
         switch section {
         case .newChats:
             
-            let chatVC = ChatViewController(people: currentPeople,
+            let chatVC = ChatViewController(currentPeopleDelegate: currentPeopleDelegate,
                                             chat: item,
                                             messageDelegate: messageDelegate,
                                             acceptChatDelegate: acceptChatDelegate,
@@ -405,11 +399,11 @@ extension ChatsViewController: UICollectionViewDelegate {
                                             requestDelegate: requestChatsDelegate)
             chatVC.acceptChatDelegate = acceptChatDelegate
             navigationController?.pushViewController(chatVC, animated: true)
-            FirestoreService.shared.updateLastActiveDate(id: currentPeople.senderId)
+            FirestoreService.shared.updateLastActiveDate(id: currentPeopleDelegate.currentPeople.senderId)
             
         case .activeChats:
             
-            let chatVC = ChatViewController(people: currentPeople,
+            let chatVC = ChatViewController(currentPeopleDelegate: currentPeopleDelegate,
                                             chat: item,
                                             messageDelegate: messageDelegate,
                                             acceptChatDelegate: acceptChatDelegate,
@@ -418,7 +412,7 @@ extension ChatsViewController: UICollectionViewDelegate {
                                             requestDelegate: requestChatsDelegate)
             chatVC.acceptChatDelegate = acceptChatDelegate
             navigationController?.pushViewController(chatVC, animated: true)
-            FirestoreService.shared.updateLastActiveDate(id: currentPeople.senderId)
+            FirestoreService.shared.updateLastActiveDate(id: currentPeopleDelegate.currentPeople.senderId)
         }
     }
 }

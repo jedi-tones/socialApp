@@ -20,6 +20,8 @@ class RequestsViewController: UIViewController {
     var likeDislikeDelegate: LikeDislikeListenerDelegate
     var acceptChatDelegate: AcceptChatListenerDelegate
     var reportDelegate: ReportsListnerDelegate
+    var currentPeopleDelegate: CurrentPeopleDataDelegate
+    
     private var emptyView = EmptyView(imageName: "delivery",
                                       header: MLabels.emptyRequestChatHeader.rawValue,
                                       text: MLabels.emptyRequestChatText.rawValue,
@@ -30,16 +32,15 @@ class RequestsViewController: UIViewController {
     private let haveRequestGetPremiumView = HaveRequestGetPremiumView(onTapped: (target: self,
                                                                                  selector: #selector(showPurchaseView)))
     private var dataSource: UICollectionViewDiffableDataSource<SectionsRequests, MChat>?
-    private var currentPeople: MPeople
     
-    init(currentPeople: MPeople,
+    init(currentPeopleDelegate: CurrentPeopleDataDelegate,
          likeDislikeDelegate: LikeDislikeListenerDelegate,
          requestChatDelegate: RequestChatListenerDelegate,
          peopleNearbyDelegate: PeopleListenerDelegate,
          acceptChatDelegate: AcceptChatListenerDelegate,
          reportDelegate: ReportsListnerDelegate) {
         
-        self.currentPeople = currentPeople
+        self.currentPeopleDelegate = currentPeopleDelegate
         self.peopleDelegate = peopleNearbyDelegate
         self.requestChatDelegate = requestChatDelegate
         self.likeDislikeDelegate = likeDislikeDelegate
@@ -72,7 +73,6 @@ class RequestsViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        updateCurrentPeople()
         setupNavigationBar()
         reloadData()
     }
@@ -83,7 +83,6 @@ class RequestsViewController: UIViewController {
     
     private func setupListeners() {
         requestChatDelegate.setupListener(reportsDelegate: reportDelegate)
-        NotificationCenter.addObsorverToCurrentUser(observer: self, selector: #selector(updateCurrentPeople))
         NotificationCenter.addObsorverToPremiumUpdate(observer: self, selector: #selector(premiumIsUpdated))
     }
     
@@ -101,7 +100,7 @@ class RequestsViewController: UIViewController {
     
     private func configureHaveRequestView() {
         let countOfPeople = requestChatDelegate.requestChats.count
-        if currentPeople.isGoldMember || currentPeople.isTestUser || countOfPeople == 0 {
+        if currentPeopleDelegate.currentPeople.isGoldMember || currentPeopleDelegate.currentPeople.isTestUser || countOfPeople == 0 {
             haveRequestGetPremiumView.configure(countOfPeople: countOfPeople, isHidden: true)
         } else {
             haveRequestGetPremiumView.configure(countOfPeople: countOfPeople, isHidden: false)
@@ -109,19 +108,12 @@ class RequestsViewController: UIViewController {
     }
     
     
-    //MARK: objc
-    @objc private func updateCurrentPeople() {
-        if let people = UserDefaultsService.shared.getMpeople() {
-            currentPeople = people
-        }
-    }
-    
     @objc private func premiumIsUpdated() {
         reloadData()
     }
     
     @objc private func emptyButtonTapped() {
-        let searchVC = EditSearchSettingsViewController(currentPeople: currentPeople,
+        let searchVC = EditSearchSettingsViewController(currentPeopleDelegate: currentPeopleDelegate,
                                                         peopleListnerDelegate: peopleDelegate,
                                                         likeDislikeDelegate: likeDislikeDelegate,
                                                         acceptChatsDelegate: acceptChatDelegate,
@@ -132,7 +124,7 @@ class RequestsViewController: UIViewController {
     }
     
     @objc private func showPurchaseView() {
-        let purchasVC = PurchasesViewController(currentPeople: currentPeople)
+        let purchasVC = PurchasesViewController(currentPeople: currentPeopleDelegate.currentPeople)
         purchasVC.modalPresentationStyle = .fullScreen
         present(purchasVC, animated: true, completion: nil)
     }
@@ -238,7 +230,7 @@ extension RequestsViewController {
                                                                         for: indexPath) as? RequestChatCell else {
                         fatalError("Can't dequeue cell type \(RequestChatCell.self)")
                     }
-                    if let currentPeople = self?.currentPeople {
+                    if let currentPeople = self?.currentPeopleDelegate.currentPeople {
                         cell.configure(with: chat, currentUser: currentPeople)
                     }
                     return cell
@@ -300,8 +292,8 @@ extension RequestsViewController: UICollectionViewDelegate {
         
         switch section {
         case .requestChats:
-            if currentPeople.isGoldMember || currentPeople.isTestUser {
-                let peopleVC = PeopleInfoViewController(currentPeople: currentPeople,
+            if currentPeopleDelegate.currentPeople.isGoldMember || currentPeopleDelegate.currentPeople.isTestUser {
+                let peopleVC = PeopleInfoViewController(currentPeopleDelegate: currentPeopleDelegate,
                                                         peopleID: item.friendId,
                                                         isFriend: false,
                                                         requestChatsDelegate: requestChatDelegate,
@@ -324,7 +316,7 @@ extension RequestsViewController: UICollectionViewDelegate {
                                                 image: nil,
                                                 okButtonText: "Перейти на Flava premium") { [ weak self] in
                     
-                    guard let currentPeople = self?.currentPeople else { return }
+                    guard let currentPeople = self?.currentPeopleDelegate.currentPeople else { return }
                     let purchasVC = PurchasesViewController(currentPeople: currentPeople)
                     purchasVC.modalPresentationStyle = .fullScreen
                     self?.present(purchasVC, animated: true, completion: nil)
