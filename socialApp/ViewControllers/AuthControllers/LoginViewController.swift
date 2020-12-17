@@ -44,9 +44,11 @@ class LoginViewController: UIViewController {
                                 textColor: .myGrayColor(),
                                 opacity: 0)
     
-    weak var navigationDelegate: NavigationDelegate?
+    private weak var navigationDelegate: NavigationDelegate?
+    private weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     
-    init(navigationDelegate: NavigationDelegate?){
+    init(navigationDelegate: NavigationDelegate?, currentPeopleDelegate: CurrentPeopleDataDelegate?){
+        self.currentPeopleDelegate = currentPeopleDelegate
         self.navigationDelegate = navigationDelegate
         super.init(nibName: nil, bundle: nil)
     }
@@ -141,6 +143,7 @@ extension LoginViewController {
     //MARK: - loginButtonPressed
     @objc private func loginButtonPressed() {
         
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil on LoginViewController")}
         switch passwordTextField.isEnabled {
         case true:
             AuthService.shared.signIn(email: emailTextField.text,
@@ -149,15 +152,16 @@ extension LoginViewController {
                 case .success( let user):
                     
                     //if correct login user, than close LoginVC and check setProfile info
-                    FirestoreService.shared.getUserData(userID: user.email! ) { result in
+                    currentPeopleDelegate.updatePeopleDataFromFirestore(userID: user.email!) { result in
                         switch result {
                         
                         case .success(let mPeople):
                             if mPeople.userImage == "" {
+                                currentPeopleDelegate.savePeopleDataToUserDefaults(currentPeople: mPeople)
                                 self?.dismiss(animated: true, completion: nil)
-                                self?.navigationDelegate?.toCompliteRegistration(userID: mPeople.senderId)
+                                self?.navigationDelegate?.toCompliteRegistration(currentPeopleDelegate: currentPeopleDelegate)
                             } else {
-                                let mainVC = MainTabBarController(currentUser: mPeople,
+                                let mainVC = MainTabBarController(currentPeopleDelegate: currentPeopleDelegate,
                                                                   isNewLogin: true)
                                 mainVC.modalPresentationStyle = .fullScreen
                                 self?.present(mainVC, animated: true, completion: nil)
@@ -178,7 +182,9 @@ extension LoginViewController {
         //if passwordTextField is disable go to RegisterVC
         default:
             guard let delegate = navigationDelegate else { fatalError("Can't get navigationDelegate")}
-            let registerEmailVC = RegisterEmailViewController(email: emailTextField.text, navigationDelegate: delegate)
+            let registerEmailVC = RegisterEmailViewController(email: emailTextField.text,
+                                                              currentPeopleDelegate: currentPeopleDelegate,
+                                                              navigationDelegate: delegate)
             navigationController?.pushViewController(registerEmailVC, animated: true)
         }
     }

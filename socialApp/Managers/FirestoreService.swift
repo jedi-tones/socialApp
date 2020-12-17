@@ -10,6 +10,7 @@ import UIKit
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 import FirebaseAuth
+import MapKit
 
 class FirestoreService {
     
@@ -38,7 +39,16 @@ class FirestoreService {
                                                 if let error = error {
                                                     fatalError(error.localizedDescription)
                                                 } else {
-                                                    complition(.success(id))
+                                                    if var people = UserDefaultsService.shared.getMpeople() {
+                                                        people.senderId = id
+                                                        people.mail = email
+                                                        people.authType = authType
+                                                        UserDefaultsService.shared.saveMpeople(people: people)
+                                                        NotificationCenter.postCurrentUserNeedUpdate()
+                                                        complition(.success(id))
+                                                    } else {
+                                                        complition(.failure(UserDefaultsError.cantGetData))
+                                                    }
                                                 }
                                             })
     }
@@ -53,7 +63,14 @@ class FirestoreService {
                                                 if let error = error {
                                                     complition(.failure(error))
                                                 } else {
-                                                    complition(.success(()))
+                                                    if var people = UserDefaultsService.shared.getMpeople() {
+                                                        people.dateOfBirth = dateOfBirth
+                                                        UserDefaultsService.shared.saveMpeople(people: people)
+                                                        NotificationCenter.postCurrentUserNeedUpdate()
+                                                        complition(.success(()))
+                                                    } else {
+                                                        complition(.failure(UserDefaultsError.cantGetData))
+                                                    }
                                                 }
                                             })
     }
@@ -66,7 +83,14 @@ class FirestoreService {
             if let error = error {
                 complition(.failure(error))
             } else {
-                complition(.success(interests))
+                if var people = UserDefaultsService.shared.getMpeople() {
+                    people.interests = interests
+                    UserDefaultsService.shared.saveMpeople(people: people)
+                    NotificationCenter.postCurrentUserNeedUpdate()
+                    complition(.success(interests))
+                } else {
+                    complition(.failure(UserDefaultsError.cantGetData))
+                }
             }
         }
     }
@@ -80,7 +104,14 @@ class FirestoreService {
             if let error = error {
                 complition(.failure(error))
             } else {
-                complition(.success(desires))
+                if var people = UserDefaultsService.shared.getMpeople() {
+                    people.desires = desires
+                    UserDefaultsService.shared.saveMpeople(people: people)
+                    NotificationCenter.postCurrentUserNeedUpdate()
+                    complition(.success(desires))
+                } else {
+                    complition(.failure(UserDefaultsError.cantGetData))
+                }
             }
         }
     }
@@ -214,7 +245,6 @@ class FirestoreService {
                               MSearchSettings.minRange.rawValue : MSearchSettings.minRange.defaultValue,
                               MSearchSettings.maxRange.rawValue : MSearchSettings.maxRange.defaultValue,
                               MSearchSettings.currentLocation.rawValue : MSearchSettings.currentLocation.defaultValue]
-        let reportList: [String:Any] = [:]
         
         usersReference.document(id).setData([MPeople.CodingKeys.displayName.rawValue : userName,
                                              MPeople.CodingKeys.gender.rawValue : gender,
@@ -226,14 +256,31 @@ class FirestoreService {
                                              MPeople.CodingKeys.isGoldMember.rawValue: false,
                                              MPeople.CodingKeys.isTestUser.rawValue: false,
                                              MPeople.CodingKeys.isIncognito.rawValue: false,
-                                             MPeople.CodingKeys.searchSettings.rawValue: searchSettings,
-                                             MPeople.CodingKeys.reportList.rawValue : FieldValue.arrayUnion([reportList])],
+                                             MPeople.CodingKeys.searchSettings.rawValue: searchSettings],
                                             merge: true,
                                             completion: { (error) in
                                                 if let error = error {
                                                     complition(.failure(error))
                                                 } else {
-                                                    complition(.success(()))
+                                                    if var people = UserDefaultsService.shared.getMpeople() {
+                                                        people.displayName = userName
+                                                        people.gender = gender
+                                                        people.lookingFor = lookingFor
+                                                        people.sexuality = sexuality
+                                                        people.isActive = false
+                                                        people.isAdmin = false
+                                                        people.isBlocked = false
+                                                        people.isGoldMember = false
+                                                        people.isTestUser = false
+                                                        people.isIncognito = false
+                                                        people.searchSettings = searchSettings
+                                                        
+                                                        UserDefaultsService.shared.saveMpeople(people: people)
+                                                        NotificationCenter.postCurrentUserNeedUpdate()
+                                                        complition(.success(()))
+                                                    } else {
+                                                        complition(.failure(UserDefaultsError.cantGetData))
+                                                    }
                                                 }
                                             })
     }
@@ -248,7 +295,15 @@ class FirestoreService {
                                                 if let error = error {
                                                     complition(.failure(error))
                                                 } else {
-                                                    complition(.success(()))
+                                                    if var people = UserDefaultsService.shared.getMpeople() {
+                                                        people.isActive = isActive
+                                                        
+                                                        UserDefaultsService.shared.saveMpeople(people: people)
+                                                        NotificationCenter.postCurrentUserNeedUpdate()
+                                                        complition(.success(()))
+                                                    } else {
+                                                        complition(.failure(UserDefaultsError.cantGetData))
+                                                    }
                                                 }
                                             })
     }
@@ -263,7 +318,15 @@ class FirestoreService {
                                                 if let error = error {
                                                     complition(.failure(error))
                                                 } else {
-                                                    complition(.success(()))
+                                                    if var people = UserDefaultsService.shared.getMpeople() {
+                                                        people.advert = advert
+                                                        
+                                                        UserDefaultsService.shared.saveMpeople(people: people)
+                                                        NotificationCenter.postCurrentUserNeedUpdate()
+                                                        complition(.success(()))
+                                                    } else {
+                                                        complition(.failure(UserDefaultsError.cantGetData))
+                                                    }
                                                 }
                                             })
     }
@@ -359,8 +422,18 @@ class FirestoreService {
             if let error = error {
                 complition(.failure(error))
             } else {
-                complition(.success([MLocation.longitude.rawValue:longitude,
-                                     MLocation.latitude.rawValue:latitude]))
+                let location = [MLocation.longitude.rawValue:longitude,
+                                MLocation.latitude.rawValue:latitude]
+                
+                if var people = UserDefaultsService.shared.getMpeople() {
+                    people.location = CLLocationCoordinate2D(latitude: latitude,
+                                                             longitude: longitude)
+                    UserDefaultsService.shared.saveMpeople(people: people)
+                    NotificationCenter.postCurrentUserNeedUpdate()
+                    complition(.success(location))
+                } else {
+                    complition(.failure(UserDefaultsError.cantGetData))
+                }
             }
         }
     }

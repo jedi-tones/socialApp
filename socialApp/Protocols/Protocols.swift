@@ -31,8 +31,8 @@ protocol ReprasentationModel {
 }
 
 protocol NavigationDelegate: class {
-    func toMainTabBarController(currentPeople: MPeople)
-    func toCompliteRegistration(userID: String)
+    func toMainTabBarController(currentPeopleDelegate: CurrentPeopleDataDelegate?)
+    func toCompliteRegistration(currentPeopleDelegate: CurrentPeopleDataDelegate?)
 }
 
 protocol PeopleButtonTappedDelegate: class {

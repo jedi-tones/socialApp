@@ -270,7 +270,7 @@ extension EditSearchSettingsViewController {
                                             image: nil,
                                             okButtonText: "Перейти на Flava premium") { [weak self] in
                 
-                let purchasVC = PurchasesViewController(currentPeople: currentPeopleDelegate.currentPeople)
+                let purchasVC = PurchasesViewController(currentPeopleDelegate: self?.currentPeopleDelegate)
                 purchasVC.modalPresentationStyle = .fullScreen
                 self?.present(purchasVC, animated: true, completion: nil)
             }

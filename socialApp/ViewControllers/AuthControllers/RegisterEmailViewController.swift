@@ -61,9 +61,11 @@ class RegisterEmailViewController: UIViewController {
                                    isHidden: true)
 
     private var email:String?
-    weak var navigationDelegate: NavigationDelegate?
+    private weak var navigationDelegate: NavigationDelegate?
+    private weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     
-    init(email: String?, navigationDelegate: NavigationDelegate?){
+    init(email: String?, currentPeopleDelegate: CurrentPeopleDataDelegate?, navigationDelegate: NavigationDelegate?){
+        self.currentPeopleDelegate = currentPeopleDelegate
         self.navigationDelegate = navigationDelegate
         self.email = email
         super.init(nibName: nil, bundle: nil)
@@ -72,7 +74,6 @@ class RegisterEmailViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -108,7 +109,7 @@ extension RegisterEmailViewController {
 extension RegisterEmailViewController {
     
     @objc func signUpButtonPressed() {
-        
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil in RegistrationEmailVC")}
         //need check activation mail before next VC
         AuthService.shared.register(
             email: email,
@@ -123,11 +124,11 @@ extension RegisterEmailViewController {
                                                         email: email,
                                                         authType: .email) { result in
                     switch result {
-                    case .success(let id):
+                    case .success(_):
                         //subscribe to notification topics
-                        PushMessagingService.shared.subscribeMainTopic(userID: id)
+                        PushMessagingService.shared.subscribeMainTopic(userID: email)
                         //after save base profile in Firestore, close and show complite registration VC
-                        let newVC = DateOfBirthViewController(userID: id)
+                        let newVC = DateOfBirthViewController(currentPeopleDelegate: currentPeopleDelegate)
                         self?.navigationController?.setViewControllers([newVC], animated: true)
                     case .failure(let error):
                         fatalError(error.localizedDescription)

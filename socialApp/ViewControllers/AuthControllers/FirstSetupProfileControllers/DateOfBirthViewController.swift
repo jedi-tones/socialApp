@@ -10,15 +10,15 @@ import UIKit
 
 class DateOfBirthViewController: UIViewController {
     
-    var userID: String
+    private weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     
-    let headerLabel = UILabel(labelText: MLabels.dateOfBirthHeader.rawValue, textFont: .avenirBold(size: 24),linesCount: 0)
-    let subHeaderLabel = UILabel(labelText: MLabels.dateOfBirthSubHeader.rawValue, textFont: .avenirRegular(size: 16), textColor: .myGrayColor(), linesCount: 0)
-    let dateLabel = UILabel(labelText: "День рождения", textFont: .avenirRegular(size: 16), textColor: .myGrayColor())
-    let datePicker = UIDatePicker(datePickerMode: .date)
+    private let headerLabel = UILabel(labelText: MLabels.dateOfBirthHeader.rawValue, textFont: .avenirBold(size: 24),linesCount: 0)
+    private let subHeaderLabel = UILabel(labelText: MLabels.dateOfBirthSubHeader.rawValue, textFont: .avenirRegular(size: 16), textColor: .myGrayColor(), linesCount: 0)
+    private let dateLabel = UILabel(labelText: "День рождения", textFont: .avenirRegular(size: 16), textColor: .myGrayColor())
+    private let datePicker = UIDatePicker(datePickerMode: .date)
     
-    init(userID: String){
-        self.userID = userID
+    init(currentPeopleDelegate: CurrentPeopleDataDelegate?){
+        self.currentPeopleDelegate = currentPeopleDelegate
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -48,12 +48,14 @@ extension  DateOfBirthViewController {
     
     @objc private func saveButtonTapped() {
         
-        let id = userID
-        FirestoreService.shared.saveFirstSetupDateOfBirth(id: id, dateOfBirth: datePicker.date) {[weak self] result in
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil in DateOfBirthVc")}
+        
+        FirestoreService.shared.saveFirstSetupDateOfBirth(id: currentPeopleDelegate.currentPeople.senderId,
+                                                          dateOfBirth: datePicker.date) {[weak self] result in
             switch result {
             
             case .success():
-                let nextViewController = GenderSelectionViewController(userID: id)
+                let nextViewController = GenderSelectionViewController(currentPeopleDelegate: currentPeopleDelegate)
                 self?.navigationController?.setViewControllers([nextViewController], animated: true)
             case .failure(let error):
                 fatalError(error.localizedDescription)

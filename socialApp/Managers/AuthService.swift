@@ -11,6 +11,7 @@ import Firebase
 import FirebaseAuth
 import AuthenticationServices
 import CryptoKit
+import ApphudSDK
 
 class AuthService {
     
@@ -20,6 +21,115 @@ class AuthService {
     
     private init() {}
     
+    private func makeRootVC(viewController: UIViewController, withNavContoller: Bool = false) -> UIViewController {
+        
+        if withNavContoller {
+            let navVC = UINavigationController(rootViewController: viewController)
+            navVC.navigationBar.isHidden = true
+            navVC.navigationItem.backButtonTitle = "Войти с Apple ID"
+            return navVC
+        }
+        return viewController
+    }
+    
+    private func checkProfileInfo(currentPeopleDelegate: CurrentPeopleDataDelegate?,
+                                  userID: String,
+                                  complition:@escaping(Result<Bool,Error>) -> Void){
+        //show animate loadView
+        PopUpService.shared.showAnimateView(name: MAnimamationName.loading.rawValue)
+        
+        currentPeopleDelegate?.updatePeopleDataFromFirestore(userID: userID,
+                                                             complition: { result in
+            switch result {
+            
+            case .success(let mPeople):
+                //if don't have profile image, need setup profile
+                if mPeople.userImage == "" {
+                    complition(.success(false))
+                } else {
+                    complition(.success(true))
+                }
+            case .failure(let error):
+                fatalError(error.localizedDescription)
+            }
+        })
+    }
+    
+    //MARK: checkAndSetRootViewController
+    func checkAndSetRootViewController(currentPeopleDelegate: CurrentPeopleDataDelegate,
+                                       complition:@escaping(Result<UIViewController,Error>)-> Void ) {
+        if let user = Auth.auth().currentUser {
+            //try reload, to check profile is avalible on server
+            user.reload {[unowned self] error in
+                if let _ = error {
+                    //if profile don't avalible, log out
+                    signOut(currentPeopleDelegate: currentPeopleDelegate) { result in
+                        switch result {
+                        case .success(_):
+                            Apphud.logout()
+                            currentPeopleDelegate.deletePeopleFromUserDefaults()
+                            let rootViewController = makeRootVC(viewController: AuthViewController(currentPeopleDelegate: currentPeopleDelegate),
+                                                                withNavContoller: true)
+                            complition(.success(rootViewController))
+                            
+                            
+                        case .failure(let error):
+                            fatalError(error.localizedDescription)
+                        }
+                    }
+                } else {
+                    if let userID = user.email {
+                        //if user avalible, check correct setup user info
+                        checkProfileInfo(currentPeopleDelegate: currentPeopleDelegate,
+                                         userID: userID) { result in
+                            switch result {
+                            
+                            case .success(let isCompliteSetup):
+                                //if user have profile photo, than go main vc
+                                if isCompliteSetup {
+                                    let rootViewController = makeRootVC(viewController: MainTabBarController(currentPeopleDelegate: currentPeopleDelegate,
+                                                                                                             isNewLogin: false),
+                                                                        withNavContoller: true)
+                                    complition(.success(rootViewController))
+                                    
+                                } else {
+                                    //stop load animation animation
+                                    PopUpService.shared.dismisPopUp(name: MAnimamationName.loading.rawValue) {}
+                                    // if don't have user photo (last step of first setup profile), go setup
+                                    let navController = UINavigationController(rootViewController: DateOfBirthViewController(currentPeopleDelegate: currentPeopleDelegate))
+                                    navController.navigationBar.tintColor = .label
+                                    navController.navigationBar.shadowImage = UIImage()
+                                    navController.navigationBar.barTintColor = .myWhiteColor()
+                                    complition(.success(navController))
+                                    
+                                    PopUpService.shared.showInfo(text: "Необходимо закончить заполнение профиля")
+                                }
+                            case .failure(_):
+                                //stop load animation animation
+                                PopUpService.shared.dismisPopUp(name: MAnimamationName.loading.rawValue) {}
+                                PopUpService.shared.bottomPopUp(header: "Проблема с учетной записью",
+                                                                text: "Не удалось получить информацию для входа",
+                                                                image: nil,
+                                                                okButtonText: "Попробовать еще") {
+                                    //make root Auth vc
+                                    let rootVC = makeRootVC(viewController: AuthViewController(currentPeopleDelegate: currentPeopleDelegate),
+                                                            withNavContoller: true)
+                                    complition(.success(rootVC))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+           //if don't have avalible current auth in firebase, set root authVc
+            let rootVC = makeRootVC(viewController: AuthViewController(currentPeopleDelegate: currentPeopleDelegate),
+                                    withNavContoller: true)
+            complition(.success(rootVC))
+        }
+    }
+    
+    //MARK: isEmailAlreadyRegister
     func isEmailAlreadyRegister(email: String?, complition: @escaping(Result<Bool,Error>) -> Void) {
         guard let email = email else { return }
         
@@ -34,11 +144,12 @@ class AuthService {
         }
     }
     
+    //MARK: verifyEmail
     func verifyEmail(user: User, complition: @escaping(Result<Bool,Error>) -> Void) {
         
         user.sendEmailVerification { error in
             
-            
+            //need complite verification method
         }
     }
     
@@ -149,12 +260,12 @@ class AuthService {
     }
     
     //MARK: - signOut
-    func signOut(complition: @escaping (Result<Bool,Error>)-> Void) {
+    func signOut(currentPeopleDelegate: CurrentPeopleDataDelegate?, complition: @escaping (Result<Bool,Error>)-> Void) {
         do {
             try Auth.auth().signOut()
             
             let keyWindow = UIApplication.shared.windows.first { $0.isKeyWindow }
-            keyWindow?.rootViewController = AuthViewController()
+            keyWindow?.rootViewController = AuthViewController(currentPeopleDelegate: currentPeopleDelegate)
             
             complition(.success(true))
         } catch {
@@ -218,4 +329,9 @@ extension AuthService {
         
         return request
     }
+}
+
+extension AuthService {
+    
+   
 }

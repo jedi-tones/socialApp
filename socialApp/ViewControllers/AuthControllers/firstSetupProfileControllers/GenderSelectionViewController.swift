@@ -10,7 +10,7 @@ import UIKit
 
 class GenderSelectionViewController: UIViewController {
 
-    private var userID: String
+    private weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     
     private let headerLabel = UILabel(labelText: MLabels.genderSelectionHeader.rawValue, textFont: .avenirBold(size: 24),linesCount: 0)
     private let genderSelectionButton = OneLineButtonWithHeader(header: "Гендер", info: "Парень")
@@ -19,8 +19,8 @@ class GenderSelectionViewController: UIViewController {
     private let nameLabel = UILabel(labelText: "Вымышленное имя", textFont: .avenirRegular(size: 16), textColor: .myGrayColor())
     private let nameTextField = OneLineTextField(isSecureText: false, tag: 1)
 
-    init(userID: String){
-        self.userID = userID
+    init(currentPeopleDelegate: CurrentPeopleDataDelegate?){
+        self.currentPeopleDelegate = currentPeopleDelegate
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -61,14 +61,14 @@ class GenderSelectionViewController: UIViewController {
 extension GenderSelectionViewController {
     
     @objc private func saveButtonTapped() {
-        let id = userID
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil in GenderSelectionVC")}
         let userName = Validators.shared.isFilledUserName(userName: nameTextField.text)
         if userName.isFilled {
             guard let gender = genderSelectionButton.infoLabel.text else { return }
             guard let sexuality = sexualitySelectionButton.infoLabel.text else { return }
             guard let lookingFor = lookingForSelectionButton.infoLabel.text else { return }
             
-            FirestoreService.shared.saveFirstSetupNameGender(id: userID,
+            FirestoreService.shared.saveFirstSetupNameGender(id: currentPeopleDelegate.currentPeople.senderId,
                                                              userName: userName.userName,
                                                              gender: gender,
                                                              lookingFor: lookingFor,
@@ -78,7 +78,7 @@ extension GenderSelectionViewController {
                 case .success():
                     
                     self?.view.endEditing(true)
-                    let nextViewController = InterestsTagsViewController(userID: id)
+                    let nextViewController = InterestsTagsViewController(currentPeopleDelegate: currentPeopleDelegate)
                     self?.navigationController?.setViewControllers([nextViewController], animated: true)
                 case .failure(let error):
                     fatalError(error.localizedDescription)

@@ -57,10 +57,10 @@ class EditProfileViewController: UIViewController {
     private var selectedVisibleYValue: CGFloat?
     private var keybordMinYValue:CGFloat?
     
-    private var currentPeople: MPeople
+    private weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     
-    init(currentPeople: MPeople) {
-        self.currentPeople = currentPeople
+    init(currentPeopleDelegate: CurrentPeopleDataDelegate?) {
+        self.currentPeopleDelegate = currentPeopleDelegate
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -138,8 +138,9 @@ extension EditProfileViewController {
     //MARK:  setPeopleData
     private func setPeopleData() {
         
-        guard let people = UserDefaultsService.shared.getMpeople() else { return }
-        currentPeople = people
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil in EditProfileVC") }
+        let people = currentPeopleDelegate.currentPeople
+        
         interestsTags.configure(unselectTags: [],
                                 selectedTags: people.interests)
         desireTags.configure(unselectTags: [],
@@ -162,9 +163,11 @@ extension EditProfileViewController {
     
     //MARK:  savePeopleData
     private func savePeopleData() {
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil in EditProfileVC") }
+        
         let name = nameTextField.text ?? ""
         let advert = advertTextView.text ?? ""
-        let id = currentPeople.senderId
+        let id = currentPeopleDelegate.currentPeople.senderId
         let isIncognito = incognitoSwitch.isOn
         let interestsSelectedTags = interestsTags.getSelectedTags()
         let desiresSelectedTags = desireTags.getSelectedTags()
@@ -210,8 +213,8 @@ extension EditProfileViewController {
 extension EditProfileViewController {
     
     @objc func editPhotosButtonTap() {
-        let id = currentPeople.senderId
-        let vc = EditPhotoViewController(userID: id,isFirstSetup: false)
+        let vc = EditPhotoViewController(currentPeopleDelegate: currentPeopleDelegate,
+                                         isFirstSetup: false)
         navigationController?.pushViewController(vc, animated: true)
     }
     
@@ -283,13 +286,15 @@ extension EditProfileViewController {
     
     //MARK: incognitoSwitchChanged
     @objc private func incognitoSwitchChanged(){
-        if !PurchasesService.shared.checkActiveSubscribtionWithApphud() && !currentPeople.isTestUser {
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil in EditProfileVC") }
+        
+        if !PurchasesService.shared.checkActiveSubscribtionWithApphud() && !currentPeopleDelegate.currentPeople.isTestUser {
             PopUpService.shared.bottomPopUp(header: "Режим инкогнито",
                                             text: "Данный режим доступен с подпиской Flava premium",
                                             image: nil,
                                             okButtonText: "Перейти на Flava premium") { [weak self] in
-                guard let currentPeople = self?.currentPeople else { return }
-                let purchasVC = PurchasesViewController(currentPeople: currentPeople)
+                
+                let purchasVC = PurchasesViewController(currentPeopleDelegate: currentPeopleDelegate)
                 purchasVC.modalPresentationStyle = .fullScreen
                 self?.present(purchasVC, animated: true, completion: nil)
             }
@@ -298,10 +303,7 @@ extension EditProfileViewController {
     }
     
     @objc private func premiumIsUpdated() {
-        if let updatedUser = UserDefaultsService.shared.getMpeople() {
-            self.currentPeople = updatedUser
-            setPeopleData()
-        }
+        setPeopleData()
     }
 }
 

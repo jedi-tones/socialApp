@@ -10,41 +10,36 @@ import ApphudSDK
 
 class FirstLoadService {
     
-    //private let currentUser: MPeople
     private var acceptChatsDelegate: AcceptChatListenerDelegate
     private var requestChatsDelegate: RequestChatListenerDelegate
     private var peopleDelegate: PeopleListenerDelegate
     private var likeDislikeDelegate: LikeDislikeListenerDelegate
     private var messageDelegate: MessageListenerDelegate
     private var reportsDelegate: ReportsListnerDelegate
-    private var currentPeopleDelegate: CurrentPeopleDataDelegate
     
-    init(currentUser: MPeople) {
-        //  self.currentUser = currentUser
-        likeDislikeDelegate = LikeDislikeChatDataProvider(userID: currentUser.senderId)
-        requestChatsDelegate = RequestChatDataProvider(userID: currentUser.senderId)
-        acceptChatsDelegate = AcceptChatDataProvider(userID: currentUser.senderId)
-        peopleDelegate = PeopleDataProvider(userID: currentUser.senderId)
-        messageDelegate = MessagesDataProvider(userID: currentUser.senderId)
-        reportsDelegate = ReportsDataProvider(userID: currentUser.senderId)
-        currentPeopleDelegate = CurrentPeopleDataProvider(currentPeople: currentUser)
+    init(currentPeopleID: String) {
+
+        likeDislikeDelegate = LikeDislikeChatDataProvider(userID: currentPeopleID)
+        requestChatsDelegate = RequestChatDataProvider(userID: currentPeopleID)
+        acceptChatsDelegate = AcceptChatDataProvider(userID: currentPeopleID)
+        peopleDelegate = PeopleDataProvider(userID: currentPeopleID)
+        messageDelegate = MessagesDataProvider(userID: currentPeopleID)
+        reportsDelegate = ReportsDataProvider(userID: currentPeopleID)
     }
     
-    func loadData(complition: @escaping(_ currentPeopleDelegate: CurrentPeopleDataDelegate,
-                                        _ acceptChatsDelegate: AcceptChatListenerDelegate,
-                                        _ requestChatsDelegate: RequestChatListenerDelegate,
-                                        _ peopleDelegate: PeopleListenerDelegate,
-                                        _ likeDislikeDelegate: LikeDislikeListenerDelegate,
-                                        _ messageDelegate: MessageListenerDelegate,
-                                        _ reportsDelegate: ReportsListnerDelegate )->Void) {
+    func loadData(currentPeople: MPeople, complition: @escaping(_ acceptChatsDelegate: AcceptChatListenerDelegate,
+                                                                _ requestChatsDelegate: RequestChatListenerDelegate,
+                                                                _ peopleDelegate: PeopleListenerDelegate,
+                                                                _ likeDislikeDelegate: LikeDislikeListenerDelegate,
+                                                                _ messageDelegate: MessageListenerDelegate,
+                                                                _ reportsDelegate: ReportsListnerDelegate )->Void) {
         setup()
-        setupApphud()
-        getPeopleData { [unowned self]  result in
+        setupApphud(currentPeopleID: currentPeople.senderId)
+        getPeopleData(people: currentPeople) { [unowned self]  result in
             switch result {
             
             case .success():
-                complition(currentPeopleDelegate,
-                           acceptChatsDelegate,
+                complition(acceptChatsDelegate,
                            requestChatsDelegate,
                            peopleDelegate,
                            likeDislikeDelegate,
@@ -72,24 +67,23 @@ extension FirstLoadService {
         
     }
     
-    private func subscribeToPushNotification() {
+    private func subscribeToPushNotification(currentPeopleID: String) {
         //subscribe to all pushNotification from chats after relogin
-        PushMessagingService.shared.logInSubscribe(currentUserID: currentPeopleDelegate.currentPeople.senderId,
+        PushMessagingService.shared.logInSubscribe(currentUserID: currentPeopleID,
                                                    acceptChats: acceptChatsDelegate.acceptChats,
                                                    likeChats: likeDislikeDelegate.likePeople)
         
     }
     
-    private func setupApphud() {
+    private func setupApphud(currentPeopleID: String) {
         Apphud.start(apiKey: "app_LDXecjNbEuvUBtpd3J9kw75A6cH14n",
-                     userID: currentPeopleDelegate.currentPeople.senderId,
+                     userID: currentPeopleID,
                      observerMode: false)
     }
     
     //MARK: getPeopleData, location
-    private func getPeopleData(complition:@escaping(Result<(),Error>) -> Void) {
-        
-        let people = currentPeopleDelegate.currentPeople
+    private func getPeopleData(people: MPeople, complition:@escaping(Result<(),Error>) -> Void) {
+       
         if let virtualLocation = MVirtualLocation(rawValue: people.searchSettings[MSearchSettings.currentLocation.rawValue] ?? 0) {
             LocationService.shared.getCoordinate(userID: people.senderId,
                                                  virtualLocation: virtualLocation) {[unowned self] isAllowPermission in
@@ -131,19 +125,11 @@ extension FirstLoadService {
                                                                                     switch result {
                                                                                     
                                                                                     case .success(_):
-                                                                                        subscribeToPushNotification()
+                                                                                        subscribeToPushNotification(currentPeopleID: people.senderId)
                                                                                         //check active subscribtion
                                                                                         PurchasesService.shared.checkSubscribtion(currentPeople: people) { _ in
                                                                                             
-                                                                                            currentPeopleDelegate.updatePeopleDataFromFirestore { result in
-                                                                                                switch result {
-                                                                                                
-                                                                                                case .success(_):
-                                                                                                    complition(.success(()))
-                                                                                                case .failure(let error):
-                                                                                                    complition(.failure(error))
-                                                                                                }
-                                                                                            }
+                                                                                            complition(.success(()))
                                                                                         }
                                                                                     case .failure(let error):
                                                                                         complition(.failure(error))

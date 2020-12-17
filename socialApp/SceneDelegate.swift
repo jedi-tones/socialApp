@@ -14,6 +14,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
     private var protectWindow: UIWindow?
+    private var currentPeopleDelegate: CurrentPeopleDataDelegate?
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         
@@ -21,66 +22,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
        // window?.windowScene = windowScene
         
-        if let user = Auth.auth().currentUser {
-            //try reload, to check profile is avalible on server
-            user.reload {[weak self] error in
-                if let _ = error {
-                    //if profile don't avalible, log out
-                    AuthService.shared.signOut { result in
-                        switch result {
-                        case .success(_):
-                            Apphud.logout()
-                            UserDefaultsService.shared.deleteMpeople()
-                            self?.window?.rootViewController = self?.makeRootVC(viewController: AuthViewController(), withNavContoller: true)
-                            
-                        case .failure(let error):
-                            fatalError(error.localizedDescription)
-                        }
-                    }
-                } else {
-                    if let userID = user.email {
-                        //if user avalible, check correct setup user info
-                        self?.checkProfileInfo(userID: userID) {[weak self] result in
-                            switch result {
-                            
-                            case .success((let isCompliteSetup, let currentPeople)):
-                                //if user have profile photo, than go main vc
-                                if isCompliteSetup {
-                                    self?.window?.rootViewController = MainTabBarController(currentUser: currentPeople,
-                                                                                            isNewLogin: false)
-                                } else {
-                                    //stop load animation animation
-                                    PopUpService.shared.dismisPopUp(name: MAnimamationName.loading.rawValue) {}
-                                    // if don't have user photo (last step of first setup profile), go setup
-                                    let navController = UINavigationController(rootViewController: DateOfBirthViewController(userID: userID))
-                                    navController.navigationBar.tintColor = .label
-                                    navController.navigationBar.shadowImage = UIImage()
-                                    navController.navigationBar.barTintColor = .myWhiteColor()
-                                    self?.window?.rootViewController = navController
-                                    
-                                    PopUpService.shared.showInfo(text: "Необходимо закончить заполнение профиля")
-                                }
-                            case .failure(_):
-                                //stop load animation animation
-                                PopUpService.shared.dismisPopUp(name: MAnimamationName.loading.rawValue) {}
-                                PopUpService.shared.bottomPopUp(header: "Проблема с учетной записью",
-                                                                text: "Не удалось получить информацию для входа",
-                                                                image: nil,
-                                                                okButtonText: "Попробовать еще") {
-                                    //make root Auth vc
-                                    self?.window?.rootViewController = self?.makeRootVC(viewController: AuthViewController(), withNavContoller: true)
-                                }
-                            }
-                        }
-                        
-                        
-                    }
-                }
+        currentPeopleDelegate = CurrentPeopleDataProvider()
+        AuthService.shared.checkAndSetRootViewController(currentPeopleDelegate: currentPeopleDelegate!) {[weak self] result in
+            switch result {
+            
+            case .success(let rootVC):
+                self?.window?.rootViewController = rootVC
+            case .failure(let error):
+                fatalError(error.localizedDescription)
             }
-        } else {
-           //if don't have avalible current auth in firebase, set root authVc
-            window?.rootViewController = makeRootVC(viewController: AuthViewController(), withNavContoller: true)
         }
+        
         window?.makeKeyAndVisible()
         
     }

@@ -30,7 +30,7 @@ enum MDefaultInterests: String, CaseIterable {
     case chiald = "Дети"
     case humar = "Юмор"
     case finance = "Финансы"
-    case medicine = "Медецина"
+    case medicine = "Медицина"
     case developer = "Разработка ПО"
     case clubs = "Клубы"
     case films = "Фильмы"

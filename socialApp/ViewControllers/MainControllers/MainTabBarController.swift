@@ -12,14 +12,14 @@ import ApphudSDK
 
 class MainTabBarController: UITabBarController{
     
-    private var currentUser: MPeople
     private var isNewLogin: Bool
     private var firstLoadService: FirstLoadService
+    private weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     
-    init(currentUser: MPeople, isNewLogin: Bool) {
+    init(currentPeopleDelegate: CurrentPeopleDataDelegate, isNewLogin: Bool) {
+        self.currentPeopleDelegate = currentPeopleDelegate
         self.isNewLogin = isNewLogin
-        self.currentUser = currentUser
-        self.firstLoadService = FirstLoadService(currentUser: currentUser)
+        self.firstLoadService = FirstLoadService(currentPeopleID: currentPeopleDelegate.currentPeople.senderId)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -50,34 +50,40 @@ extension MainTabBarController {
 //MARK: setupControllers
 extension MainTabBarController {
     private func setupControllers(){
-        firstLoadService.loadData { currentPeopleDelegate,
-                                    acceptChatsDelegate,
-                                    requestChatsDelegate,
-                                    peopleDelegate,
-                                    likeDislikeDelegate,
-                                    messageDelegate,
-                                    reportsDelegate in
+        guard let newCurrentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil in MainTabBarVC")}
+       
+        let appearance = tabBar.standardAppearance.copy()
+        appearance.backgroundImage = UIImage()
+        appearance.shadowImage = UIImage()
+        appearance.shadowColor = .clear
+        appearance.backgroundColor = .myWhiteColor()
+        tabBar.standardAppearance = appearance
+        
+        tabBar.unselectedItemTintColor = .myLightGrayColor()
+        tabBar.tintColor = .myLabelColor()
+        
+       
+        
+        firstLoadService.loadData(currentPeople: newCurrentPeopleDelegate.currentPeople) {[unowned self] acceptChatsDelegate,
+                                                                                                      requestChatsDelegate,
+                                                                                                      peopleDelegate,
+                                                                                                      likeDislikeDelegate,
+                                                                                                      messageDelegate,
+                                                                                                      reportsDelegate in
             
-            PopUpService.shared.dismisPopUp(name: MAnimamationName.loading.rawValue) { [unowned self] in
+            PopUpService.shared.dismisPopUp(name: MAnimamationName.loading.rawValue) {
                 
-                let appearance = tabBar.standardAppearance.copy()
-                appearance.backgroundImage = UIImage()
-                appearance.shadowImage = UIImage()
-                appearance.shadowColor = .clear
-                appearance.backgroundColor = .myWhiteColor()
-                tabBar.standardAppearance = appearance
                 
-                tabBar.unselectedItemTintColor = .myLightGrayColor()
-                tabBar.tintColor = .myLabelColor()
                 
-                let profileVC = ProfileViewController(currentPeopleDelegate: currentPeopleDelegate,
+                
+                let profileVC = ProfileViewController(currentPeopleDelegate: newCurrentPeopleDelegate,
                                                       peopleListnerDelegate: peopleDelegate,
                                                       likeDislikeDelegate: likeDislikeDelegate,
                                                       acceptChatsDelegate: acceptChatsDelegate,
                                                       requestChatsDelegate: requestChatsDelegate,
                                                       reportsDelegate: reportsDelegate)
                 
-                let peopleVC = PeopleViewController(currentPeopleDelegate: currentPeopleDelegate,
+                let peopleVC = PeopleViewController(currentPeopleDelegate: newCurrentPeopleDelegate,
                                                     peopleDelegate: peopleDelegate,
                                                     requestChatDelegate: requestChatsDelegate,
                                                     likeDislikeDelegate: likeDislikeDelegate,
@@ -86,7 +92,7 @@ extension MainTabBarController {
                 
                 peopleDelegate.peopleCollectionViewDelegate = peopleVC
                 
-                let requsetsVC = RequestsViewController(currentPeopleDelegate: currentPeopleDelegate,
+                let requsetsVC = RequestsViewController(currentPeopleDelegate: newCurrentPeopleDelegate,
                                                         likeDislikeDelegate: likeDislikeDelegate,
                                                         requestChatDelegate: requestChatsDelegate,
                                                         peopleNearbyDelegate: peopleDelegate,
@@ -95,7 +101,7 @@ extension MainTabBarController {
                 
                 requestChatsDelegate.requestChatCollectionViewDelegate = requsetsVC
                 
-                let chatsVC = ChatsViewController(currentPeopleDelegate: currentPeopleDelegate,
+                let chatsVC = ChatsViewController(currentPeopleDelegate: newCurrentPeopleDelegate,
                                                   acceptChatDelegate: acceptChatsDelegate,
                                                   likeDislikeDelegate: likeDislikeDelegate,
                                                   messageDelegate: messageDelegate,

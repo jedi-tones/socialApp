@@ -17,17 +17,17 @@ class AppSettingsViewController: UIViewController {
     
     private var collectionView: UICollectionView!
     private var dataSource: UICollectionViewDiffableDataSource<SectionAppSettings, MAppSettings>?
-    private var currentPeople: MPeople
+    private weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     weak var acceptChatDelegate: AcceptChatListenerDelegate?
     weak var requestChatDelegate: RequestChatListenerDelegate?
     
-    init(currentPeople: MPeople,
+    init(currentPeopleDelegate: CurrentPeopleDataDelegate?,
          acceptChatDelegate: AcceptChatListenerDelegate?,
          requestChatDelegate: RequestChatListenerDelegate?) {
         
         self.acceptChatDelegate = acceptChatDelegate
         self.requestChatDelegate = requestChatDelegate
-        self.currentPeople = currentPeople
+        self.currentPeopleDelegate = currentPeopleDelegate
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -64,10 +64,18 @@ class AppSettingsViewController: UIViewController {
 extension AppSettingsViewController {
     //MARK: deleteAllUserData
     private func deleteAllUserData() {
-        FirestoreService.shared.deleteAllProfileData(userID: currentPeople.senderId) { [weak self] in
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil on AppSettingsVC")}
+        guard let acceptChatDelegate = acceptChatDelegate else { fatalError("acceptChatDelegate is nil on AppSettingsVC")}
+        
+        currentPeopleDelegate.deletePeopleFromUserDefaults()
+        Apphud.logout()
+        PushMessagingService.shared.logOutUnsabscribe(currentUserID: currentPeopleDelegate.currentPeople.senderId,
+                                                      acceptChats: acceptChatDelegate.acceptChats)
+        
+        FirestoreService.shared.deleteAllProfileData(userID: currentPeopleDelegate.currentPeople.senderId) { [weak self] in
             //after delete, sign out
             self?.view.addCustomTransition(type: .fade)
-            AuthService.shared.signOut { result in
+            AuthService.shared.signOut(currentPeopleDelegate: currentPeopleDelegate) { result in
                 switch result {
                 case .success(_):
                     return
@@ -125,9 +133,11 @@ extension AppSettingsViewController {
     
     //MARK: setupDataSource
     private func setupDataSource() {
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil on AppSettingsVC")}
+        
         dataSource = UICollectionViewDiffableDataSource(
             collectionView: collectionView,
-            cellProvider: {[unowned self] collectionView, indexpath, item -> UICollectionViewCell? in
+            cellProvider: { collectionView, indexpath, item -> UICollectionViewCell? in
                 
                 guard let cell =  MAppSettings(rawValue: indexpath.item) else { fatalError("Unknown cell")}
                 
@@ -136,7 +146,7 @@ extension AppSettingsViewController {
                 case .about:
                     guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: InfoCell.reuseID, for: indexpath) as? InfoCell else { fatalError("Can't dequeue cell type SettingsCell")}
                     
-                    cell.configure(header: "Твой аккаунт", subHeader: currentPeople.senderId)
+                    cell.configure(header: "Твой аккаунт", subHeader: currentPeopleDelegate.currentPeople.senderId)
                     return cell
                 default:
                     guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SettingsCell.reuseID, for: indexpath) as? SettingsCell else { fatalError("Can't dequeue cell type SettingsCell")}
@@ -188,8 +198,8 @@ extension AppSettingsViewController: UICollectionViewDelegate {
 extension AppSettingsViewController {
     //MARK:  signOutAlert
     private func signOutAlert(pressedIndexPath: IndexPath) {
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil on AppSettingsVC")}
         guard let acceptChatDelegate = acceptChatDelegate else { return }
-        let strongCurrentPeople = currentPeople
         
         let alert = UIAlertController(title: nil,
                                       message: nil,
@@ -199,13 +209,13 @@ extension AppSettingsViewController {
                                      style: .destructive) {[weak self] _ in
             
             self?.view.addCustomTransition(type: .fade)
-            AuthService.shared.signOut { result in
+            AuthService.shared.signOut(currentPeopleDelegate: currentPeopleDelegate) { result in
                 switch result {
                 case .success(_):
                     
                     Apphud.logout()
-                    UserDefaultsService.shared.deleteMpeople()
-                    PushMessagingService.shared.logOutUnsabscribe(currentUserID: strongCurrentPeople.senderId,
+                    currentPeopleDelegate.deletePeopleFromUserDefaults()
+                    PushMessagingService.shared.logOutUnsabscribe(currentUserID: currentPeopleDelegate.currentPeople.senderId,
                                                                   acceptChats: acceptChatDelegate.acceptChats)
                 case .failure(let error):
                     fatalError(error.localizedDescription)
@@ -226,6 +236,7 @@ extension AppSettingsViewController {
     
     //MARK:  terminateAccauntAlert
     private func terminateAccauntAlert(pressedIndexPath: IndexPath) {
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil on AppSettingsVC")}
         
         let alert = UIAlertController(title: nil,
                                       message: "Удалить профиль полностью, без возможности восстановления?",
@@ -234,7 +245,7 @@ extension AppSettingsViewController {
         let okAction = UIAlertAction(title: "Ввести пароль и удалить",
                                      style: .destructive) {[weak self] _ in
             
-            let authType = self?.currentPeople.authType
+            let authType = currentPeopleDelegate.currentPeople.authType
             
             switch authType {
             case .appleID:
@@ -242,8 +253,6 @@ extension AppSettingsViewController {
                                                   presetationController: self!)
             case .email:
                 self?.emailLoginAlert()
-            case .none:
-                return
             }
         }
         
@@ -261,29 +270,25 @@ extension AppSettingsViewController {
     
     //MARK:  emailLoginAlert
     private func emailLoginAlert() {
-        let strongCurrentPeople = currentPeople
-        guard let acceptChatDelegate = acceptChatDelegate else { return }
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil on AppSettingsVC")}
         
         let alert = UIAlertController(title: "Введи свой пароль от почты:",
-                                      message: currentPeople.mail,
+                                      message: currentPeopleDelegate.currentPeople.mail,
                                       preferredStyle: .alert)
 
         let actionOK = UIAlertAction(title: "Подтвердить",
                                      style: .cancel) {[weak self] _ in
             
             guard let password = alert.textFields?.first?.text else { return }
-            guard let mail = self?.currentPeople.mail else { return }
             
             AuthService.shared.reAuthentificate(credential: nil,
-                                                email: mail,
+                                                email: currentPeopleDelegate.currentPeople.mail,
                                                 password: password) { result in
                 switch result {
                 
                 case .success(_):
                     self?.deleteAllUserData()
-                    Apphud.logout()
-                    PushMessagingService.shared.logOutUnsabscribe(currentUserID: strongCurrentPeople.senderId,
-                                                                  acceptChats: acceptChatDelegate.acceptChats)
+                    
                 case .failure(let error):
                     self?.reAuthErrorAlert(text: error.localizedDescription)
                 }
@@ -348,9 +353,6 @@ extension AppSettingsViewController: ASAuthorizationControllerDelegate {
     
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
         
-        guard let acceptChatDelegate = acceptChatDelegate else { return }
-        let strongCurrentPeople = currentPeople
-        
         AuthService.shared.didCompleteWithAuthorizationApple(authorization: authorization) {  [weak self] result in
             
             switch result {
@@ -363,11 +365,8 @@ extension AppSettingsViewController: ASAuthorizationControllerDelegate {
                     
                     case .success(_):
                         //after reAuth, delete all user data
-                        PushMessagingService.shared.logOutUnsabscribe(currentUserID: strongCurrentPeople.senderId,
-                                                                      acceptChats: acceptChatDelegate.acceptChats)
                         self?.deleteAllUserData()
-                        UserDefaultsService.shared.deleteMpeople()
-                        Apphud.logout()
+                        
                     case .failure(let error):
                         self?.reAuthErrorAlert(text: error.localizedDescription)
                     }

@@ -159,12 +159,18 @@ extension FirestoreService {
     
     
     //MARK: dislikePeople
-    func dislikePeople(currentPeople: MPeople, dislikeForPeopleID: String, requestChats: [MChat],viewControllerDelegate: UIViewController, complition: @escaping(Result<MDislike,Error>)->Void) {
+    func dislikePeople(currentPeople: MPeople,
+                       dislikeForPeopleID: String,
+                       requestChats: [MChat],
+                       viewControllerDelegate: UIViewController,
+                       complition: @escaping(Result<(MDislike,Bool),Error>)->Void) {
         let collectionCurrentUserDislikeRef = usersReference.document(currentPeople.senderId).collection(MFirestorCollection.dislikePeople.rawValue)
         let collectionCurrentRequestRef = db.collection([MFirestorCollection.users.rawValue, currentPeople.senderId, MFirestorCollection.requestsChats.rawValue].joined(separator: "/"))
         let collectionDislikeUserLikeRef = db.collection([MFirestorCollection.users.rawValue, dislikeForPeopleID, MFirestorCollection.likePeople.rawValue].joined(separator: "/"))
         
         let dislikeChat = MDislike(dislikePeopleID: dislikeForPeopleID, date: Date())
+        var isMissMatch = false
+        
         //unsubscribe from push notificasion
         PushMessagingService.shared.unSubscribeToChatNotification(currentUserID: currentPeople.senderId,
                                                                   chatUserID: dislikeChat.dislikePeopleID)
@@ -180,25 +186,13 @@ extension FirestoreService {
             collectionCurrentRequestRef.document(dislikeForPeopleID).delete()
             //delete from like in dislike user collection
             collectionDislikeUserLikeRef.document(currentPeople.senderId).delete()
+            isMissMatch = true
             
-            if currentPeople.isGoldMember || currentPeople.isTestUser {
-                
-            } else {
-                //if don't have subscribtion, show notification
-                PopUpService.shared.showInfoWithButtonPopUp(header: "Ой, пропустили пару",
-                                                            text: "Подпишись на Flava premium, что бы не пропускать",
-                                                            cancelButtonText: "Позже",
-                                                            okButtonText: "Подписаться",
-                                                            font: .avenirBold(size: 16)) {
-                    let purchasVC = PurchasesViewController(currentPeople: currentPeople)
-                    purchasVC.modalPresentationStyle = .fullScreen
-                    viewControllerDelegate.present(purchasVC, animated: true, completion: nil)
-                }
-            }
         }
         do {
             try collectionCurrentUserDislikeRef.document(dislikeForPeopleID).setData(from: dislikeChat)
-            complition(.success(dislikeChat))
+            
+            complition(.success((dislikeChat,isMissMatch)))
         } catch { complition(.failure(error))}
     }
     

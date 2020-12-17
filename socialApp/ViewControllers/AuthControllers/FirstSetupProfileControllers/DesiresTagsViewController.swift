@@ -10,13 +10,13 @@ import UIKit
 
 class DesiresTagsViewController: UIViewController {
 
-    private var userID: String
+    private weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     private let tagsView = TagsSetupView(unselectTags: MDefaultsDesires.getSortedDesires(),
                                          tagsHeader: "Выбранные желания",
                                          viewHeader: MLabels.desiresTagsHeader.rawValue)
    
-    init(userID: String){
-        self.userID = userID
+    init(currentPeopleDelegate: CurrentPeopleDataDelegate?){
+        self.currentPeopleDelegate = currentPeopleDelegate
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -58,17 +58,18 @@ class DesiresTagsViewController: UIViewController {
 extension DesiresTagsViewController {
     
     @objc private func saveButtonTapped() {
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil in DesiresTagsVC")}
+        
         navigationItem.rightBarButtonItem?.isEnabled = false
-        let id = userID
         let selecetedDiseresTags = tagsView.getSelectedTags()
         
         
-        FirestoreService.shared.saveDesires(id: id,
+        FirestoreService.shared.saveDesires(id: currentPeopleDelegate.currentPeople.senderId,
                                             desires: selecetedDiseresTags) {[weak self] result in
             switch result {
             
             case .success(_):
-                let nextViewController = InterestsSelectionViewController(userID: id)
+                let nextViewController = InterestsSelectionViewController(currentPeopleDelegate: currentPeopleDelegate)
                 self?.navigationController?.setViewControllers([nextViewController], animated: true)
             case .failure(let error):
                 self?.navigationItem.rightBarButtonItem?.isEnabled = true

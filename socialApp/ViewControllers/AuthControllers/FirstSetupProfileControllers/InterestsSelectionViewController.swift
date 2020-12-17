@@ -10,11 +10,11 @@ import UIKit
 
 class InterestsSelectionViewController: UIViewController {
     
-    private let userID: String
+    private weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     private let interestsView = InterestsSelectionView()
     
-    init(userID: String){
-        self.userID = userID
+    init(currentPeopleDelegate: CurrentPeopleDataDelegate?){
+        self.currentPeopleDelegate = currentPeopleDelegate
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -42,15 +42,17 @@ class InterestsSelectionViewController: UIViewController {
 
 extension InterestsSelectionViewController {
     @objc private func saveButtonTapped() {
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil in InterestsVC")}
         
-        let id = userID
         let interestText = interestsView.getInterestsText()
         
-        FirestoreService.shared.saveAdvert(id: id, advert: interestText) {[weak self] result in
+        FirestoreService.shared.saveAdvert(id: currentPeopleDelegate.currentPeople.senderId,
+                                           advert: interestText) {[weak self] result in
             switch result {
             
             case .success():
-                let nextViewController = EditPhotoViewController(userID: id, isFirstSetup: true)
+                let nextViewController = EditPhotoViewController(currentPeopleDelegate: currentPeopleDelegate,
+                                                                 isFirstSetup: true)
                 self?.navigationController?.setViewControllers([nextViewController], animated: true)
             case .failure(let error):
                 fatalError(error.localizedDescription)

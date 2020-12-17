@@ -261,7 +261,7 @@ extension ProfileViewController: UICollectionViewDelegate {
             switch cell {
             
             case .setupProfile:
-                let vc = EditProfileViewController(currentPeople: currentPeopleDelegate.currentPeople)
+                let vc = EditProfileViewController(currentPeopleDelegate: currentPeopleDelegate)
                 vc.hidesBottomBarWhenPushed = true
                 navigationController?.pushViewController(vc, animated: true)
                 
@@ -279,7 +279,7 @@ extension ProfileViewController: UICollectionViewDelegate {
                 collectionView.deselectItem(at: indexPath, animated: true)
                 
             case .appSettings:
-                let vc = AppSettingsViewController(currentPeople: currentPeopleDelegate.currentPeople,
+                let vc = AppSettingsViewController(currentPeopleDelegate: currentPeopleDelegate,
                                                    acceptChatDelegate: acceptChatsDelegate,
                                                    requestChatDelegate: requestChatsDelegate)
                 vc.hidesBottomBarWhenPushed = true
@@ -313,8 +313,10 @@ extension ProfileViewController: UICollectionViewDelegate {
 //MARK: objc
 extension ProfileViewController {
     @objc private func refresh() {
-        currentPeopleDelegate?.updatePeopleDataFromFirestore(complition: {[weak self] result in
-            switch result {
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil on ProfileViewVC")}
+        currentPeopleDelegate.updatePeopleDataFromFirestore(userID: currentPeopleDelegate.currentPeople.senderId,
+                                                            complition: {[weak self] result in
+                                                                switch result {
             
             case .success(let updatedCurrentPeople):
                 self?.collectionView.refreshControl?.endRefreshing()
@@ -337,7 +339,7 @@ extension ProfileViewController {
     @objc private func tapPremiumCell() {
         guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil on ProfileViewController")}
         
-        let purchasVC = PurchasesViewController(currentPeople: currentPeopleDelegate.currentPeople)
+        let purchasVC = PurchasesViewController(currentPeopleDelegate: currentPeopleDelegate)
         purchasVC.modalPresentationStyle = .fullScreen
         present(purchasVC, animated: true, completion: nil)
     }

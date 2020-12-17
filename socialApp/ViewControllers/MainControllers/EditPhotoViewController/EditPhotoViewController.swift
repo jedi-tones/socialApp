@@ -46,25 +46,24 @@ class EditPhotoViewController: UIViewController {
                                 textColor: .myGrayColor(),
                                 linesCount: 0)
     
-    private var images: [MGallery] = []
-    private var currentPeople: MPeople? {
-        didSet {
-            images = []
-            guard let currentPeople = currentPeople else { return }
+    private var images: [MGallery]   {
+        var galleryImages: [MGallery] = []
+        if let currentPeople = currentPeopleDelegate?.currentPeople {
             for image in currentPeople.gallery {
-                images.append(MGallery(photo: image.key,
+                galleryImages.append(MGallery(photo: image.key,
                                        property: MGalleryPhotoProperty(isPrivate: image.value.isPrivate,
                                                                        index: image.value.index)))
             }
-            images.sort { $0.property.index > $1.property.index }
+            galleryImages.sort { $0.property.index > $1.property.index }
         }
+        return galleryImages
     }
+    weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     private var isMainPhotoSetup = false
-    private var userID: String
     private var isFirstSetup = false
     
-    init (userID: String, isFirstSetup: Bool) {
-        self.userID = userID
+    init (currentPeopleDelegate: CurrentPeopleDataDelegate?, isFirstSetup: Bool) {
+        self.currentPeopleDelegate = currentPeopleDelegate
         self.isFirstSetup = isFirstSetup
         super.init(nibName: nil, bundle: nil)
     }
@@ -88,6 +87,7 @@ class EditPhotoViewController: UIViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
     }
     
     
@@ -128,28 +128,8 @@ class EditPhotoViewController: UIViewController {
     //MARK: updateProfileData
     private func updateProfileData(isRenew: Bool, complition: (()->())?) {
         
-        if isRenew {
-            currentPeople = UserDefaultsService.shared.getMpeople()
-        } else {
-            //if first setup Photo -> get from Firebase else get from UserDefaults
-            if isFirstSetup {
-                FirestoreService.shared.getUserData(userID: userID, complition: {[weak self] result in
-                    switch result {
-                    
-                    case .success(let mPeople):
-                        self?.currentPeople = mPeople
-                        UserDefaultsService.shared.saveMpeople(people: mPeople)
-                    case .failure(let error):
-                        fatalError(error.localizedDescription)
-                    }
-                })
-            } else {
-                currentPeople = UserDefaultsService.shared.getMpeople()
-            }
-        }
-        
-        guard let people = currentPeople else { return }
-        guard let imageURL = URL(string: people.userImage) else { return }
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil in EditPhotoVC") }
+        guard let imageURL = URL(string: currentPeopleDelegate.currentPeople.userImage) else { return }
         profileImage.sd_setImage(with: imageURL, completed: nil)
         
         updateDataSource(galleryImages: images)
@@ -183,31 +163,24 @@ extension EditPhotoViewController {
     }
     
     @objc private func saveButtonTapped() {
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil on EditPhotoVc") }
         //if image is setup
         if profileImage.image != nil {
             navigationItem.rightBarButtonItem?.isEnabled = false
-            FirestoreService.shared.saveIsActive(id: userID,
+            FirestoreService.shared.saveIsActive(id: currentPeopleDelegate.currentPeople.senderId,
                                                  isActive: true) {[unowned self]  result in
                 
                 switch result {
                 
                 case .success():
-                    FirestoreService.shared.getUserData(userID: userID) {result in
-                        switch result {
-                        
-                        case .success(let mPeople):
-                            let mainTabBarVC = MainTabBarController(currentUser: mPeople, isNewLogin: true)
-                            mainTabBarVC.modalPresentationStyle = .fullScreen
-                            navigationController?.dismiss(animated: false, completion: {
-                                navigationController?.removeFromParent()
-                                let vc = UIApplication.getCurrentViewController()
-                                vc?.present(mainTabBarVC, animated: false, completion: nil)
-                            })
-                        case .failure(_):
-                            navigationItem.rightBarButtonItem?.isEnabled = true
-                            PopUpService.shared.showInfo(text: "Не удалось загрузить профиль")
-                        }
-                    }
+                    let mainTabBarVC = MainTabBarController(currentPeopleDelegate: currentPeopleDelegate,
+                                                            isNewLogin: true)
+                    mainTabBarVC.modalPresentationStyle = .fullScreen
+                    navigationController?.dismiss(animated: false, completion: {
+                        navigationController?.removeFromParent()
+                        let vc = UIApplication.getCurrentViewController()
+                        vc?.present(mainTabBarVC, animated: false, completion: nil)
+                    })
                 case .failure(let error):
                     navigationItem.rightBarButtonItem?.isEnabled = true
                     PopUpService.shared.showInfo(text: "Ошибка: \(error.localizedDescription)")
@@ -297,14 +270,14 @@ extension EditPhotoViewController {
 
 extension EditPhotoViewController {
     private func sortGalleryImages(complition: @escaping ()->()) {
-        guard let currentPeople = currentPeople else { return }
-        images.sort{$0.property.index > $1.property.index }
-        for index in 0..<images.count {
-            images[index].property.index = index
+        guard let currentPeople = currentPeopleDelegate?.currentPeople else { fatalError("currentPeopleDelegate is nil") }
+        var sortedImages = images.sorted{$0.property.index > $1.property.index }
+        for index in 0..<sortedImages.count {
+            sortedImages[index].property.index = index
             FirestoreService.shared.saveImageToGallery(image: nil,
-                                                       uploadedImageLink: images[index].photo,
+                                                       uploadedImageLink: sortedImages[index].photo,
                                                        id: currentPeople.senderId,
-                                                       isPrivate: images[index].property.isPrivate,
+                                                       isPrivate: sortedImages[index].property.isPrivate,
                                                        index: index) { _ in }
         }
         complition()
@@ -315,7 +288,9 @@ extension EditPhotoViewController {
     
     
     private func editGalleryAlert(galleryImage: MGallery, index: Int, complition:@escaping()->Void) {
-        guard let people = currentPeople else { return }
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil") }
+        let currentPeople = currentPeopleDelegate.currentPeople
+        
         let privateActionText = galleryImage.property.isPrivate ? "Сделать общедоступной " : "Сделать приватной"
         
         let photoAlert = UIAlertController(title: nil,
@@ -329,8 +304,8 @@ extension EditPhotoViewController {
         let makeProfileAction = UIAlertAction(title: "Сделать основной",
                                               style: .default) { _ in
             FirestoreService.shared.updateAvatar(galleryImage: galleryImage,
-                                                 currentAvatarURL: people.userImage,
-                                                 id: people.senderId) {[weak self] result in
+                                                 currentAvatarURL: currentPeople.userImage,
+                                                 id: currentPeople.senderId) {[weak self] result in
                 switch result {
                 case .success(_):
                     self?.updateProfileData(isRenew: true) {
@@ -345,8 +320,8 @@ extension EditPhotoViewController {
         //make private image
         let privateAction = UIAlertAction(title: privateActionText,
                                           style: .default) { _ in
-            if people.isGoldMember || people.isTestUser {
-                FirestoreService.shared.makePhotoPrivate(currentUser: people,
+            if currentPeople.isGoldMember || currentPeople.isTestUser {
+                FirestoreService.shared.makePhotoPrivate(currentUser: currentPeople,
                                                          galleryPhoto: galleryImage) {[weak self] result in
                     switch result {
                     
@@ -363,7 +338,7 @@ extension EditPhotoViewController {
                                                 text: "Данная функция доступна с подпиской Flava premium",
                                                 image: nil,
                                                 okButtonText: "Перейти на Flava premium") { [weak self] in
-                    let purchasVC = PurchasesViewController(currentPeople: people)
+                    let purchasVC = PurchasesViewController(currentPeopleDelegate: self?.currentPeopleDelegate)
                     purchasVC.modalPresentationStyle = .fullScreen
                     self?.present(purchasVC, animated: true, completion: nil)
                 }
@@ -373,11 +348,11 @@ extension EditPhotoViewController {
         let deleteAction = UIAlertAction(title: "Удалить",
                                          style: .default) { _ in
             FirestoreService.shared.deleteFromGallery(galleryImage: galleryImage,
-                                                      id: people.senderId) {[weak self] result in
+                                                      id: currentPeople.senderId) {[weak self] result in
                 switch result {
                 
                 case .success(_):
-                    self?.images.remove(at: index)
+                    
                     //sort gallery images, for change images index
                     self?.sortGalleryImages(complition: {
                         self?.updateProfileData(isRenew: true)  {
@@ -452,17 +427,15 @@ extension EditPhotoViewController:UIImagePickerControllerDelegate , UINavigation
         
         picker.dismiss(animated: true, completion: nil)
         guard let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage else { return }
-        guard var people = currentPeople else { return }
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil on EditPhotoVc") }
         //if isMainPhotoSetup, set new to profile
         if isMainPhotoSetup {
-            let oldImageString: String? = currentPeople?.userImage != "" ? currentPeople?.userImage : nil
+            let oldImageString: String? = currentPeopleDelegate.currentPeople.userImage != "" ? currentPeopleDelegate.currentPeople.userImage : nil
             FirestoreService.shared.saveAvatar(image: image,
-                                               id: people.senderId,
+                                               id: currentPeopleDelegate.currentPeople.senderId,
                                                oldImageString: oldImageString) {[weak self] result in
                 switch result {
                 case .success(_):
-                    
-                    self?.currentPeople = UserDefaultsService.shared.getMpeople()
                     self?.profileImage.image = image
                     
                 case .failure(let error):
@@ -472,14 +445,13 @@ extension EditPhotoViewController:UIImagePickerControllerDelegate , UINavigation
             //if user have profile image, save to gallery
         } else {
             let indexOfImage = images.count
-            FirestoreService.shared.saveImageToGallery(image: image, id: people.senderId, isPrivate: false, index: indexOfImage) {[weak self] result in
+            FirestoreService.shared.saveImageToGallery(image: image,
+                                                       id: currentPeopleDelegate.currentPeople.senderId,
+                                                       isPrivate: false,
+                                                       index: indexOfImage) {[weak self] result in
                 switch result {
                 
-                case .success(let imageURLString):
-                    people.gallery[imageURLString] = MGalleryPhotoProperty(isPrivate: false,
-                                                                           index: indexOfImage)
-                    self?.currentPeople = people
-                    UserDefaultsService.shared.saveMpeople(people: people)
+                case .success(_):
                     guard let images = self?.images else { return }
                     self?.updateDataSource(galleryImages: images)
                 case .failure(let error):

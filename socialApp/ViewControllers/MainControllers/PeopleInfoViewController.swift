@@ -11,8 +11,9 @@ import UIKit
 class PeopleInfoViewController: UIViewController {
     
     private var peopleID: String
-    private var isFriend: Bool
     private var people: MPeople?
+    private var isFriend: Bool
+    
     private let peopleView = PeopleView()
     private let loadingView = LoadingView(name: MAnimamationName.loading.rawValue, isHidden: false)
     
@@ -112,7 +113,7 @@ extension PeopleInfoViewController: PeopleButtonTappedDelegate {
                                         image: nil,
                                         okButtonText: "Перейти на Flava premium") { [ weak self] in
             
-            let purchasVC = PurchasesViewController(currentPeople: currentPeopleDelegate.currentPeople)
+            let purchasVC = PurchasesViewController(currentPeopleDelegate: currentPeopleDelegate)
             purchasVC.modalPresentationStyle = .fullScreen
             self?.present(purchasVC, animated: true, completion: nil)
         }

@@ -12,7 +12,7 @@ import ApphudSDK
 
 class PurchasesViewController: UIViewController {
     
-    private let currentPeople: MPeople
+    private let currentPeopleDelegate: CurrentPeopleDataDelegate?
     private let scrollView = UIScrollView()
     private let loadingView = LoadingView(name: "wallet", isHidden: true, contentMode: .scaleAspectFit)
     private let header = UILabel(labelText: "Перейти на Flava premium",
@@ -43,8 +43,8 @@ class PurchasesViewController: UIViewController {
     private let threeMonthButton = PurchaseButton()
     private let oneYearButton = PurchaseButton()
     
-    init(currentPeople: MPeople) {
-        self.currentPeople = currentPeople
+    init(currentPeopleDelegate: CurrentPeopleDataDelegate?) {
+        self.currentPeopleDelegate = currentPeopleDelegate
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -94,8 +94,9 @@ class PurchasesViewController: UIViewController {
     
     //MARK: purchas
     private func purchase(identifier: MPurchases) {
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil in PurchasesVC") }
+        
         loadingView.show()
-        let strongCurrentPeople = currentPeople
         PurchasesService.shared.purcheWithApphud(product: identifier) {[weak self] result in
             self?.loadingView.hide()
             self?.dismiss(animated: true, completion: nil)
@@ -105,7 +106,7 @@ class PurchasesViewController: UIViewController {
                 if let subscribtion = resultOfpurches.subscription, subscribtion.isActive(){
                     let dateToContine = subscribtion.expiresDate
                     
-                    FirestoreService.shared.saveIsGoldMember(id: strongCurrentPeople.senderId,
+                    FirestoreService.shared.saveIsGoldMember(id: currentPeopleDelegate.currentPeople.senderId,
                                                              isGoldMember: true,
                                                              goldMemberDate: dateToContine,
                                                              goldMemberPurches: identifier ) { result in
@@ -175,10 +176,10 @@ extension PurchasesViewController {
     
     //MARK: restorePurchaseTapped
     @objc func restorePurchaseTapped() {
-        let strongCurrentPeople = currentPeople
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil in PurchasesVC") }
         loadingView.show()
         
-        PurchasesService.shared.checkSubscribtion(currentPeople: strongCurrentPeople,
+        PurchasesService.shared.checkSubscribtion(currentPeople: currentPeopleDelegate.currentPeople,
                                                   isRestore: true) {[weak self] _ in
             self?.loadingView.hide()
         }

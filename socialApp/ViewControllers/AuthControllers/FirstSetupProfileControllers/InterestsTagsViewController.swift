@@ -10,14 +10,14 @@ import UIKit
 
 class InterestsTagsViewController: UIViewController {
 
-    private var userID: String
+    private weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     private let tagsView = TagsSetupView(unselectTags: MDefaultInterests.getSortedInterests(),
                                          tagsHeader: "Выбранные интересы",
                                          viewHeader: MLabels.interestsTagsHeader.rawValue)
 
    
-    init(userID: String){
-        self.userID = userID
+    init(currentPeopleDelegate: CurrentPeopleDataDelegate?){
+        self.currentPeopleDelegate = currentPeopleDelegate
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -58,18 +58,20 @@ class InterestsTagsViewController: UIViewController {
 extension InterestsTagsViewController {
     
     @objc private func saveButtonTapped() {
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil in InterestTagsVC")}
+        
         navigationItem.rightBarButtonItem?.isEnabled = false
-        let id = userID
+        
         let selecetedInterestsTags = tagsView.getSelectedTags()
         
         if Validators.shared.checkTagsIsFilled(tags: selecetedInterestsTags) {
-            FirestoreService.shared.saveInterests(id: id,
+            FirestoreService.shared.saveInterests(id: currentPeopleDelegate.currentPeople.senderId,
                                                   interests: selecetedInterestsTags) {[weak self] result in
                 switch result {
                 
                 case .success(_):
                     self?.navigationItem.rightBarButtonItem?.isEnabled = true
-                    let nextViewController = DesiresTagsViewController(userID: id)
+                    let nextViewController = DesiresTagsViewController(currentPeopleDelegate: currentPeopleDelegate)
                     self?.navigationController?.setViewControllers([nextViewController], animated: true)
                 case .failure(let error):
                     self?.navigationItem.rightBarButtonItem?.isEnabled = true

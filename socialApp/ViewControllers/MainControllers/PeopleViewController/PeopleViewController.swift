@@ -346,7 +346,7 @@ extension PeopleViewController {
                                                     image: nil,
                                                     okButtonText: "Перейти на Flava premium") { [ weak self] in
                         
-                        let purchasVC = PurchasesViewController(currentPeople: currentPeopleDelegate.currentPeople)
+                        let purchasVC = PurchasesViewController(currentPeopleDelegate: self?.currentPeopleDelegate)
                         purchasVC.modalPresentationStyle = .fullScreen
                         self?.present(purchasVC, animated: true, completion: nil)
                     }
@@ -412,8 +412,7 @@ extension PeopleViewController: PeopleButtonTappedDelegate {
                                         image: nil,
                                         okButtonText: "Перейти на Flava premium") { [weak self] in
             
-            guard let currentPeopleDelegate = self?.currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil") }
-            let purchasVC = PurchasesViewController(currentPeople: currentPeopleDelegate.currentPeople)
+            let purchasVC = PurchasesViewController(currentPeopleDelegate: self?.currentPeopleDelegate)
             purchasVC.modalPresentationStyle = .fullScreen
             self?.present(purchasVC, animated: true, completion: nil)
         }
@@ -435,12 +434,28 @@ extension PeopleViewController: PeopleButtonTappedDelegate {
                                               viewControllerDelegate: self) {[weak self] result in
             switch result {
 
-            case .success(let dislikeChat):
+            case .success((let dislikeChat, let isMissMatch)):
                 //delete dislike people from array
                 self?.peopleDelegate?.deletePeople(peopleID: people.senderId)
                 //append to dislike array, for local changes
                 self?.likeDislikeDelegate?.dislikePeople.append(dislikeChat)
-               
+                
+                //if match is missed
+                if isMissMatch {
+                    //and currentUser don't have premium subscribtion
+                    if !currentPeopleDelegate.currentPeople.isGoldMember && !currentPeopleDelegate.currentPeople.isTestUser {
+                        //show notification
+                        PopUpService.shared.showInfoWithButtonPopUp(header: "Ой, пропустили пару",
+                                                                    text: "Подпишись на Flava premium, что бы не пропускать",
+                                                                    cancelButtonText: "Позже",
+                                                                    okButtonText: "Подписаться",
+                                                                    font: .avenirBold(size: 16)) {
+                            let purchasVC = PurchasesViewController(currentPeopleDelegate: currentPeopleDelegate)
+                            purchasVC.modalPresentationStyle = .fullScreen
+                            self?.present(purchasVC, animated: true, completion: nil)
+                        }
+                    }
+                }
 
             case .failure(let error):
                 fatalError(error.localizedDescription)

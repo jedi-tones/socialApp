@@ -12,7 +12,7 @@ enum MDefaultsDesires: String, CaseIterable {
     case sport = "Занятие спортом"
     case fwb = "FWB"
     case friendships = "Дружба"
-    case freeRelationship = "Свобдные отношения"
+    case freeRelationship = "Свободные отношения"
     case seriousRelationship = "Серьезные отношения"
     case communication = "Общение"
     case sexting = "Секстинг"

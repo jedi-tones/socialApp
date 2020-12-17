@@ -124,7 +124,7 @@ class RequestsViewController: UIViewController {
     }
     
     @objc private func showPurchaseView() {
-        let purchasVC = PurchasesViewController(currentPeople: currentPeopleDelegate.currentPeople)
+        let purchasVC = PurchasesViewController(currentPeopleDelegate: currentPeopleDelegate)
         purchasVC.modalPresentationStyle = .fullScreen
         present(purchasVC, animated: true, completion: nil)
     }
@@ -316,8 +316,7 @@ extension RequestsViewController: UICollectionViewDelegate {
                                                 image: nil,
                                                 okButtonText: "Перейти на Flava premium") { [ weak self] in
                     
-                    guard let currentPeople = self?.currentPeopleDelegate.currentPeople else { return }
-                    let purchasVC = PurchasesViewController(currentPeople: currentPeople)
+                    let purchasVC = PurchasesViewController(currentPeopleDelegate: self?.currentPeopleDelegate)
                     purchasVC.modalPresentationStyle = .fullScreen
                     self?.present(purchasVC, animated: true, completion: nil)
                 }

@@ -393,7 +393,7 @@ extension ChatViewController {
     @objc private func chatSettingsTapped() {
         guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("CurrentPeopleDelegate is nil in ChatVC")}
         
-        let settingsVC = SetupChatMenu(currentUser: currentPeopleDelegate.currentPeople,
+        let settingsVC = SetupChatMenu(currentPeopleDelegate: currentPeopleDelegate,
                                        chat: chat,
                                        reportDelegate: reportDelegate,
                                        peopleDelegate: peopleDelegate,
