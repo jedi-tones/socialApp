@@ -189,12 +189,12 @@ class ListenerService {
     
     //MARK: acceptChatsListener
     func addAcceptChatsListener(acceptChatDelegate: AcceptChatListenerDelegate) {
+        
         self.acceptChatsListner = acceptChatsRef.addSnapshotListener({ snapshot, error in
             guard let snapshot = snapshot else { return }
             
             snapshot.documentChanges.forEach { changes in
                 guard var chat = MChat(documentSnap: changes.document) else { fatalError(ChatError.getUserData.localizedDescription)}
-                
                 
                 switch changes.type {
                 

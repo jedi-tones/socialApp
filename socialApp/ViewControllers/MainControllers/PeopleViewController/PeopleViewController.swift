@@ -77,13 +77,13 @@ class PeopleViewController: UIViewController, UICollectionViewDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: true)
-        updateCurrentPeople()
+        setNeedsStatusBarAppearanceUpdate()
     }
     
     //MARK:  setup VC
     private func setup() {
         
-        setNeedsStatusBarAppearanceUpdate()
+        
         view.backgroundColor = .myWhiteColor()
         navigationItem.backButtonTitle = ""
     }

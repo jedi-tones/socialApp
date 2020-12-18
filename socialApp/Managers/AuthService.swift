@@ -89,7 +89,7 @@ class AuthService {
                                 if isCompliteSetup {
                                     let rootViewController = makeRootVC(viewController: MainTabBarController(currentPeopleDelegate: currentPeopleDelegate,
                                                                                                              isNewLogin: false),
-                                                                        withNavContoller: true)
+                                                                        withNavContoller: false)
                                     complition(.success(rootViewController))
                                     
                                 } else {

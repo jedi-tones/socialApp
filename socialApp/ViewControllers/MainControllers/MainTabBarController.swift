@@ -65,16 +65,16 @@ extension MainTabBarController {
        
         
         firstLoadService.loadData(currentPeople: newCurrentPeopleDelegate.currentPeople) {[unowned self] acceptChatsDelegate,
-                                                                                                      requestChatsDelegate,
-                                                                                                      peopleDelegate,
-                                                                                                      likeDislikeDelegate,
-                                                                                                      messageDelegate,
-                                                                                                      reportsDelegate in
+                                                                                                         requestChatsDelegate,
+                                                                                                         peopleDelegate,
+                                                                                                         likeDislikeDelegate,
+                                                                                                         messageDelegate,
+                                                                                                         reportsDelegate in
             
-            PopUpService.shared.dismisPopUp(name: MAnimamationName.loading.rawValue) {
+            
                 
                 
-                
+            
                 
                 let profileVC = ProfileViewController(currentPeopleDelegate: newCurrentPeopleDelegate,
                                                       peopleListnerDelegate: peopleDelegate,
@@ -110,16 +110,16 @@ extension MainTabBarController {
                                                   reportDelegate: reportsDelegate)
                 
                 acceptChatsDelegate.acceptChatCollectionViewDelegate = chatsVC
-                
-                
+            
+            
+            
                 viewControllers = [
                     generateNavigationController(rootViewController: peopleVC, image: #imageLiteral(resourceName: "people"), title: nil, isHidden: true),
                     generateNavigationController(rootViewController: requsetsVC, image: #imageLiteral(resourceName: "request"), title: nil, isHidden: true),
                     generateNavigationController(rootViewController: chatsVC, image: #imageLiteral(resourceName: "chats"), title: nil),
                     generateNavigationController(rootViewController: profileVC, image: #imageLiteral(resourceName: "profile"), title: nil, isHidden: true)
                 ]
-                
-            }
+            PopUpService.shared.dismisPopUp(name: MAnimamationName.loading.rawValue) {}
         }
     }
     

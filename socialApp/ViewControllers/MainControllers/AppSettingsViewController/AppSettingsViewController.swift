@@ -214,9 +214,9 @@ extension AppSettingsViewController {
                 case .success(_):
                     
                     Apphud.logout()
-                    currentPeopleDelegate.deletePeopleFromUserDefaults()
                     PushMessagingService.shared.logOutUnsabscribe(currentUserID: currentPeopleDelegate.currentPeople.senderId,
                                                                   acceptChats: acceptChatDelegate.acceptChats)
+                    currentPeopleDelegate.deletePeopleFromUserDefaults()
                 case .failure(let error):
                     fatalError(error.localizedDescription)
                 }

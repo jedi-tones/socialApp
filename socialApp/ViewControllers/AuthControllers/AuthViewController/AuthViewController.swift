@@ -65,7 +65,6 @@ extension AuthViewController: AuthViewControllerDelegate {
     }
     
     @objc func termsOfServicePressed() {
-        print("pressed")
         if let url = URL(string: MLinks.termsOfServiceLink.rawValue) {
             let webController = WebViewController(urlToOpen: url)
             webController.modalPresentationStyle = .pageSheet
