@@ -29,6 +29,7 @@ extension FirestoreService {
                                 currentUserIsWantStopTimer: false,
                                 timerOfLifeIsStoped: false,
                                 createChatDate: Date(),
+                                fcmKey: fromUser.fcmKey,
                                 date: Date())
         
         do { //add chat request document for reciever user
@@ -76,6 +77,7 @@ extension FirestoreService {
                                 currentUserIsWantStopTimer: false,
                                 timerOfLifeIsStoped: false,
                                 createChatDate: Date(),
+                                fcmKey: currentPeople.fcmKey,
                                 date: Date())
         var likeChat = MChat(friendUserName: likePeople.displayName,
                              friendUserImageString: likePeople.userImage,
@@ -87,6 +89,7 @@ extension FirestoreService {
                              currentUserIsWantStopTimer: false,
                              timerOfLifeIsStoped: false,
                              createChatDate: Date(),
+                             fcmKey: likePeople.fcmKey,
                              date: Date())
         //subscribe to push notification topic
         PushMessagingService.shared.subscribeToChatNotification(currentUserID: currentPeople.senderId,

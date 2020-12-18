@@ -8,7 +8,7 @@
 
 import ApphudSDK
 
-class FirstLoadService {
+class DataDelegateService {
     
     private var acceptChatsDelegate: AcceptChatListenerDelegate
     private var requestChatsDelegate: RequestChatListenerDelegate
@@ -16,9 +16,10 @@ class FirstLoadService {
     private var likeDislikeDelegate: LikeDislikeListenerDelegate
     private var messageDelegate: MessageListenerDelegate
     private var reportsDelegate: ReportsListnerDelegate
+    private var currentPeopleID: String
     
     init(currentPeopleID: String) {
-
+        self.currentPeopleID = currentPeopleID
         likeDislikeDelegate = LikeDislikeChatDataProvider(userID: currentPeopleID)
         requestChatsDelegate = RequestChatDataProvider(userID: currentPeopleID)
         acceptChatsDelegate = AcceptChatDataProvider(userID: currentPeopleID)
@@ -34,11 +35,12 @@ class FirstLoadService {
                                                                 _ messageDelegate: MessageListenerDelegate,
                                                                 _ reportsDelegate: ReportsListnerDelegate )->Void) {
         setup()
-        setupApphud(currentPeopleID: currentPeople.senderId)
+        setupApphud()
         getPeopleData(people: currentPeople) { [unowned self]  result in
             switch result {
             
             case .success():
+
                 complition(acceptChatsDelegate,
                            requestChatsDelegate,
                            peopleDelegate,
@@ -50,11 +52,13 @@ class FirstLoadService {
                 fatalError(error.localizedDescription)
             }
         }
+        NotificationCenter.addObsorverToFCMKeyInChatsUpdate(observer: self, selector: #selector(fcmKeyInChatsUpdate(notification:)))
     }
 }
 
-extension FirstLoadService {
+extension DataDelegateService {
     
+    //MARK: setup
     private func setup() {
         //update current user in UserDefault
         
@@ -67,6 +71,7 @@ extension FirstLoadService {
         
     }
     
+    //MARK: subscribeToPushNotification
     private func subscribeToPushNotification(currentPeopleID: String) {
         //subscribe to all pushNotification from chats after relogin
         PushMessagingService.shared.logInSubscribe(currentUserID: currentPeopleID,
@@ -75,10 +80,34 @@ extension FirstLoadService {
         
     }
     
-    private func setupApphud(currentPeopleID: String) {
+    //MARK: setupApphud
+    private func setupApphud() {
         Apphud.start(apiKey: "app_LDXecjNbEuvUBtpd3J9kw75A6cH14n",
                      userID: currentPeopleID,
                      observerMode: false)
+    }
+    
+    private func updateFCMKey() {
+        PushMessagingService.shared.getToken()
+    }
+    
+    //MARK: fcmKeyInChatsUpdate
+    //update fcmKey in chats
+    @objc private func fcmKeyInChatsUpdate(notification: NSNotification) {
+        guard let userInfo = notification.userInfo as? [String : String],
+              let fcmKey = userInfo[PushMessagingService.shared.notificationName] else { return }
+        FirestoreService.shared.updateFCMKeyInChats(id: currentPeopleID,
+                                                    fcmKey: fcmKey,
+                                                    acceptChats: acceptChatsDelegate.acceptChats,
+                                                    likeChats: likeDislikeDelegate.likePeople) { result in
+            switch result {
+                
+            case .success(_):
+                break
+            case .failure(let error):
+                PopUpService.shared.showInfo(text: "Ошибка \(error.localizedDescription)")
+            }
+        }
     }
     
     //MARK: getPeopleData, location
@@ -129,6 +158,7 @@ extension FirstLoadService {
                                                                                         //check active subscribtion
                                                                                         PurchasesService.shared.checkSubscribtion(currentPeople: people) { _ in
                                                                                             
+                                                                                            updateFCMKey()
                                                                                             complition(.success(()))
                                                                                         }
                                                                                     case .failure(let error):
@@ -166,7 +196,7 @@ extension FirstLoadService {
 
 
 //MARK: alert
-extension FirstLoadService {
+extension DataDelegateService {
     
     private func openSettingsAlert(){
         PopUpService.shared.bottomPopUp(header: "Нет доступа к геопозиции",

@@ -13,13 +13,13 @@ import ApphudSDK
 class MainTabBarController: UITabBarController{
     
     private var isNewLogin: Bool
-    private var firstLoadService: FirstLoadService
+    private var firstLoadService: DataDelegateService
     private weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     
     init(currentPeopleDelegate: CurrentPeopleDataDelegate, isNewLogin: Bool) {
         self.currentPeopleDelegate = currentPeopleDelegate
         self.isNewLogin = isNewLogin
-        self.firstLoadService = FirstLoadService(currentPeopleID: currentPeopleDelegate.currentPeople.senderId)
+        self.firstLoadService = DataDelegateService(currentPeopleID: currentPeopleDelegate.currentPeople.senderId)
         super.init(nibName: nil, bundle: nil)
     }
     

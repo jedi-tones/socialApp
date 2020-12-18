@@ -14,35 +14,7 @@ class CurrentPeopleDataProvider {
     var currentPeople: MPeople
     
     init() {
-        self.currentPeople = MPeople(senderId: "",
-                                     displayName: "",
-                                     advert: "",
-                                     userImage: "",
-                                     gallery: [:],
-                                     mail: "",
-                                     gender: "",
-                                     dateOfBirth: Date(),
-                                     sexuality: "",
-                                     lookingFor: "",
-                                     interests: [],
-                                     desires: [],
-                                     isGoldMember: false,
-                                     goldMemberDate: nil,
-                                     goldMemeberPurches: nil,
-                                     likeCount: 0,
-                                     lastActiveDate: Date(),
-                                     lastLikeDate: Date(),
-                                     isTestUser: false,
-                                     isIncognito: false,
-                                     isBlocked: false,
-                                     isAdmin: false,
-                                     isActive: false,
-                                     isFakeUser: nil,
-                                     reportList: [],
-                                     authType: .email,
-                                     searchSettings: [:],
-                                     location: CLLocationCoordinate2D(latitude: 0, longitude: 0),
-                                     distance: 0)
+        self.currentPeople = MPeople()
         setup()
     }
     
@@ -53,40 +25,11 @@ class CurrentPeopleDataProvider {
     private func setup() {
         UserDefaultsService.shared.saveMpeople(people: currentPeople)
         NotificationCenter.addObsorverToCurrentUser(observer: self, selector: #selector(currentUserUserDefaultUpdate))
+        NotificationCenter.addObsorverToFCMKeyUpdate(observer: self, selector: #selector(fcmKeyIsUpdated(notification:)))
     }
     
     private func setEmptyCurrentPeople()  {
-        let emptyCurrentPeople = MPeople(senderId: "",
-                                         displayName: "",
-                                         advert: "",
-                                         userImage: "",
-                                         gallery: [:],
-                                         mail: "",
-                                         gender: "",
-                                         dateOfBirth: Date(),
-                                         sexuality: "",
-                                         lookingFor: "",
-                                         interests: [],
-                                         desires: [],
-                                         isGoldMember: false,
-                                         goldMemberDate: nil,
-                                         goldMemeberPurches: nil,
-                                         likeCount: 0,
-                                         lastActiveDate: Date(),
-                                         lastLikeDate: Date(),
-                                         isTestUser: false,
-                                         isIncognito: false,
-                                         isBlocked: false,
-                                         isAdmin: false,
-                                         isActive: false,
-                                         isFakeUser: nil,
-                                         reportList: [],
-                                         authType: .email,
-                                         searchSettings: [:],
-                                         location: CLLocationCoordinate2D(latitude: 0, longitude: 0),
-                                         distance: 0)
-      currentPeople = emptyCurrentPeople
-        
+        currentPeople = MPeople()
     }
     
     @objc private func currentUserUserDefaultUpdate() {
@@ -94,6 +37,24 @@ class CurrentPeopleDataProvider {
             currentPeople = people
         } else {
             PopUpService.shared.showInfo(text: UserDefaultsError.cantGetData.localizedDescription)
+        }
+    }
+    
+    @objc private func fcmKeyIsUpdated(notification: NSNotification) {
+        guard let userInfo = notification.userInfo as? [String: String],
+              let fcmKey = userInfo[PushMessagingService.shared.notificationName],
+              fcmKey != currentPeople.fcmKey else { return }
+        
+        FirestoreService.shared.saveFCMKey(id: currentPeople.senderId,
+                                           fcmKey: fcmKey) {[weak self] result in
+            switch result {
+            
+            case .success(_):
+                self?.currentPeople.fcmKey = fcmKey
+                NotificationCenter.postFCMKeyInChatsNeedUpdate(data: userInfo)
+            case .failure(let error):
+                PopUpService.shared.showInfo(text: "Ошибка: \(error)")
+            }
         }
     }
 }

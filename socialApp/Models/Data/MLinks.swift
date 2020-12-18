@@ -12,4 +12,5 @@ enum MLinks: String {
     case email = "flava.social.app@gmail.com"
     case termsOfServiceLink = "https://flava.app/terms/"
     case privacyLink = "https://flava.app/privacy/"
+    case site = "https://flava.app"
 }

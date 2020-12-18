@@ -116,6 +116,71 @@ class FirestoreService {
         }
     }
     
+    //MARK: saveFCMKey
+    func saveFCMKey(id: String,
+                    fcmKey: String,
+                    complition: @escaping (Result<String, Error>) -> Void) {
+        usersReference.document(id).setData([MPeople.CodingKeys.fcmKey.rawValue : fcmKey],
+                                            merge: true) { error in
+            if let error = error {
+                complition(.failure(error))
+            } else {
+                if var people = UserDefaultsService.shared.getMpeople() {
+                    people.fcmKey = fcmKey
+                    UserDefaultsService.shared.saveMpeople(people: people)
+                    NotificationCenter.postCurrentUserNeedUpdate()
+                    complition(.success(fcmKey))
+                } else {
+                    complition(.failure(UserDefaultsError.cantGetData))
+                }
+            }
+        }
+    }
+
+    
+    //MARK: update FCMKey
+    func updateFCMKeyInChats(id: String,
+                             fcmKey: String,
+                             acceptChats: [MChat],
+                             likeChats: [MChat],
+                             complition: @escaping (Result<String, Error>) -> Void) {
+        var withError = false
+        acceptChats.forEach { acceptChat in
+            let refFriendAcceptChat =
+                usersReference
+                .document(acceptChat.friendId)
+                .collection(MFirestorCollection.acceptChats.rawValue)
+                .document(id)
+            
+            refFriendAcceptChat.setData([MChat.CodingKeys.fcmKey.rawValue : fcmKey],
+                                        merge: true) { error in
+                if let error = error {
+                    withError = true
+                    complition(.failure(error))
+                }
+            }
+        }
+        
+        likeChats.forEach { likeChat in
+            let refFriendRequestChat =
+                usersReference
+                .document(likeChat.friendId)
+                .collection(MFirestorCollection.requestsChats.rawValue)
+                .document(id)
+            
+            refFriendRequestChat.setData([MChat.CodingKeys.fcmKey.rawValue : fcmKey],
+                                        merge: true) { error in
+                if let error = error {
+                    withError = true
+                    complition(.failure(error))
+                }
+            }
+        }
+        if !withError {
+            complition(.success(fcmKey))
+        }
+    }
+
     //MARK: saveIsGoldMember
     func saveIsGoldMember(id: String,
                           isGoldMember: Bool,
@@ -307,6 +372,7 @@ class FirestoreService {
                                                 }
                                             })
     }
+    
     
     //MARK:  saveFirstSetupAdvert
     func saveAdvert(id: String,

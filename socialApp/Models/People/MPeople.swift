@@ -39,6 +39,7 @@ struct MPeople: Hashable, Codable, SenderType {
     var isFakeUser: Bool?
     var authType: MAuthType
     var reportList: [MReports]
+    var fcmKey: String
     
     var searchSettings: [String: Int]
     var location: CLLocationCoordinate2D
@@ -69,6 +70,7 @@ struct MPeople: Hashable, Codable, SenderType {
          isActive: Bool,
          isFakeUser: Bool?,
          reportList: [MReports],
+         fcmKey: String,
          authType: MAuthType,
          searchSettings: [String: Int],
          location: CLLocationCoordinate2D,
@@ -99,12 +101,46 @@ struct MPeople: Hashable, Codable, SenderType {
         self.isActive = isActive
         self.isFakeUser = isFakeUser
         self.reportList = reportList
+        self.fcmKey = fcmKey
         self.authType = authType
         self.searchSettings = searchSettings
         self.location = location
         self.distance = distance
     }
     
+    init() {
+        senderId = ""
+        displayName = ""
+        advert = ""
+        userImage = ""
+        gallery =  [:]
+        mail = ""
+        gender = ""
+        dateOfBirth = Date()
+        sexuality = ""
+        lookingFor = ""
+        interests = []
+        desires = []
+        isGoldMember = false
+        goldMemberDate = nil
+        goldMemberPurches = nil
+        likeCount = 0
+        lastActiveDate = Date()
+        lastLikeDate = Date()
+        isTestUser = false
+        isIncognito = false
+        isBlocked = false
+        isAdmin = false
+        isActive = false
+        isFakeUser = nil
+        reportList = []
+        fcmKey = ""
+        authType = .email
+        searchSettings = [:]
+        location = CLLocationCoordinate2D(latitude: MLocation.latitude.defaultValue,
+                                          longitude: MLocation.longitude.defaultValue)
+        distance = 0
+    }
     //MARK: documentSnapshot
     // for get document from Firestore
     init?(documentSnap: DocumentSnapshot){
@@ -161,6 +197,7 @@ struct MPeople: Hashable, Codable, SenderType {
         } else {
             self.reportList = []
         }
+        if let fcmKey = documet["fcmKey"] as? String { self.fcmKey = fcmKey } else { self.fcmKey = "" }
         if let location = documet["location"] as? [String:Double] {
             let latitude = location[MLocation.latitude.rawValue] ?? MLocation.latitude.defaultValue
             let longitude = location[MLocation.longitude.rawValue] ?? MLocation.longitude.defaultValue
@@ -275,6 +312,8 @@ struct MPeople: Hashable, Codable, SenderType {
         } else {
             self.reportList = []
         }
+        
+        if let fcmKey = documet["fcmKey"] as? String { self.fcmKey = fcmKey } else { self.fcmKey = "" }
         if let location = documet["location"] as? [String:Double] {
             let latitude = location[MLocation.latitude.rawValue] ?? MLocation.latitude.defaultValue
             let longitude = location[MLocation.longitude.rawValue] ?? MLocation.longitude.defaultValue
@@ -350,6 +389,7 @@ struct MPeople: Hashable, Codable, SenderType {
         guard let isActive = data["isActive"] as? Bool else { return nil }
         guard let isFakeUser = data["isFakeUser"] as? Bool else { return nil }
         guard let reportList = data["reportList"] as? [MReports] else { return nil }
+        guard let fcmKey = data["fcmKey"] as? String else { return nil }
         guard let location = data["location"] as? CLLocationCoordinate2D else { return nil }
         guard let mail = data["mail"] as? String else { return nil }
         guard let authType = data["authType"] as? MAuthType else { return nil }
@@ -380,6 +420,7 @@ struct MPeople: Hashable, Codable, SenderType {
         self.isActive = isActive
         self.isFakeUser = isFakeUser
         self.reportList = reportList
+        self.fcmKey = fcmKey
         self.location = location
         self.mail = mail
         self.authType = authType
@@ -412,6 +453,7 @@ struct MPeople: Hashable, Codable, SenderType {
         case isActive
         case isFakeUser
         case reportList
+        case fcmKey
         case location
         case mail
         case authType

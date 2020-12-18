@@ -22,6 +22,7 @@ class AboutViewController: UIViewController {
         navigationItem.title = "Информация"
         navigationController?.setNavigationBarHidden(false, animated: true)
         aboutView.configure(delegate: self,
+                            siteButtonSelector: #selector(siteButtonTapped),
                             termsOfServiceSelector: #selector(termsOfServiceTapped),
                             privacyButtonSelector: #selector(privacyTapped))
     }
@@ -29,6 +30,14 @@ class AboutViewController: UIViewController {
 }
 
 extension AboutViewController {
+    
+    @objc private func siteButtonTapped() {
+        if let url = URL(string: MLinks.site.rawValue) {
+           let webController = WebViewController(urlToOpen: url)
+            webController.modalPresentationStyle = .pageSheet
+            present(webController, animated: true, completion: nil)
+        }
+    }
     
     @objc private func termsOfServiceTapped() {
         if let url = URL(string: MLinks.termsOfServiceLink.rawValue) {
