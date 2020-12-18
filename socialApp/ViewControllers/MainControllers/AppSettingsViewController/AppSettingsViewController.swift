@@ -69,22 +69,34 @@ extension AppSettingsViewController {
     private func deleteAllUserData() {
         guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil on AppSettingsVC")}
         guard let acceptChatDelegate = acceptChatDelegate else { fatalError("acceptChatDelegate is nil on AppSettingsVC")}
+        guard let likeDislikeDelegate = likeDislikeDelegate else { fatalError("likeDislikeDelegate is nil on AppSettingsVC")}
         
         currentPeopleDelegate.deletePeople()
         Apphud.logout()
         PushMessagingService.shared.logOutUnsabscribe(currentUserID: currentPeopleDelegate.currentPeople.senderId,
                                                       acceptChats: acceptChatDelegate.acceptChats)
         
-        FirestoreService.shared.deleteAllProfileData(userID: currentPeopleDelegate.currentPeople.senderId) { [weak self] in
-            //after delete, sign out
-            self?.view.addCustomTransition(type: .fade)
-            AuthService.shared.signOut(currentPeopleDelegate: currentPeopleDelegate) { result in
-                switch result {
-                case .success(_):
-                    return
-                case .failure(let error):
-                    fatalError(error.localizedDescription)
+        //unsubscribe from token pushMessage
+        PushMessagingService.shared.deleteToken(currentPeopleID: currentPeopleDelegate.currentPeople.senderId,
+                                                acceptChats: acceptChatDelegate.acceptChats,
+                                                likeChats: likeDislikeDelegate.likePeople) { result in
+            switch result {
+            
+            case .success():
+                FirestoreService.shared.deleteAllProfileData(userID: currentPeopleDelegate.currentPeople.senderId) { [weak self] in
+                    //after delete, sign out
+                    self?.view.addCustomTransition(type: .fade)
+                    AuthService.shared.signOut(currentPeopleDelegate: currentPeopleDelegate) { result in
+                        switch result {
+                        case .success(_):
+                            return
+                        case .failure(let error):
+                            fatalError(error.localizedDescription)
+                        }
+                    }
                 }
+            case .failure(let error):
+                fatalError(error.localizedDescription)
             }
         }
     }
