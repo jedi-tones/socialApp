@@ -281,7 +281,8 @@ extension ProfileViewController: UICollectionViewDelegate {
             case .appSettings:
                 let vc = AppSettingsViewController(currentPeopleDelegate: currentPeopleDelegate,
                                                    acceptChatDelegate: acceptChatsDelegate,
-                                                   requestChatDelegate: requestChatsDelegate)
+                                                   requestChatDelegate: requestChatsDelegate,
+                                                   likeDislikeDelegate: likeDislikeDelegate)
                 vc.hidesBottomBarWhenPushed = true
                 navigationController?.pushViewController(vc, animated: true)
                 

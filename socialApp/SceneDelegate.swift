@@ -28,6 +28,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             
             case .success(let rootVC):
                 self?.window?.rootViewController = rootVC
+                PushMessagingService.shared.subscribeMainTopic()
             case .failure(let error):
                 fatalError(error.localizedDescription)
             }

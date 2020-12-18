@@ -11,7 +11,7 @@ import Foundation
 protocol CurrentPeopleDataDelegate: class {
     var currentPeople: MPeople { get set }
     func savePeopleDataToUserDefaults(currentPeople: MPeople)
-    func deletePeopleFromUserDefaults()
+    func deletePeople()
     func updatePeopleDataFromUserDefaults(complition:@escaping(Result<MPeople,Error>) -> Void)
     func updatePeopleDataFromFirestore(userID: String, complition:@escaping(Result<MPeople,Error>) -> Void)
 }

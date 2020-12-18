@@ -125,8 +125,6 @@ extension RegisterEmailViewController {
                                                         authType: .email) { result in
                     switch result {
                     case .success(_):
-                        //subscribe to notification topics
-                        PushMessagingService.shared.subscribeMainTopic(userID: email)
                         //after save base profile in Firestore, close and show complite registration VC
                         let newVC = DateOfBirthViewController(currentPeopleDelegate: currentPeopleDelegate)
                         self?.navigationController?.setViewControllers([newVC], animated: true)

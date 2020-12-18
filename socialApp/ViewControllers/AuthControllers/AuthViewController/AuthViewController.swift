@@ -117,8 +117,6 @@ extension AuthViewController: ASAuthorizationControllerDelegate {
                                 self?.currentPeopleDelegate?.updatePeopleDataFromFirestore(userID: id, complition: { result in
                                     switch result {
                                     case .success(let mPeople):
-                                        //subscribe to notification topics
-                                        PushMessagingService.shared.subscribeMainTopic(userID: id)
                                         //check gender and want data in mPeople
                                         if mPeople.userImage == "" {
                                             self?.toCompliteRegistration(currentPeopleDelegate: self?.currentPeopleDelegate)

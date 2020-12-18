@@ -71,15 +71,6 @@ extension DataDelegateService {
         
     }
     
-    //MARK: subscribeToPushNotification
-    private func subscribeToPushNotification(currentPeopleID: String) {
-        //subscribe to all pushNotification from chats after relogin
-        PushMessagingService.shared.logInSubscribe(currentUserID: currentPeopleID,
-                                                   acceptChats: acceptChatsDelegate.acceptChats,
-                                                   likeChats: likeDislikeDelegate.likePeople)
-        
-    }
-    
     //MARK: setupApphud
     private func setupApphud() {
         Apphud.start(apiKey: "app_LDXecjNbEuvUBtpd3J9kw75A6cH14n",
@@ -98,8 +89,7 @@ extension DataDelegateService {
               let fcmKey = userInfo[PushMessagingService.shared.notificationName] else { return }
         FirestoreService.shared.updateFCMKeyInChats(id: currentPeopleID,
                                                     fcmKey: fcmKey,
-                                                    acceptChats: acceptChatsDelegate.acceptChats,
-                                                    likeChats: likeDislikeDelegate.likePeople) { result in
+                                                    acceptChats: acceptChatsDelegate.acceptChats) { result in
             switch result {
                 
             case .success(_):
@@ -154,7 +144,6 @@ extension DataDelegateService {
                                                                                     switch result {
                                                                                     
                                                                                     case .success(_):
-                                                                                        subscribeToPushNotification(currentPeopleID: people.senderId)
                                                                                         //check active subscribtion
                                                                                         PurchasesService.shared.checkSubscribtion(currentPeople: people) { _ in
                                                                                             

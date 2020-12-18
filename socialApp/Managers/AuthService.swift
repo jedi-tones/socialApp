@@ -67,7 +67,7 @@ class AuthService {
                         switch result {
                         case .success(_):
                             Apphud.logout()
-                            currentPeopleDelegate.deletePeopleFromUserDefaults()
+                            currentPeopleDelegate.deletePeople()
                             let rootViewController = makeRootVC(viewController: AuthViewController(currentPeopleDelegate: currentPeopleDelegate),
                                                                 withNavContoller: true)
                             complition(.success(rootViewController))

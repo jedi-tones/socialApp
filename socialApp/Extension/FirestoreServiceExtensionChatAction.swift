@@ -67,7 +67,7 @@ extension FirestoreService {
         let currentUserMessagesRef = collectionCurrentAcceptChatRef.document(currentPeople.senderId).collection(MFirestorCollection.messages.rawValue)
         let currentUserMessageRef = currentUserMessagesRef.document(MFirestorCollection.requestMessage.rawValue)
         
-        var requestChat = MChat(friendUserName: currentPeople.displayName,
+        let requestChat = MChat(friendUserName: currentPeople.displayName,
                                 friendUserImageString: currentPeople.userImage,
                                 lastMessage: message,
                                 isNewChat: true,
@@ -91,9 +91,6 @@ extension FirestoreService {
                              createChatDate: Date(),
                              fcmKey: likePeople.fcmKey,
                              date: Date())
-        //subscribe to push notification topic
-        PushMessagingService.shared.subscribeToChatNotification(currentUserID: currentPeople.senderId,
-                                                                chatUserID: likeChat.friendId)
         
         //if like people contains in current user request chat than add to newChat and delete in request
         let requestChatFromLikeUser = requestChats.filter { requestChat -> Bool in
@@ -110,7 +107,8 @@ extension FirestoreService {
                                           content: chat.lastMessage,
                                           id: currentUserMessageRef.path)
             
-            do { //add to acceptChat to current user
+            //add to acceptChat to current user
+            do {
                 //if with first message, create chat and message in collection
                 if !chat.lastMessage.isEmpty {
                     likeChat.unreadChatMessageCount = 1
@@ -121,25 +119,26 @@ extension FirestoreService {
                 }
             } catch { complition(.failure(error), false)}
             
-            do { //add to acceptChat to like user
+            //add to acceptChat to like user
+            do {
                 if !chat.lastMessage.isEmpty {
-                    requestChat.unreadChatMessageCount = 1
                     try collectionLikeUserAcceptChatRef.document(currentPeople.senderId).setData(from: requestChat)
                     //change message id to likeUser path
                     requestMessage.messageId = likeUserMessageRef.path
                     //if with first message, create message in collection
                     likeUserMessageRef.setData(requestMessage.reprasentation)
-                    PushMessagingService.shared.sendMessageToUser(currentUser: currentPeople,
-                                                                  toUserID: likeChat,
-                                                                  header: "У тебя новая пара с \(currentPeople.displayName)",
-                                                                  text: "Начни общение, иначе чат удалится через сутки")
+                    
+                    PushMessagingService.shared.sendPushMessageToToken(token: likePeople.fcmKey,
+                                                                       header: "У тебя новая пара с \(currentPeople.displayName)",
+                                                                       text: "Начни общение, чат удалится через сутки",
+                                                                       category: MActionType.request)
                     complition(.success(likeChat), true)
                 } else {
                     try collectionLikeUserAcceptChatRef.document(currentPeople.senderId).setData(from: requestChat)
-                    PushMessagingService.shared.sendMessageToUser(currentUser: currentPeople,
-                                                                  toUserID: likeChat,
-                                                                  header: "У тебя новая пара с \(currentPeople.displayName)",
-                                                                  text: "Начни общение, иначе чат удалится через сутки")
+                    PushMessagingService.shared.sendPushMessageToToken(token: likePeople.fcmKey,
+                                                                       header: "У тебя новая пара с \(currentPeople.displayName)",
+                                                                       text: "Начни общение, чат удалится через сутки",
+                                                                       category: MActionType.request)
                     complition(.success(likeChat), true)
                 }
             } catch { complition(.failure(error), false)}
@@ -151,10 +150,11 @@ extension FirestoreService {
                 //add chat to like collection current user
                 try collectionCurrentLikeRef.document(likePeople.senderId).setData(from:likeChat)
                 
-                PushMessagingService.shared.sendPushMessageToUser(userID: likePeople.senderId,
-                                                                  header: "У тебя новый лайк",
-                                                                  text: "Скорее заходи, возможно это взаимно",
-                                                                  category: MActionType.request)
+                PushMessagingService.shared.sendPushMessageToToken(token: likePeople.fcmKey,
+                                                                   header: "У тебя новый лайк",
+                                                                   text: "Скорее заходи, возможно это взаимно",
+                                                                   category: MActionType.request)
+        
                 complition(.success(likeChat), false)
             } catch { complition(.failure(error), false) }
         }
@@ -306,10 +306,11 @@ extension FirestoreService {
                                                                      chat: chat,
                                                                      text: messageText) { _ in
                                 //send notification to friend
-                                PushMessagingService.shared.sendMessageToUser(currentUser: currentUser,
-                                                                              toUserID: chat,
-                                                                              header: MAdmin.displayName.rawValue,
-                                                                              text: messageText)
+                                PushMessagingService.shared.sendPushMessageToToken(token: chat.fcmKey,
+                                                                                   header: MAdmin.displayName.rawValue,
+                                                                                   text: messageText,
+                                                                                   category: .systemMessage)
+                        
                             }
                             complition(.success(()))
                         }
@@ -335,10 +336,11 @@ extension FirestoreService {
                                                                  chat: chat,
                                                                  text: messageText) { _ in
                             
-                            PushMessagingService.shared.sendMessageToUser(currentUser: currentUser,
-                                                                          toUserID: chat,
-                                                                          header: MAdmin.displayName.rawValue,
-                                                                          text: messageText)
+                            PushMessagingService.shared.sendPushMessageToToken(token: chat.fcmKey,
+                                                                               header: MAdmin.displayName.rawValue,
+                                                                               text: messageText,
+                                                                               category: .systemMessage)
+                            
                         }
                         complition(.success(()))
                     }

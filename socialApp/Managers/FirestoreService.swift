@@ -142,42 +142,26 @@ class FirestoreService {
     func updateFCMKeyInChats(id: String,
                              fcmKey: String,
                              acceptChats: [MChat],
-                             likeChats: [MChat],
                              complition: @escaping (Result<String, Error>) -> Void) {
-        var withError = false
+        
+        let batch = db.batch()
         acceptChats.forEach { acceptChat in
             let refFriendAcceptChat =
                 usersReference
                 .document(acceptChat.friendId)
                 .collection(MFirestorCollection.acceptChats.rawValue)
                 .document(id)
-            
-            refFriendAcceptChat.setData([MChat.CodingKeys.fcmKey.rawValue : fcmKey],
-                                        merge: true) { error in
-                if let error = error {
-                    withError = true
-                    complition(.failure(error))
-                }
-            }
+            batch.setData([MChat.CodingKeys.fcmKey.rawValue : fcmKey],
+                          forDocument: refFriendAcceptChat,
+                          merge: true)
         }
         
-        likeChats.forEach { likeChat in
-            let refFriendRequestChat =
-                usersReference
-                .document(likeChat.friendId)
-                .collection(MFirestorCollection.requestsChats.rawValue)
-                .document(id)
-            
-            refFriendRequestChat.setData([MChat.CodingKeys.fcmKey.rawValue : fcmKey],
-                                        merge: true) { error in
-                if let error = error {
-                    withError = true
-                    complition(.failure(error))
-                }
+        batch.commit { error in
+            if let error = error {
+                complition(.failure(error))
+            } else {
+                complition(.success(fcmKey))
             }
-        }
-        if !withError {
-            complition(.success(fcmKey))
         }
     }
 

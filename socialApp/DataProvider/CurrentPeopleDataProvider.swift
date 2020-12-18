@@ -70,8 +70,9 @@ extension CurrentPeopleDataProvider: CurrentPeopleDataDelegate {
         }
     }
     
-    func deletePeopleFromUserDefaults() {
+    func deletePeople() {
         setEmptyCurrentPeople()
+        
         UserDefaultsService.shared.saveMpeople(people: currentPeople)
     }
     

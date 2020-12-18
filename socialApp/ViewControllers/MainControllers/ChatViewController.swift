@@ -297,10 +297,18 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
                     
                     case .success():
                         //send notification to friend
-                        PushMessagingService.shared.sendMessageToUser(currentUser: currentPeopleDelegate.currentPeople,
-                                                                      toUserID: chat,
-                                                                      header: currentPeopleDelegate.currentPeople.displayName,
-                                                                      text: "Фото")
+                        if chat.fcmKey != "" {
+                            PushMessagingService.shared.sendMessageToToken(token: chat.fcmKey,
+                                                                           header: currentPeopleDelegate.currentPeople.displayName,
+                                                                           text: "Фото")
+                        } else {
+                            //push to topic
+                            PushMessagingService.shared.sendMessageToUser(currentUser: currentPeopleDelegate.currentPeople,
+                                                                          toUserID: chat,
+                                                                          header: currentPeopleDelegate.currentPeople.displayName,
+                                                                          text: "Фото")
+                        }
+                        
                     case .failure(let error):
                         fatalError(error.localizedDescription)
                     }
@@ -349,10 +357,18 @@ extension ChatViewController {
             
             //send notification to friend
             guard let chat = self?.chat else { return }
-            PushMessagingService.shared.sendMessageToUser(currentUser: currentPeopleDelegate.currentPeople,
-                                                          toUserID: chat,
-                                                          header: MAdmin.displayName.rawValue,
-                                                          text: text)
+            if chat.fcmKey != "" {
+                PushMessagingService.shared.sendMessageToToken(token: chat.fcmKey,
+                                                               header: MAdmin.displayName.rawValue,
+                                                               text: text)
+            } else {
+                //push to topic
+                PushMessagingService.shared.sendMessageToUser(currentUser: currentPeopleDelegate.currentPeople,
+                                                              toUserID: chat,
+                                                              header: MAdmin.displayName.rawValue,
+                                                              text: text)
+            }
+            
         }
     }
     
@@ -368,10 +384,17 @@ extension ChatViewController {
             
             //send notification to friend
             guard let chat = self?.chat else { return }
-            PushMessagingService.shared.sendMessageToUser(currentUser: currentPeopleDelegate.currentPeople,
-                                                          toUserID: chat,
-                                                          header: MAdmin.displayName.rawValue,
-                                                          text: text)
+            if chat.fcmKey != "" {
+                PushMessagingService.shared.sendMessageToToken(token: chat.fcmKey,
+                                                               header: MAdmin.displayName.rawValue,
+                                                               text: text)
+            } else {
+                //push to topic
+                PushMessagingService.shared.sendMessageToUser(currentUser: currentPeopleDelegate.currentPeople,
+                                                              toUserID: chat,
+                                                              header: MAdmin.displayName.rawValue,
+                                                              text: text)
+            }
         }
     }
     
@@ -629,10 +652,19 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
             
             case .success():
                 //send notification to friend
-                PushMessagingService.shared.sendMessageToUser(currentUser: currentPeopleDelegate.currentPeople,
-                                                              toUserID: strongChat,
-                                                              header: currentPeopleDelegate.currentPeople.displayName,
-                                                              text: text)
+                if strongChat.fcmKey != "" {
+                    PushMessagingService.shared.sendMessageToToken(token: strongChat.fcmKey,
+                                                                   header: currentPeopleDelegate.currentPeople.displayName,
+                                                                   text: text)
+                } else {
+                    //push to topic
+                    PushMessagingService.shared.sendMessageToUser(currentUser: currentPeopleDelegate.currentPeople,
+                                                                  toUserID: strongChat,
+                                                                  header: currentPeopleDelegate.currentPeople.displayName,
+                                                                  text: text)
+                }
+               
+               
               
             case .failure(_):
                 //no document to update

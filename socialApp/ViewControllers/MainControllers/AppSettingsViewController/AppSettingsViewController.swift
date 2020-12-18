@@ -18,16 +18,19 @@ class AppSettingsViewController: UIViewController {
     private var collectionView: UICollectionView!
     private var dataSource: UICollectionViewDiffableDataSource<SectionAppSettings, MAppSettings>?
     private weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
-    weak var acceptChatDelegate: AcceptChatListenerDelegate?
-    weak var requestChatDelegate: RequestChatListenerDelegate?
+    private weak var acceptChatDelegate: AcceptChatListenerDelegate?
+    private weak var requestChatDelegate: RequestChatListenerDelegate?
+    private weak var likeDislikeDelegate: LikeDislikeListenerDelegate?
     
     init(currentPeopleDelegate: CurrentPeopleDataDelegate?,
          acceptChatDelegate: AcceptChatListenerDelegate?,
-         requestChatDelegate: RequestChatListenerDelegate?) {
+         requestChatDelegate: RequestChatListenerDelegate?,
+         likeDislikeDelegate: LikeDislikeListenerDelegate?) {
         
         self.acceptChatDelegate = acceptChatDelegate
         self.requestChatDelegate = requestChatDelegate
         self.currentPeopleDelegate = currentPeopleDelegate
+        self.likeDislikeDelegate = likeDislikeDelegate
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -67,7 +70,7 @@ extension AppSettingsViewController {
         guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil on AppSettingsVC")}
         guard let acceptChatDelegate = acceptChatDelegate else { fatalError("acceptChatDelegate is nil on AppSettingsVC")}
         
-        currentPeopleDelegate.deletePeopleFromUserDefaults()
+        currentPeopleDelegate.deletePeople()
         Apphud.logout()
         PushMessagingService.shared.logOutUnsabscribe(currentUserID: currentPeopleDelegate.currentPeople.senderId,
                                                       acceptChats: acceptChatDelegate.acceptChats)
@@ -196,10 +199,13 @@ extension AppSettingsViewController: UICollectionViewDelegate {
 
 //MARK: - ALERTS
 extension AppSettingsViewController {
+    
+    
     //MARK:  signOutAlert
     private func signOutAlert(pressedIndexPath: IndexPath) {
-        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil on AppSettingsVC")}
+        guard let currentPeopleDelegate = currentPeopleDelegate else { return }
         guard let acceptChatDelegate = acceptChatDelegate else { return }
+        guard let likeDislikeDelegate = likeDislikeDelegate else { return }
         
         let alert = UIAlertController(title: nil,
                                       message: nil,
@@ -209,18 +215,35 @@ extension AppSettingsViewController {
                                      style: .destructive) {[weak self] _ in
             
             self?.view.addCustomTransition(type: .fade)
-            AuthService.shared.signOut(currentPeopleDelegate: currentPeopleDelegate) { result in
+            //unsubscribe from topic pushMessage
+            PushMessagingService.shared.logOutUnsabscribe(currentUserID: currentPeopleDelegate.currentPeople.senderId,
+                                                          acceptChats: acceptChatDelegate.acceptChats)
+            
+            //unsubscribe from token pushMessage 
+            PushMessagingService.shared.deleteToken(currentPeopleID: currentPeopleDelegate.currentPeople.senderId,
+                                                    acceptChats: acceptChatDelegate.acceptChats,
+                                                    likeChats: likeDislikeDelegate.likePeople) { result in
                 switch result {
-                case .success(_):
-                    
-                    Apphud.logout()
-                    PushMessagingService.shared.logOutUnsabscribe(currentUserID: currentPeopleDelegate.currentPeople.senderId,
-                                                                  acceptChats: acceptChatDelegate.acceptChats)
-                    currentPeopleDelegate.deletePeopleFromUserDefaults()
+                
+                case .success():
+                    AuthService.shared.signOut(currentPeopleDelegate: currentPeopleDelegate) { result in
+                        switch result {
+                        case .success(_):
+                            
+                            Apphud.logout()
+                            currentPeopleDelegate.deletePeople()
+                            
+                            
+                        case .failure(let error):
+                            PopUpService.shared.showInfo(text: "Ошибка: \(error)")
+                        }
+                    }
                 case .failure(let error):
-                    fatalError(error.localizedDescription)
+                    PopUpService.shared.showInfo(text: "Ошибка: \(error)")
                 }
             }
+            
+            
         }
         let cancelAction = UIAlertAction(title: "Продолжу общение",
                                          style: .default) { [weak self] _ in
