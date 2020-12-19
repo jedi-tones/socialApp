@@ -30,6 +30,7 @@ extension FirestoreService {
                                 timerOfLifeIsStoped: false,
                                 createChatDate: Date(),
                                 fcmKey: fromUser.fcmKey,
+                                friendInChat: false,
                                 date: Date())
         
         do { //add chat request document for reciever user
@@ -78,6 +79,7 @@ extension FirestoreService {
                                 timerOfLifeIsStoped: false,
                                 createChatDate: Date(),
                                 fcmKey: currentPeople.fcmKey,
+                                friendInChat: false,
                                 date: Date())
         var likeChat = MChat(friendUserName: likePeople.displayName,
                              friendUserImageString: likePeople.userImage,
@@ -90,6 +92,7 @@ extension FirestoreService {
                              timerOfLifeIsStoped: false,
                              createChatDate: Date(),
                              fcmKey: likePeople.fcmKey,
+                             friendInChat: false,
                              date: Date())
         
         //if like people contains in current user request chat than add to newChat and delete in request
@@ -256,11 +259,51 @@ extension FirestoreService {
     }
     
     //MARK: readAllMessageInChat
-    func readAllMessageInChat(userID: String, chat: MChat, complition: @escaping(Result<(),Error>) -> Void) {
-        let refChat = db.collection([MFirestorCollection.users.rawValue,
-                                     userID,
-                                     MFirestorCollection.acceptChats.rawValue].joined(separator: "/"))
-        refChat.document(chat.friendId).updateData([ MChat.CodingKeys.unreadChatMessageCount.rawValue : 0]) { error in
+    func currentUserOpenCloseChat(currentUserID: String,
+                                  chat: MChat,
+                                  isOpen: Bool,
+                                  lastMessage: MMessage?,
+                                  complition: @escaping(Result<(),Error>) -> Void) {
+        
+        let refChat = db.document([MFirestorCollection.users.rawValue,
+                                   currentUserID,
+                                   MFirestorCollection.acceptChats.rawValue,
+                                   chat.friendId].joined(separator: "/"))
+        
+        let refFriendChat = db.document([MFirestorCollection.users.rawValue,
+                                         chat.friendId,
+                                         MFirestorCollection.acceptChats.rawValue,
+                                         currentUserID].joined(separator: "/"))
+        
+        let batch = db.batch()
+        //if chat was open, read all message in currentUser chat
+        if isOpen {
+            batch.setData([MChat.CodingKeys.unreadChatMessageCount.rawValue : 0],
+                          forDocument: refChat,
+                          merge: true)
+            
+        } else if let lastMessage = lastMessage {
+            //if chat was close and have last message, set last message and new date in currentUser chat
+            var lastMessageText = ""
+            //if text content
+            if let textContent = lastMessage.content {
+                lastMessageText = textContent
+            //if image content
+            } else if let _ = lastMessage.imageURL {
+                lastMessageText = "Фото 📷"
+            }
+            
+            batch.setData([MChat.CodingKeys.lastMessage.rawValue : lastMessageText,
+                           MChat.CodingKeys.date.rawValue : lastMessage.sentDate],
+                          forDocument: refChat,
+                          merge: true)
+        }
+        //change state friendInChat in friend chat
+        batch.setData([MChat.CodingKeys.friendInChat.rawValue : isOpen],
+                      forDocument: refFriendChat,
+                      merge: true)
+        
+        batch.commit { error in
             if let error = error {
                 complition(.failure(error))
             } else {
@@ -354,17 +397,19 @@ extension FirestoreService {
                      currentUser: MPeople,
                      message: MMessage,
                      complition: @escaping(Result<Void, Error>)-> Void) {
-        let refFriendChat = db.collection([MFirestorCollection.users.rawValue,
-                                           chat.friendId,
-                                           MFirestorCollection.acceptChats.rawValue].joined(separator: "/"))
-        let refSenderChat = db.collection([MFirestorCollection.users.rawValue,
-                                           currentUser.senderId,
-                                           MFirestorCollection.acceptChats.rawValue].joined(separator: "/"))
+        let refFriendChat = db.document([MFirestorCollection.users.rawValue,
+                                         chat.friendId,
+                                         MFirestorCollection.acceptChats.rawValue,
+                                         currentUser.senderId].joined(separator: "/"))
+        let refSenderChat = db.document([MFirestorCollection.users.rawValue,
+                                         currentUser.senderId,
+                                         MFirestorCollection.acceptChats.rawValue,
+                                         chat.friendId].joined(separator: "/"))
         
-        let refFriendMessage = refFriendChat.document(currentUser.senderId).collection(MFirestorCollection.messages.rawValue)
-        let refSenderMessage = refSenderChat.document(chat.friendId).collection(MFirestorCollection.messages.rawValue)
+        let refFriendMessage = refFriendChat.collection(MFirestorCollection.messages.rawValue)
+        let refSenderMessage = refSenderChat.collection(MFirestorCollection.messages.rawValue)
         
-        refFriendMessage.addDocument(data: message.reprasentation) { error in
+        refFriendMessage.addDocument(data: message.reprasentation) {[unowned self] error in
             if let error = error {
                 complition(.failure(error))
             } else {
@@ -372,45 +417,33 @@ extension FirestoreService {
                     if let error = error {
                         complition(.failure(error))
                     } else {
-                        //set new lastMessage to activeChats, set to active chat and increment unread message
+                        
+                        //set lastMessageText
+                        var lastMessageText = ""
                         if let messageContent = message.content {
-                            refFriendChat.document(currentUser.senderId).updateData([MChat.CodingKeys.lastMessage.rawValue: messageContent,
-                                                                                     MChat.CodingKeys.date.rawValue: message.sentDate,
-                                                                                     MChat.CodingKeys.isNewChat.rawValue: false,
-                                                                                     MChat.CodingKeys.unreadChatMessageCount.rawValue : FieldValue.increment(Int64(1))]) { error in
-                                if let error = error {
-                                    complition(.failure(error))
-                                }
-                            }
-                            refSenderChat.document(chat.friendId).updateData([MChat.CodingKeys.lastMessage.rawValue: messageContent,
-                                                                              MChat.CodingKeys.date.rawValue: message.sentDate,
-                                                                              MChat.CodingKeys.isNewChat.rawValue: false]) { error in
-                                if let error = error {
-                                    complition(.failure(error))
-                                } else {
-                                    complition(.success(()))
-                                }
-                            }
+                            lastMessageText = messageContent
                         } else if let _ = message.imageURL {
-                            refFriendChat.document(currentUser.senderId).updateData([MChat.CodingKeys.lastMessage.rawValue: "Фото 📷",
-                                                                                     MChat.CodingKeys.date.rawValue: message.sentDate,
-                                                                                     MChat.CodingKeys.isNewChat.rawValue: false,
-                                                                                     MChat.CodingKeys.unreadChatMessageCount.rawValue : FieldValue.increment(Int64(1))]) { error in
-                                if let error = error {
-                                    complition(.failure(error))
-                                }
-                            }
-                            refSenderChat.document(chat.friendId).updateData([MChat.CodingKeys.lastMessage.rawValue: "Фото 📷",
-                                                                              MChat.CodingKeys.date.rawValue: message.sentDate,
-                                                                              MChat.CodingKeys.isNewChat.rawValue: false]) { error in
-                                if let error = error {
-                                    complition(.failure(error))
-                                } else {
-                                    complition(.success(()))
-                                }
-                            }
+                            lastMessageText = "Фото 📷"
                         }
                         
+                        let batch = db.batch()
+                        //if friend don't open chat, set new last message to him, and increment unread message
+                        if !chat.friendInChat {
+                            batch.setData([MChat.CodingKeys.lastMessage.rawValue: lastMessageText,
+                                           MChat.CodingKeys.date.rawValue: message.sentDate,
+                                           MChat.CodingKeys.isNewChat.rawValue: false,
+                                           MChat.CodingKeys.unreadChatMessageCount.rawValue : FieldValue.increment(Int64(1))],
+                                          forDocument: refFriendChat,
+                                          merge: true)
+                        }
+                        
+                        batch.commit { error in
+                            if let error = error {
+                                complition(.failure(error))
+                            } else {
+                                complition(.success(()))
+                            }
+                        }
                     }
                 }
             }

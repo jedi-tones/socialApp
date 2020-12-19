@@ -92,6 +92,8 @@ protocol AcceptChatCollectionViewDelegate: class {
 
 protocol MessageControllerDelegate: class {
     var isInitiateDeleteChat: Bool { get set }
+    var chat:MChat { get set }
+    var lastMessage: MMessage? { get }
     
     func newMessage()
     func showChatAlert(text: String)
@@ -133,7 +135,7 @@ protocol RequestChatListenerDelegate: class {
 protocol AcceptChatListenerDelegate: class {
     var acceptChats: [MChat] { get set }
     var sortedAcceptChats: [MChat] { get }
-    var selectedChat: MChat? { get set }
+    var lastMessageInSelectedChat:MMessage? { get set }
     var acceptChatCollectionViewDelegate: AcceptChatCollectionViewDelegate? { get set }
     var messageCollectionViewDelegate: MessageControllerDelegate? { get set }
     

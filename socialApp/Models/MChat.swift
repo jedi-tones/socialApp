@@ -21,6 +21,7 @@ struct MChat: Hashable, Codable, ReprasentationModel {
     var timerOfLifeIsStoped: Bool
     var createChatDate: Date
     var fcmKey: String
+    var friendInChat: Bool
     var date: Date
     
     init(friendUserName: String,
@@ -34,6 +35,7 @@ struct MChat: Hashable, Codable, ReprasentationModel {
          timerOfLifeIsStoped: Bool,
          createChatDate: Date,
          fcmKey: String,
+         friendInChat: Bool,
          date:Date) {
         self.friendUserName = friendUserName
         self.friendUserImageString = friendUserImageString
@@ -46,6 +48,7 @@ struct MChat: Hashable, Codable, ReprasentationModel {
         self.timerOfLifeIsStoped = timerOfLifeIsStoped
         self.createChatDate = createChatDate
         self.fcmKey = fcmKey
+        self.friendInChat = friendInChat
         self.date = date
     }
     
@@ -97,6 +100,10 @@ struct MChat: Hashable, Codable, ReprasentationModel {
         if let fcmKey = documet["fcmKey"] as? String {
             self.fcmKey = fcmKey
         } else { self.fcmKey = "" }
+        
+        if let friendInChat = documet["friendInChat"] as? Bool {
+            self.friendInChat = friendInChat
+        } else { self.friendInChat = false }
         
         if let date = documet["date"] as? Timestamp {
             self.date = date.dateValue()
@@ -152,6 +159,10 @@ struct MChat: Hashable, Codable, ReprasentationModel {
             self.fcmKey = fcmKey
         } else { self.fcmKey = "" }
         
+        if let friendInChat = documet["friendInChat"] as? Bool {
+            self.friendInChat = friendInChat
+        } else { self.friendInChat = false }
+        
         if let date = documet["date"] as? Timestamp {
             self.date = date.dateValue()
         } else { return nil }
@@ -171,6 +182,7 @@ struct MChat: Hashable, Codable, ReprasentationModel {
             "timerOfLifeIsStoped": timerOfLifeIsStoped,
             "createChatDate": createChatDate,
             "fcmKey": fcmKey,
+            "friendInChat": friendInChat,
             "date": date
         ]
         return rep
@@ -189,6 +201,7 @@ struct MChat: Hashable, Codable, ReprasentationModel {
         case timerOfLifeIsStoped
         case createChatDate
         case fcmKey
+        case friendInChat
         case date
     }
     

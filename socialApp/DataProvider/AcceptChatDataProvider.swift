@@ -18,10 +18,25 @@ class AcceptChatDataProvider: AcceptChatListenerDelegate {
         }
         return accept
     }
-    var selectedChat: MChat?
-    
+    private var selectedChat: MChat?
+    var lastMessageInSelectedChat: MMessage?
+     
     weak var acceptChatCollectionViewDelegate: AcceptChatCollectionViewDelegate?
-    weak var messageCollectionViewDelegate: MessageControllerDelegate?
+    weak var messageCollectionViewDelegate: MessageControllerDelegate? {
+        didSet {
+            if let selectedMessageCollectionView = messageCollectionViewDelegate {
+                selectedChat = selectedMessageCollectionView.chat
+                chatWasOpenClose(isWasOpen: true,
+                                 lastMessage: selectedMessageCollectionView.lastMessage,
+                                 chat: selectedChat)
+            } else {
+                chatWasOpenClose(isWasOpen: false,
+                                 lastMessage: lastMessageInSelectedChat,
+                                 chat: selectedChat)
+                selectedChat = nil
+            }
+        }
+    }
     
     init(userID: String) {
         self.userID = userID
@@ -35,12 +50,15 @@ class AcceptChatDataProvider: AcceptChatListenerDelegate {
         case .delete:
             acceptChatCollectionViewDelegate?.reloadDataSource(changeType: changeType)
         case .update:
-            //if chat update, send to messageCollectionView this chat
-            messageCollectionViewDelegate?.chatsCollectionWasUpdate(chat: chat)
             acceptChatCollectionViewDelegate?.reloadDataSource(changeType: changeType)
             
-            //show popUp notification if message is changed
-            if messageIsChanged == true {
+            //if selected chat update, send to messageCollectionView this chat
+            if chat.friendId == selectedChat?.friendId {
+                messageCollectionViewDelegate?.chatsCollectionWasUpdate(chat: chat)
+            }
+            
+            //show popUp notification if message is changed and lastMessage not from current user
+            if messageIsChanged == true && lastMessageInSelectedChat?.sender.senderId != userID {
                 //and this chat don't open 
                 if chat.friendId != selectedChat?.friendId || selectedChat == nil {
                     PopUpService.shared.showMessagePopUp(header: chat.friendUserName,
@@ -48,6 +66,25 @@ class AcceptChatDataProvider: AcceptChatListenerDelegate {
                                                          time: chat.date.getFormattedDate(format: "HH:mm"),
                                                          imageStringURL: chat.friendUserImageString)
                 }
+            }
+        }
+    }
+}
+
+extension AcceptChatDataProvider {
+    private func chatWasOpenClose(isWasOpen: Bool, lastMessage: MMessage?, chat: MChat?) {
+        guard let chat = chat else { return }
+       
+        FirestoreService.shared.currentUserOpenCloseChat(currentUserID: userID,
+                                                         chat: chat,
+                                                         isOpen: isWasOpen,
+                                                         lastMessage: lastMessage) { result in
+            switch result {
+            
+            case .success():
+                break
+            case .failure(let error):
+                fatalError(error.localizedDescription)
             }
         }
     }

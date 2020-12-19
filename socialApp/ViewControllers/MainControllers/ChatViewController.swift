@@ -13,7 +13,14 @@ import InputBarAccessoryView
 
 class ChatViewController: MessagesViewController, MessageControllerDelegate  {
     
-    private var chat:MChat
+    var chat:MChat
+    var lastMessage: MMessage? {
+        if let messageDelegate = messageDelegate {
+            return messageDelegate.messages.last
+        } else {
+            return nil
+        }
+    }
     private let loadingMessagesImage = AnimationCustomView(name: MAnimamationName.loading.rawValue,
                                                    loopMode: .loop,
                                                    contentMode: .scaleAspectFit,
@@ -53,20 +60,11 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
     deinit {
         removeMessageListner()
         removeListners()
-        acceptChatDelegate?.selectedChat = nil
+        acceptChatDelegate?.messageCollectionViewDelegate = nil
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        messagesCollectionView.messagesDataSource = self
-        messagesCollectionView.messagesLayoutDelegate = self
-        messagesCollectionView.messagesDisplayDelegate = self
-        messagesCollectionView.messageCellDelegate = self
-        
-        messageInputBar.delegate = self
-        messageDelegate?.messageControllerDelegate = self
-        
-        acceptChatDelegate?.messageCollectionViewDelegate = self
         
         configure()
         configureInputBar()
@@ -75,18 +73,17 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
         
         getAllMessages()
         addListners()
-        readAllMessageInChat()
         showTimerPopUp()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        readAllMessageInChat()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: true)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        acceptChatDelegate?.lastMessageInSelectedChat = lastMessage
     }
     
     override func didMove(toParent parent: UIViewController?) {
@@ -112,16 +109,19 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
         }
     }
     
-    private func readAllMessageInChat() {
-        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("CurrentPeopleDelegate is nil in ChatVC")}
-        FirestoreService.shared.readAllMessageInChat(userID: currentPeopleDelegate.currentPeople.senderId, chat: chat) { _ in
-        }
-    }
-    
     //MARK: configure
     private func configure() {
+        messagesCollectionView.messagesDataSource = self
+        messagesCollectionView.messagesLayoutDelegate = self
+        messagesCollectionView.messagesDisplayDelegate = self
+        messagesCollectionView.messageCellDelegate = self
+        
+        messageInputBar.delegate = self
+        messageDelegate?.messageControllerDelegate = self
+        
+        acceptChatDelegate?.messageCollectionViewDelegate = self
+        
         showMessageTimestampOnSwipeLeft = true
-        acceptChatDelegate?.selectedChat = chat
     
         messagesCollectionView.backgroundColor = .myWhiteColor()
         //delete avatar from message

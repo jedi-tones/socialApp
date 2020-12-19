@@ -28,25 +28,33 @@ class ListenerService {
     }
     private var requestChatsRef: CollectionReference {
         guard let id = currentUser?.email else { fatalError("Cant get current user")}
-        let collection = db.collection([MFirestorCollection.users.rawValue, id, MFirestorCollection.requestsChats.rawValue].joined(separator: "/"))
+        let collection = db.collection([MFirestorCollection.users.rawValue,
+                                        id,
+                                        MFirestorCollection.requestsChats.rawValue].joined(separator: "/"))
         return collection
     }
     
     private var likeRef: CollectionReference {
         guard let id = currentUser?.email else { fatalError("Cant get current user")}
-        let collection = db.collection([MFirestorCollection.users.rawValue, id, MFirestorCollection.likePeople.rawValue].joined(separator: "/"))
+        let collection = db.collection([MFirestorCollection.users.rawValue,
+                                        id,
+                                        MFirestorCollection.likePeople.rawValue].joined(separator: "/"))
         return collection
     }
     
     private var dislikeRef: CollectionReference {
         guard let id = currentUser?.email else { fatalError("Cant get current user")}
-        let collection = db.collection([MFirestorCollection.users.rawValue, id, MFirestorCollection.dislikePeople.rawValue].joined(separator: "/"))
+        let collection = db.collection([MFirestorCollection.users.rawValue,
+                                        id,
+                                        MFirestorCollection.dislikePeople.rawValue].joined(separator: "/"))
         return collection
     }
     
     private var acceptChatsRef: CollectionReference {
         guard let id = currentUser?.email else { fatalError("Cant get current user")}
-        let collection = db.collection([MFirestorCollection.users.rawValue, id, MFirestorCollection.acceptChats.rawValue].joined(separator: "/"))
+        let collection = db.collection([MFirestorCollection.users.rawValue,
+                                        id,
+                                        MFirestorCollection.acceptChats.rawValue].joined(separator: "/"))
         return collection
     }
     
