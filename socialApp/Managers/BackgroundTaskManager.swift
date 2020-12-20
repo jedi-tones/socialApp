@@ -13,11 +13,8 @@ class BackgroundTaskManager {
     static let shared = BackgroundTaskManager()
     
     private init() {}
-    private var currentUserID: String?
-    private var openChat: MChat?
-    private var lastMessage: MMessage?
     private var backgroundTaskID: UIBackgroundTaskIdentifier?
-    private var acceptChatDelegate: AcceptChatListenerDelegate?
+    weak var acceptChatDelegate: AcceptChatListenerDelegate?
     
     let backgroundAppRefreshTaskSchedulerIdentifier = "art.jedi-tones.flava.backgroundAppRefresh"
     
@@ -54,18 +51,18 @@ class BackgroundTaskManager {
     
     
     func exitCurrentOpenMessage(complition:@escaping()->()) {
-        guard let currentUserID = currentUserID,
-              let openChat = openChat,
-              let acceptChatDelegate = acceptChatDelegate
-        else {
-            complition()
-            return
-        }
+        guard
+            let acceptChatDelegate = acceptChatDelegate,
+            let lastChat = acceptChatDelegate.lastSelectedChat
+            else {
+                complition()
+                return
+            }
         
-        FirestoreService.shared.currentUserOpenCloseChat(currentUserID: currentUserID,
-                                                         chat: openChat,
+        FirestoreService.shared.currentUserOpenCloseChat(currentUserID: acceptChatDelegate.userID,
+                                                         chat: lastChat,
                                                          isOpen: false,
-                                                         lastMessage: lastMessage) { _ in
+                                                         lastMessage: acceptChatDelegate.lastMessageInSelectedChat) { _ in
             acceptChatDelegate.acceptChatCollectionViewDelegate = nil
             complition()
         }
@@ -88,17 +85,6 @@ class BackgroundTaskManager {
                 self.backgroundTaskID = UIBackgroundTaskIdentifier.invalid
             }
         }
-    }
-    
-    func setCurrentOpenMessage(acceptChatDelegate: AcceptChatListenerDelegate?,
-                               currentUserID: String,
-                               openChat: MChat?,
-                               lastMessage: MMessage?) {
-        self.acceptChatDelegate = acceptChatDelegate
-        self.currentUserID = currentUserID
-        self.openChat = openChat
-        self.lastMessage = lastMessage
-        
     }
 }
 

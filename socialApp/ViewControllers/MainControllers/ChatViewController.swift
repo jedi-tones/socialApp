@@ -340,10 +340,8 @@ extension ChatViewController {
     //MARK: sceneDidChanged
     @objc private func sceneDidChanged(notification: Notification) {
         switch notification.name {
-        case UIApplication.willEnterForegroundNotification:
+        case UIApplication.didBecomeActiveNotification:
             acceptChatDelegate?.messageCollectionViewDelegate = self
-            print("get back!!!!")
-        case UIApplication.willTerminateNotification:
             print("get back!!!!")
         default:
             break

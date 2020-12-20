@@ -133,8 +133,10 @@ protocol RequestChatListenerDelegate: class {
 }
 
 protocol AcceptChatListenerDelegate: class {
+    var userID: String { get set }
     var acceptChats: [MChat] { get set }
     var sortedAcceptChats: [MChat] { get }
+    var lastSelectedChat: MChat? { get set }
     var lastMessageInSelectedChat:MMessage? { get set }
     var acceptChatCollectionViewDelegate: AcceptChatCollectionViewDelegate? { get set }
     var messageCollectionViewDelegate: MessageControllerDelegate? { get set }

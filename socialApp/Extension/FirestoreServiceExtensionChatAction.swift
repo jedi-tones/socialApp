@@ -303,6 +303,7 @@ extension FirestoreService {
             }
             
             batch.setData([MChat.CodingKeys.lastMessage.rawValue : lastMessageText,
+                           MChat.CodingKeys.lastMessageSenderID.rawValue: lastMessage.sender.senderId,
                            MChat.CodingKeys.date.rawValue : lastMessage.sentDate],
                           forDocument: refChat,
                           merge: true)
@@ -440,6 +441,7 @@ extension FirestoreService {
                         //if friend don't open chat, set new last message to him, and increment unread message
                         if !chat.friendInChat {
                             batch.setData([MChat.CodingKeys.lastMessage.rawValue: lastMessageText,
+                                           MChat.CodingKeys.lastMessageSenderID.rawValue: message.sender.senderId,
                                            MChat.CodingKeys.date.rawValue: message.sentDate,
                                            MChat.CodingKeys.isNewChat.rawValue: false,
                                            MChat.CodingKeys.unreadChatMessageCount.rawValue : FieldValue.increment(Int64(1))],
