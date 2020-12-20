@@ -77,7 +77,7 @@ struct MChat: Hashable, Codable, ReprasentationModel {
         
         if let lastMessage =  documet["lastMessage"] as? String {
             self.lastMessage = lastMessage
-        } else { return nil }
+        } else { self.lastMessage = "" }
         
         if let isNewChat =  documet["isNewChat"] as? Bool {
             self.isNewChat = isNewChat

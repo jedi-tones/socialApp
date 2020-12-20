@@ -449,8 +449,9 @@ extension FirestoreService {
                                           merge: true)
                             
                             //and change status of unsee message in current user chat
-                            if chat.friendSawAllMessageInChat {
-                                batch.setData([MChat.CodingKeys.friendSawAllMessageInChat.rawValue : false],
+                            if chat.friendSawAllMessageInChat || chat.isNewChat {
+                                batch.setData([MChat.CodingKeys.friendSawAllMessageInChat.rawValue : false,
+                                               MChat.CodingKeys.isNewChat.rawValue: false],
                                               forDocument: refSenderChat,
                                               merge: true)
                             }
