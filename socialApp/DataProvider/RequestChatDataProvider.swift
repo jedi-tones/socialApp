@@ -16,11 +16,13 @@ class RequestChatDataProvider: RequestChatListenerDelegate {
             sortedRequestChats = requestChats.sorted {
                 $0.date > $1.date
             }
-            
+            mainTabBarDelegate?.renewBadge()
         }
     }
     var sortedRequestChats: [MChat] = []
-    var requestChatCollectionViewDelegate: RequestChatCollectionViewDelegate?
+    
+   weak var mainTabBarDelegate: MainTabBarDelegate?
+   weak var requestChatCollectionViewDelegate: RequestChatCollectionViewDelegate?
    
     init(userID: String) {
         self.userID = userID
@@ -28,6 +30,7 @@ class RequestChatDataProvider: RequestChatListenerDelegate {
 }
 
 extension RequestChatDataProvider {
+    
     //MARK: setup listner
     func setupListener(reportsDelegate: ReportsListnerDelegate) {
         

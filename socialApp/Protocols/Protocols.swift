@@ -119,7 +119,10 @@ protocol ReportsListnerDelegate: class {
 protocol RequestChatListenerDelegate: class {
     var requestChats: [MChat] { get set }
     var sortedRequestChats: [MChat] { get set}
+    
+    var mainTabBarDelegate: MainTabBarDelegate? { get set }
     var requestChatCollectionViewDelegate: RequestChatCollectionViewDelegate? { get set }
+    
     //first time get data
     func getRequestChats(reportsDelegate: ReportsListnerDelegate, complition: @escaping (Result<[MChat], Error>) -> Void)
     //work with collectionView
@@ -138,6 +141,8 @@ protocol AcceptChatListenerDelegate: class {
     var sortedAcceptChats: [MChat] { get }
     var lastSelectedChat: MChat? { get set }
     var lastMessageInSelectedChat:MMessage? { get set }
+    
+    var mainTabBarDelegate: MainTabBarDelegate? { get set }
     var acceptChatCollectionViewDelegate: AcceptChatCollectionViewDelegate? { get set }
     var messageCollectionViewDelegate: MessageControllerDelegate? { get set }
     
@@ -145,6 +150,7 @@ protocol AcceptChatListenerDelegate: class {
     func getAcceptChats(complition: @escaping (Result<[MChat], Error>) -> Void)
     func setupAcceptChatListener()
     func removeAcceptChatListener()
+    func calculateUnreadAndNewChats() -> Int
 }
 
 protocol PeopleListenerDelegate: class {

@@ -79,7 +79,6 @@ class ChatsViewController: UIViewController {
         NotificationCenter.addObsorverToPremiumUpdate(observer: self, selector: #selector(premiumIsUpdated))
     }
     
-  
     
     //MARK:  setupNavigationController
     private func setupNavigationController(){
@@ -98,7 +97,7 @@ class ChatsViewController: UIViewController {
     }
     
     //MARK: checkPeopleNearbyIsEmpty
-    private func checkPeopleNearbyIsEmpty()  {
+    private func checkAcceptChatsIsEmpty()  {
         //if nearby people empty set
         guard let acceptChatDelegate = acceptChatDelegate?.acceptChats else { fatalError() }
         if acceptChatDelegate.isEmpty {
@@ -111,7 +110,6 @@ class ChatsViewController: UIViewController {
     }
     
     //MARK: objc
-    
     @objc private func premiumIsUpdated() {
         // reloadDataSource(changeType: .update)
         print("Premium was updated on chats screen")
@@ -183,7 +181,7 @@ extension ChatsViewController {
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: grupSize,
                                                        subitems: [item])
         
-
+        
         
         let section = NSCollectionLayoutSection(group: group)
         
@@ -206,17 +204,17 @@ extension ChatsViewController {
                                               heightDimension: .estimated(80))
         
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
-
+        
         let grupSize = NSCollectionLayoutSize(widthDimension: .estimated(70),
                                               heightDimension: isEmpty ? .absolute(0.1) : .estimated(80))
         
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: grupSize,
                                                        subitems: [item])
         
-//        group.contentInsets = NSDirectionalEdgeInsets(top: 0,
-//                                                      leading: 0,
-//                                                      bottom: 0,
-//                                                      trailing: 0)
+        //        group.contentInsets = NSDirectionalEdgeInsets(top: 0,
+        //                                                      leading: 0,
+        //                                                      bottom: 0,
+        //                                                      trailing: 0)
         
         let section = NSCollectionLayoutSection(group: group)
         
@@ -284,7 +282,7 @@ extension ChatsViewController {
             guard let section = SectionsChats(rawValue: indexPath.section) else { fatalError("Unknown section")}
             
             guard let itemsInSection = self?.collectionView?.numberOfItems(inSection: indexPath.section) else { fatalError("Can't get count of items")}
-           
+            
             reuseSectionHeader.configure(text: section.description(count: itemsInSection),
                                          font: .avenirRegular(size: 12),
                                          textColor: UIColor.myGrayColor())
@@ -296,7 +294,8 @@ extension ChatsViewController {
     //MARK: renewDataSource
     private func renewDataSource(searchText: String?) {
         guard let sortedAcceptChats = acceptChatDelegate?.sortedAcceptChats else { fatalError("Can't get sorted accept chats")}
-        checkPeopleNearbyIsEmpty()
+        //check empty to show emptyView
+        checkAcceptChatsIsEmpty()
         
         let filtredAcceptChats = sortedAcceptChats.filter { acceptChat -> Bool in
             acceptChat.contains(element: searchText)
@@ -320,7 +319,7 @@ extension ChatsViewController {
             snapshot.appendItems(activeChats, toSection: .activeChats)
             
             dataSource.apply(snapshot, animatingDifferences: false) { [weak self] in
-               
+                
                 self?.collectionView?.collectionViewLayout.invalidateLayout()
                 self?.collectionView?.layoutIfNeeded()
                 self?.collectionView?.setCollectionViewLayout(self?.setupCompositionalLayout(isEmptyActiveSection: activeChats.isEmpty,
@@ -348,14 +347,17 @@ extension ChatsViewController {
     }
 }
 
+//MARK:  AcceptChatCollectionViewDelegate
 extension ChatsViewController: AcceptChatCollectionViewDelegate {
+    
+    
     //MARK:  reloadDataSource
     func reloadDataSource(changeType: MTypeOfListenerChanges){
         
         switch changeType {
         case .delete:
-        //chat can be deleted only if user unmatch or timer to delete, when user unmatch people it is add to dislike collection
-        //we need update dislike collection
+            //chat can be deleted only if user unmatch or timer to delete, when user unmatch people it is add to dislike collection
+            //we need update dislike collection
             likeDislikeDelegate?.getDislike(complition: { _ in })
             fallthrough
         default:
@@ -417,6 +419,7 @@ extension ChatsViewController: UICollectionViewDelegate {
     }
 }
 
+//MARK: setupConstraint
 extension ChatsViewController {
     private func setupConstraint() {
         emptyView.translatesAutoresizingMaskIntoConstraints = false

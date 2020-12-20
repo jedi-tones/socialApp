@@ -11,7 +11,11 @@ import UIKit
 class AcceptChatDataProvider: AcceptChatListenerDelegate {
     
     var userID: String
-    var acceptChats: [MChat] = []
+    var acceptChats: [MChat] = [] {
+        didSet {
+            mainTabBarDelegate?.renewBadge()
+        }
+    }
     var sortedAcceptChats: [MChat] {
         let accept = acceptChats.sorted {
             $0.date > $1.date
@@ -21,6 +25,7 @@ class AcceptChatDataProvider: AcceptChatListenerDelegate {
     var lastSelectedChat: MChat?
     var lastMessageInSelectedChat: MMessage?
      
+    weak var mainTabBarDelegate: MainTabBarDelegate?
     weak var acceptChatCollectionViewDelegate: AcceptChatCollectionViewDelegate?
     weak var messageCollectionViewDelegate: MessageControllerDelegate? {
         didSet {
@@ -56,6 +61,8 @@ class AcceptChatDataProvider: AcceptChatListenerDelegate {
     }
     
     func reloadData(changeType: MTypeOfListenerChanges, chat: MChat, messageIsChanged: Bool?) {
+        //for change tabbar badge
+        
         
         switch changeType {
         case .add:
@@ -101,6 +108,7 @@ class AcceptChatDataProvider: AcceptChatListenerDelegate {
 
 extension AcceptChatDataProvider {
     
+    //MARK: sceneDidChanged
     @objc private func sceneDidChanged(notifivation: Notification) {
         switch notifivation.name {
         case UIApplication.didEnterBackgroundNotification:
@@ -109,6 +117,8 @@ extension AcceptChatDataProvider {
             break
         }
     }
+    
+    //MARK: chatWasOpenClose
     private func chatWasOpenClose(isWasOpen: Bool, lastMessage: MMessage?, chat: MChat?) {
         guard let chat = chat else { return }
         FirestoreService.shared.currentUserOpenCloseChat(currentUserID: userID,
@@ -124,6 +134,8 @@ extension AcceptChatDataProvider {
             }
         }
     }
+    
+   
 }
 
 extension AcceptChatDataProvider {
@@ -138,6 +150,15 @@ extension AcceptChatDataProvider {
 
 //MARK:  getAcceptChats
 extension AcceptChatDataProvider {
+    
+    func calculateUnreadAndNewChats() -> Int {
+        let newChatsCount = acceptChats.filter { $0.isNewChat }.count
+        var unreadMessageCount = 0
+        acceptChats.forEach { unreadMessageCount += $0.unreadChatMessageCount }
+        let eventCount = unreadMessageCount + newChatsCount
+        return eventCount
+    }
+    
      func getAcceptChats(complition: @escaping (Result<[MChat], Error>) -> Void) {
         
         //first get list of like people
