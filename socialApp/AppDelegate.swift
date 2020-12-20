@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let notificationCenter = UNUserNotificationCenter.current()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
+
         FirebaseApp.configure()
         PurchasesService.shared.setupPurchases { isSuccess in
             if isSuccess {
@@ -27,6 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         PushMessagingService.shared.registerDelegate()
         PushNotificationService.shared.requestNotificationAuth()
+        BackgroundTaskManager.shared.registerBackgroundTask()
         
         return true
     }

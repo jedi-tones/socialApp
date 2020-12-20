@@ -12,8 +12,9 @@ import SDWebImage
 class ChatTitleStackView: UIStackView {
     
     private var chat: MChat?
-    let peopleImageButton = UIButton()
-    let peopleNameLabel = UILabel(labelText: "Test", textFont: .avenirBold(size: 16), textColor: .myLabelColor())
+    private let peopleImageButton = UIButton()
+    private let peopleNameLabel = UILabel(labelText: "Test", textFont: .avenirBold(size: 16), textColor: .myLabelColor())
+    private let peopleOnlineLabel = UILabel(labelText: "", textFont: .avenirBold(size: 16), textColor: .mySecondSatColor())
     
     convenience init(chat: MChat, target: Any, profileTappedAction: Selector) {
         self.init()
@@ -22,6 +23,10 @@ class ChatTitleStackView: UIStackView {
         setup()
         setupConstraints()
         peopleImageButton.addTarget(target, action: profileTappedAction, for: .touchUpInside)
+    }
+    
+    func changePeopleStatus(isOnline: Bool) {
+        peopleOnlineLabel.text = isOnline ? "в чате" : ""
     }
     
     private func setup() {
@@ -33,6 +38,8 @@ class ChatTitleStackView: UIStackView {
         peopleImageButton.clipsToBounds = true
         
         peopleNameLabel.text = chat.friendUserName
+        
+        changePeopleStatus(isOnline: chat.friendInChat)
     }
     
     override func layoutSubviews() {
@@ -48,6 +55,8 @@ extension ChatTitleStackView {
         
         addArrangedSubview(peopleImageButton)
         addArrangedSubview(peopleNameLabel)
+        addArrangedSubview(peopleOnlineLabel)
+        
         alignment = .center
         spacing = 15
         axis = .horizontal

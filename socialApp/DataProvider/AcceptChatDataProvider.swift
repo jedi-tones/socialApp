@@ -18,28 +18,56 @@ class AcceptChatDataProvider: AcceptChatListenerDelegate {
         }
         return accept
     }
-    private var selectedChat: MChat?
-    var lastMessageInSelectedChat: MMessage?
+    private var lastSelectedChat: MChat?
+    var lastMessageInSelectedChat: MMessage? {
+        didSet {
+            BackgroundTaskManager.shared.setCurrentOpenMessage(acceptChatDelegate: self,
+                                                               currentUserID: userID,
+                                                               openChat: lastSelectedChat,
+                                                               lastMessage: lastMessageInSelectedChat)
+        }
+    }
      
     weak var acceptChatCollectionViewDelegate: AcceptChatCollectionViewDelegate?
     weak var messageCollectionViewDelegate: MessageControllerDelegate? {
         didSet {
+            print("didset")
             if let selectedMessageCollectionView = messageCollectionViewDelegate {
-                selectedChat = selectedMessageCollectionView.chat
+                lastSelectedChat = selectedMessageCollectionView.chat
                 chatWasOpenClose(isWasOpen: true,
                                  lastMessage: selectedMessageCollectionView.lastMessage,
-                                 chat: selectedChat)
+                                 chat: lastSelectedChat)
             } else {
                 chatWasOpenClose(isWasOpen: false,
                                  lastMessage: lastMessageInSelectedChat,
-                                 chat: selectedChat)
-                selectedChat = nil
+                                 chat: lastSelectedChat)
+                lastSelectedChat = nil
             }
         }
     }
     
     init(userID: String) {
         self.userID = userID
+        configure()
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    private func configure() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(sceneDidChanged(notifivation:)),
+                                               name: UIApplication.willTerminateNotification,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(sceneDidChanged(notifivation:)),
+                                               name: UIApplication.didEnterBackgroundNotification,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(sceneDidChanged(notifivation:)),
+                                               name: UIApplication.willEnterForegroundNotification,
+                                               object: nil)
     }
     
     func reloadData(changeType: MTypeOfListenerChanges, chat: MChat, messageIsChanged: Bool?) {
@@ -53,18 +81,32 @@ class AcceptChatDataProvider: AcceptChatListenerDelegate {
             acceptChatCollectionViewDelegate?.reloadDataSource(changeType: changeType)
             
             //if selected chat update, send to messageCollectionView this chat
-            if chat.friendId == selectedChat?.friendId {
+            if chat.friendId == lastSelectedChat?.friendId {
                 messageCollectionViewDelegate?.chatsCollectionWasUpdate(chat: chat)
             }
             
-            //show popUp notification if message is changed and lastMessage not from current user
-            if messageIsChanged == true && lastMessageInSelectedChat?.sender.senderId != userID {
-                //and this chat don't open 
-                if chat.friendId != selectedChat?.friendId || selectedChat == nil {
-                    PopUpService.shared.showMessagePopUp(header: chat.friendUserName,
-                                                         text: chat.lastMessage,
-                                                         time: chat.date.getFormattedDate(format: "HH:mm"),
-                                                         imageStringURL: chat.friendUserImageString)
+            let isNotLatsSennMessage =
+                chat.date != lastMessageInSelectedChat?.sentDate &&
+                chat.friendId != lastMessageInSelectedChat?.sender.senderId
+            let isLastSeenMessage: Bool =
+                //last send date equel lastSeenMessage
+                (chat.date == lastMessageInSelectedChat?.sentDate)
+                //and last sender or current user or admin
+                && ((lastMessageInSelectedChat?.sender.senderId == chat.friendId)
+                        || (lastMessageInSelectedChat?.sender.senderId == userID)
+                        || (lastMessageInSelectedChat?.sender.senderId == MAdmin.id.rawValue))
+            
+            //show popUp notification if message is changed
+            if messageIsChanged == true {
+                //changedMessage not last seen massage in closed chat
+                if !isLastSeenMessage {
+                    //and this chat don't open
+                    if chat.friendId != lastSelectedChat?.friendId || lastSelectedChat == nil {
+                        PopUpService.shared.showMessagePopUp(header: chat.friendUserName,
+                                                             text: chat.lastMessage,
+                                                             time: chat.date.getFormattedDate(format: "HH:mm"),
+                                                             imageStringURL: chat.friendUserImageString)
+                    }
                 }
             }
         }
@@ -72,9 +114,21 @@ class AcceptChatDataProvider: AcceptChatListenerDelegate {
 }
 
 extension AcceptChatDataProvider {
+    
+    @objc private func sceneDidChanged(notifivation: Notification) {
+        switch notifivation.name {
+        case UIApplication.didEnterBackgroundNotification:
+            BackgroundTaskManager.shared.submitBackgoundTaskShort()
+        case UIApplication.willTerminateNotification:
+            print("accept chats will terminate")
+           // BackgroundTaskManager.shared.submitBackgroundTasks()
+        default:
+            break
+        }
+    }
     private func chatWasOpenClose(isWasOpen: Bool, lastMessage: MMessage?, chat: MChat?) {
         guard let chat = chat else { return }
-       
+        print("isWasOpen :\(isWasOpen)")
         FirestoreService.shared.currentUserOpenCloseChat(currentUserID: userID,
                                                          chat: chat,
                                                          isOpen: isWasOpen,

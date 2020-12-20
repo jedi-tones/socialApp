@@ -11,7 +11,11 @@ import Foundation
 class MessagesDataProvider: MessageListenerDelegate {
     
     let userID: String
-    var messages:[MMessage] = []
+    var messages:[MMessage] = [] {
+        didSet {
+            messageControllerDelegate?.lastMessage = messages.last
+        }
+    }
     weak var messageControllerDelegate: MessageControllerDelegate?
     
     init(userID: String) {

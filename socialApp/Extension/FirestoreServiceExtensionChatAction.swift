@@ -10,36 +10,38 @@ import FirebaseFirestore
 
 extension FirestoreService {
     //MARK: sendChatRequest
-    func sendChatRequest(fromUser: MPeople, forFrend: MPeople, text:String?, complition: @escaping(Result<MMessage,Error>)->Void) {
-        
-        let textToSend = text ?? MLabels.requestMessage.rawValue
-        let collectionRequestRef = db.collection([MFirestorCollection.users.rawValue, forFrend.senderId, MFirestorCollection.acceptChats.rawValue].joined(separator: "/"))
-        let messagesRef = collectionRequestRef.document(fromUser.senderId).collection(MFirestorCollection.messages.rawValue)
-        let messageRef = messagesRef.document(MFirestorCollection.requestMessage.rawValue)
-        
-        let sender = MSender(senderId: fromUser.senderId, displayName: fromUser.displayName)
-        let message = MMessage(user: sender, content: textToSend, id: messagesRef.path)
-        let chatMessage = MChat(friendUserName: fromUser.displayName,
-                                friendUserImageString: fromUser.userImage,
-                                lastMessage: textToSend,
-                                isNewChat: false,
-                                friendId: fromUser.senderId,
-                                unreadChatMessageCount: 0,
-                                friendIsWantStopTimer: false,
-                                currentUserIsWantStopTimer: false,
-                                timerOfLifeIsStoped: false,
-                                createChatDate: Date(),
-                                fcmKey: fromUser.fcmKey,
-                                friendInChat: false,
-                                date: Date())
-        
-        do { //add chat request document for reciever user
-            try collectionRequestRef.document(fromUser.senderId).setData(from: chatMessage, merge: true)
-            //add message to collection messages in ChatRequest
-            messageRef.setData(message.reprasentation)
-            complition(.success(message))
-        } catch { complition(.failure(error)) }
-    }
+//    func sendChatRequest(fromUser: MPeople, forFrend: MPeople, text:String?, complition: @escaping(Result<MMessage,Error>)->Void) {
+//
+//        let textToSend = text ?? MLabels.requestMessage.rawValue
+//        let collectionRequestRef = db.collection([MFirestorCollection.users.rawValue, forFrend.senderId, MFirestorCollection.acceptChats.rawValue].joined(separator: "/"))
+//        let messagesRef = collectionRequestRef.document(fromUser.senderId).collection(MFirestorCollection.messages.rawValue)
+//        let messageRef = messagesRef.document(MFirestorCollection.requestMessage.rawValue)
+//        let lastMessageSender = textToSend == "" ? "" : fromUser.senderId
+//        let sender = MSender(senderId: fromUser.senderId, displayName: fromUser.displayName)
+//        let message = MMessage(user: sender, content: textToSend, id: messagesRef.path)
+//        let chatMessage = MChat(friendUserName: fromUser.displayName,
+//                                friendUserImageString: fromUser.userImage,
+//                                lastMessage: textToSend,
+//                                lastMessageSenderID: lastMessageSender,
+//                                isNewChat: false,
+//                                friendId: fromUser.senderId,
+//                                unreadChatMessageCount: 0,
+//                                friendIsWantStopTimer: false,
+//                                currentUserIsWantStopTimer: false,
+//                                timerOfLifeIsStoped: false,
+//                                createChatDate: Date(),
+//                                fcmKey: fromUser.fcmKey,
+//                                friendInChat: false,
+//                                friendSawAllMessageInChat: <#T##Bool#>
+//                                date: Date())
+//
+//        do { //add chat request document for reciever user
+//            try collectionRequestRef.document(fromUser.senderId).setData(from: chatMessage, merge: true)
+//            //add message to collection messages in ChatRequest
+//            messageRef.setData(message.reprasentation)
+//            complition(.success(message))
+//        } catch { complition(.failure(error)) }
+//    }
     
     //MARK: deleteChatRequest
     func deleteChatRequest(fromUser: MChat, forUser: MPeople) {
@@ -68,9 +70,10 @@ extension FirestoreService {
         let currentUserMessagesRef = collectionCurrentAcceptChatRef.document(currentPeople.senderId).collection(MFirestorCollection.messages.rawValue)
         let currentUserMessageRef = currentUserMessagesRef.document(MFirestorCollection.requestMessage.rawValue)
         
-        let requestChat = MChat(friendUserName: currentPeople.displayName,
+        var requestChat = MChat(friendUserName: currentPeople.displayName,
                                 friendUserImageString: currentPeople.userImage,
                                 lastMessage: message,
+                                lastMessageSenderID: "",
                                 isNewChat: true,
                                 friendId: currentPeople.senderId,
                                 unreadChatMessageCount: 0,
@@ -80,10 +83,12 @@ extension FirestoreService {
                                 createChatDate: Date(),
                                 fcmKey: currentPeople.fcmKey,
                                 friendInChat: false,
+                                friendSawAllMessageInChat: true,
                                 date: Date())
         var likeChat = MChat(friendUserName: likePeople.displayName,
                              friendUserImageString: likePeople.userImage,
                              lastMessage: message,
+                             lastMessageSenderID: "",
                              isNewChat: true,
                              friendId: likePeople.senderId,
                              unreadChatMessageCount: 0,
@@ -93,6 +98,7 @@ extension FirestoreService {
                              createChatDate: Date(),
                              fcmKey: likePeople.fcmKey,
                              friendInChat: false,
+                             friendSawAllMessageInChat: true,
                              date: Date())
         
         //if like people contains in current user request chat than add to newChat and delete in request
@@ -115,6 +121,7 @@ extension FirestoreService {
                 //if with first message, create chat and message in collection
                 if !chat.lastMessage.isEmpty {
                     likeChat.unreadChatMessageCount = 1
+                    likeChat.lastMessageSenderID = likePeople.senderId
                     try collectionCurrentAcceptChatRef.document(likePeople.senderId).setData(from: likeChat)
                     currentUserMessageRef.setData(requestMessage.reprasentation)
                 } else {
@@ -125,6 +132,8 @@ extension FirestoreService {
             //add to acceptChat to like user
             do {
                 if !chat.lastMessage.isEmpty {
+                    //set that friend don't see last message
+                    requestChat.friendSawAllMessageInChat = false
                     try collectionLikeUserAcceptChatRef.document(currentPeople.senderId).setData(from: requestChat)
                     //change message id to likeUser path
                     requestMessage.messageId = likeUserMessageRef.path
@@ -258,7 +267,7 @@ extension FirestoreService {
         }
     }
     
-    //MARK: readAllMessageInChat
+    //MARK: currentUserOpenCloseChat
     func currentUserOpenCloseChat(currentUserID: String,
                                   chat: MChat,
                                   isOpen: Bool,
@@ -288,7 +297,7 @@ extension FirestoreService {
             //if text content
             if let textContent = lastMessage.content {
                 lastMessageText = textContent
-            //if image content
+                //if image content
             } else if let _ = lastMessage.imageURL {
                 lastMessageText = "Фото 📷"
             }
@@ -298,8 +307,9 @@ extension FirestoreService {
                           forDocument: refChat,
                           merge: true)
         }
-        //change state friendInChat in friend chat
-        batch.setData([MChat.CodingKeys.friendInChat.rawValue : isOpen],
+        //change state friendInChat in friend chat, and set that current user see all message
+        batch.setData([MChat.CodingKeys.friendInChat.rawValue : isOpen,
+                       MChat.CodingKeys.friendSawAllMessageInChat.rawValue : true],
                       forDocument: refFriendChat,
                       merge: true)
         
@@ -435,6 +445,13 @@ extension FirestoreService {
                                            MChat.CodingKeys.unreadChatMessageCount.rawValue : FieldValue.increment(Int64(1))],
                                           forDocument: refFriendChat,
                                           merge: true)
+                            
+                            //and change status of unsee message in current user chat
+                            if chat.friendSawAllMessageInChat {
+                                batch.setData([MChat.CodingKeys.friendSawAllMessageInChat.rawValue : false],
+                                              forDocument: refSenderChat,
+                                              merge: true)
+                            }
                         }
                         
                         batch.commit { error in

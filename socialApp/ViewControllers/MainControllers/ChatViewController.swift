@@ -13,18 +13,24 @@ import InputBarAccessoryView
 
 class ChatViewController: MessagesViewController, MessageControllerDelegate  {
     
-    var chat:MChat
-    var lastMessage: MMessage? {
-        if let messageDelegate = messageDelegate {
-            return messageDelegate.messages.last
-        } else {
-            return nil
+    var chat:MChat {
+        didSet {
+            chatIsChanged()
         }
     }
+    var lastMessage: MMessage? {
+        didSet {
+            acceptChatDelegate?.lastMessageInSelectedChat = lastMessage
+        }
+    }
+    
     private let loadingMessagesImage = AnimationCustomView(name: MAnimamationName.loading.rawValue,
                                                    loopMode: .loop,
                                                    contentMode: .scaleAspectFit,
                                                    isHidden: false)
+    private lazy var titleView = ChatTitleStackView(chat: chat,
+                                                    target: self,
+                                                    profileTappedAction: #selector(profileTapped))
     weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     weak var acceptChatDelegate: AcceptChatListenerDelegate?
     weak var messageDelegate: MessageListenerDelegate?
@@ -81,11 +87,6 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
         navigationController?.setNavigationBarHidden(false, animated: true)
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        acceptChatDelegate?.lastMessageInSelectedChat = lastMessage
-    }
-    
     override func didMove(toParent parent: UIViewController?) {
         super.didMove(toParent: parent)
         
@@ -130,7 +131,7 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
             layout.textMessageSizeCalculator.incomingAvatarSize = .zero
         }
         
-        navigationItem.titleView = ChatTitleStackView(chat: chat, target: self, profileTappedAction: #selector(profileTapped))
+        navigationItem.titleView = titleView
         navigationItem.backButtonTitle = ""
         let barButtonItem = UIBarButtonItem(image: UIImage(systemName: "ellipsis"),
                                             style: .done,
@@ -154,12 +155,24 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(keyboardNotification(notification:)),
-                                               name: UIResponder.keyboardWillShowNotification, object: nil)
+                                               name: UIResponder.keyboardWillShowNotification,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(sceneDidChanged),
+                                               name: UIApplication.didBecomeActiveNotification,
+                                               object: nil)
     }
     
     private func removeListners() {
         NotificationCenter.default.removeObserver(self)
         ScreenRecordingManager.shared.removeListner()
+    }
+    
+    //MARK: chatIsChanged
+    private func chatIsChanged() {
+        titleView.changePeopleStatus(isOnline: chat.friendInChat)
+        messagesCollectionView.reloadData()
     }
     
     //MARK: getAllMessages
@@ -322,6 +335,22 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
 
 //MARK: objc
 extension ChatViewController {
+    
+    
+    //MARK: sceneDidChanged
+    @objc private func sceneDidChanged(notification: Notification) {
+        switch notification.name {
+        case UIApplication.willEnterForegroundNotification:
+            acceptChatDelegate?.messageCollectionViewDelegate = self
+            print("get back!!!!")
+        case UIApplication.willTerminateNotification:
+            print("get back!!!!")
+        default:
+            break
+        }
+        
+       
+    }
     
     //MARK: keyboardNotification
     @objc private func keyboardNotification(notification: Notification) {
@@ -541,6 +570,22 @@ extension ChatViewController: MessagesDataSource {
             return nil
         }
     }
+    
+    func messageBottomLabelAttributedText(for message: MessageType, at indexPath: IndexPath) -> NSAttributedString? {
+        guard let messageDelegate = messageDelegate else { fatalError() }
+        let sawAllMessageText = chat.friendSawAllMessageInChat ? "Просмотрено" : "Отправлено"
+        let color: UIColor = chat.friendSawAllMessageInChat ? .myLabelColor() : .myGrayColor()
+        let attributedString = NSAttributedString(string: sawAllMessageText,
+                                                  attributes: [NSAttributedString.Key.font : UIFont.avenirRegular(size: 12),
+                                                               NSAttributedString.Key.foregroundColor : color])
+        let isLastMessage = indexPath.row == messageDelegate.messages.count - 1
+        if isFromCurrentSender(message: message) && isLastMessage {
+            return attributedString
+        } else {
+            return nil
+        }
+    }
+
 }
 
 //MARK: MessagesLayoutDelegate
@@ -552,21 +597,36 @@ extension ChatViewController: MessagesLayoutDelegate {
     
     func cellTopLabelHeight(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> CGFloat {
         if indexPath.row == 0 {
-            return 30
+            return 50
         } else {
             guard let messageDelegate = messageDelegate else { return 0 }
             //if from previus message more then 10 minets set new height
             let timeDifference = messageDelegate.messages[indexPath.row - 1].sentDate.distance(to: message.sentDate) / 600
             if timeDifference > 1 {
+                return 50
+            }
+            //if last message not from penultimate message sender
+            if messageDelegate.messages[indexPath.row - 1].sender.senderId != message.sender.senderId {
                 return 30
             }
         }
         return 0
     }
     
+    
     func messageTopLabelHeight(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> CGFloat {
         //if sender of message - Admin, set more Height to label in messageTop
         if message.sender.senderId == MAdmin.id.rawValue {
+            return 20
+        } else {
+            return 0
+        }
+    }
+    
+    func messageBottomLabelHeight(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> CGFloat {
+        guard let messageDelegate = messageDelegate else { return 0 }
+        let isLastMessage = indexPath.row == messageDelegate.messages.count - 1
+        if isFromCurrentSender(message: message) && isLastMessage {
             return 20
         } else {
             return 0
@@ -602,7 +662,19 @@ extension ChatViewController: MessagesDisplayDelegate {
     }
     
     func messageStyle(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> MessageStyle {
-        .bubbleTail(isFromCurrentSender(message: message) ? MessageStyle.TailCorner.bottomRight : MessageStyle.TailCorner.bottomLeft, MessageStyle.TailStyle.pointedEdge)
+//        .bubbleTail(isFromCurrentSender(message: message) ? MessageStyle.TailCorner.bottomRight : MessageStyle.TailCorner.bottomLeft, MessageStyle.TailStyle.pointedEdge)
+        let messageCount = messageDelegate?.messages.count ?? 0
+        let tailCorner = isFromCurrentSender(message: message) ? MessageStyle.TailCorner.bottomRight : MessageStyle.TailCorner.bottomLeft
+        if indexPath.row == messageCount - 1 {
+            //if last message, show tail
+            return .bubbleTail(tailCorner, .pointedEdge)
+        } else if message.sender.senderId  == messageDelegate?.messages[indexPath.row + 1].sender.senderId {
+            //if next message from this user too
+            return .bubble
+        } else {
+            return .bubbleTail(tailCorner, .pointedEdge)
+        }
+        
     }
     
     func configureMediaMessageImageView(_ imageView: UIImageView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {

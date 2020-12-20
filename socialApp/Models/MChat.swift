@@ -13,6 +13,7 @@ struct MChat: Hashable, Codable, ReprasentationModel {
     var friendUserName: String
     var friendUserImageString: String
     var lastMessage: String
+    var lastMessageSenderID: String
     var isNewChat: Bool
     var friendId: String
     var unreadChatMessageCount: Int
@@ -22,11 +23,13 @@ struct MChat: Hashable, Codable, ReprasentationModel {
     var createChatDate: Date
     var fcmKey: String
     var friendInChat: Bool
+    var friendSawAllMessageInChat: Bool
     var date: Date
     
     init(friendUserName: String,
          friendUserImageString: String,
          lastMessage: String,
+         lastMessageSenderID: String,
          isNewChat: Bool,
          friendId:String,
          unreadChatMessageCount: Int,
@@ -36,10 +39,12 @@ struct MChat: Hashable, Codable, ReprasentationModel {
          createChatDate: Date,
          fcmKey: String,
          friendInChat: Bool,
+         friendSawAllMessageInChat: Bool,
          date:Date) {
         self.friendUserName = friendUserName
         self.friendUserImageString = friendUserImageString
         self.lastMessage = lastMessage
+        self.lastMessageSenderID = lastMessageSenderID
         self.isNewChat = isNewChat
         self.friendId = friendId
         self.unreadChatMessageCount = unreadChatMessageCount
@@ -49,6 +54,7 @@ struct MChat: Hashable, Codable, ReprasentationModel {
         self.createChatDate = createChatDate
         self.fcmKey = fcmKey
         self.friendInChat = friendInChat
+        self.friendSawAllMessageInChat = friendSawAllMessageInChat
         self.date = date
     }
     
@@ -64,6 +70,10 @@ struct MChat: Hashable, Codable, ReprasentationModel {
         if let friendUserImageString = documet["friendUserImageString"] as? String {
             self.friendUserImageString = friendUserImageString
         } else { return nil }
+        
+        if let lastMessageSenderID =  documet["lastMessageSenderID"] as? String {
+            self.lastMessageSenderID = lastMessageSenderID
+        } else { self.lastMessageSenderID = "" }
         
         if let lastMessage =  documet["lastMessage"] as? String {
             self.lastMessage = lastMessage
@@ -104,6 +114,10 @@ struct MChat: Hashable, Codable, ReprasentationModel {
         if let friendInChat = documet["friendInChat"] as? Bool {
             self.friendInChat = friendInChat
         } else { self.friendInChat = false }
+        
+        if let friendSawAllMessageInChat = documet["friendSawAllMessageInChat"] as? Bool {
+            self.friendSawAllMessageInChat = friendSawAllMessageInChat
+        } else { self.friendSawAllMessageInChat = true }
         
         if let date = documet["date"] as? Timestamp {
             self.date = date.dateValue()
@@ -127,6 +141,10 @@ struct MChat: Hashable, Codable, ReprasentationModel {
             self.lastMessage = lastMessage
         } else { return nil }
         
+        if let lastMessageSenderID =  documet["lastMessageSenderID"] as? String {
+            self.lastMessageSenderID = lastMessageSenderID
+        } else { self.lastMessageSenderID = "" }
+        
         if let isNewChat =  documet["isNewChat"] as? Bool {
             self.isNewChat = isNewChat
         } else { return nil }
@@ -163,6 +181,10 @@ struct MChat: Hashable, Codable, ReprasentationModel {
             self.friendInChat = friendInChat
         } else { self.friendInChat = false }
         
+        if let friendSawAllMessageInChat = documet["friendSawAllMessageInChat"] as? Bool {
+            self.friendSawAllMessageInChat = friendSawAllMessageInChat
+        } else { self.friendSawAllMessageInChat = true }
+        
         if let date = documet["date"] as? Timestamp {
             self.date = date.dateValue()
         } else { return nil }
@@ -174,6 +196,7 @@ struct MChat: Hashable, Codable, ReprasentationModel {
             "friendUserName": friendUserName,
             "friendUserImageString": friendUserImageString,
             "lastMessage": lastMessage,
+            "lastMessageSenderID": lastMessageSenderID,
             "isNewChat": isNewChat,
             "friendId": friendId,
             "unreadChatMessageCount": unreadChatMessageCount,
@@ -183,6 +206,7 @@ struct MChat: Hashable, Codable, ReprasentationModel {
             "createChatDate": createChatDate,
             "fcmKey": fcmKey,
             "friendInChat": friendInChat,
+            "friendSawAllMessageInChat": friendSawAllMessageInChat,
             "date": date
         ]
         return rep
@@ -193,6 +217,7 @@ struct MChat: Hashable, Codable, ReprasentationModel {
         case friendUserName
         case friendUserImageString
         case lastMessage
+        case lastMessageSenderID
         case isNewChat
         case friendId
         case unreadChatMessageCount
@@ -202,6 +227,7 @@ struct MChat: Hashable, Codable, ReprasentationModel {
         case createChatDate
         case fcmKey
         case friendInChat
+        case friendSawAllMessageInChat
         case date
     }
     

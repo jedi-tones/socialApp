@@ -113,6 +113,7 @@
 		FB8C3D94253A51BF00184FB5 /* RequestsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8C3D93253A51BE00184FB5 /* RequestsViewController.swift */; };
 		FB8C3D98253A525500184FB5 /* SectionsRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8C3D97253A525500184FB5 /* SectionsRequests.swift */; };
 		FB8C3D9C253A589B00184FB5 /* RequestChatCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8C3D9B253A589B00184FB5 /* RequestChatCell.swift */; };
+		FB8F2E86258EC0F000022853 /* BackgroundTaskManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8F2E85258EC0F000022853 /* BackgroundTaskManager.swift */; };
 		FBA2AA282550601A00A471F6 /* LikeDisklikeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA2AA272550601A00A471F6 /* LikeDisklikeButton.swift */; };
 		FBA2AA2B2552D3F400A471F6 /* UniversalTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA2AA2A2552D3F300A471F6 /* UniversalTableView.swift */; };
 		FBA2AA2E2552D7D000A471F6 /* MCellType.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA2AA2D2552D7D000A471F6 /* MCellType.swift */; };
@@ -353,6 +354,7 @@
 		FB8C3D93253A51BE00184FB5 /* RequestsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestsViewController.swift; sourceTree = "<group>"; };
 		FB8C3D97253A525500184FB5 /* SectionsRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionsRequests.swift; sourceTree = "<group>"; };
 		FB8C3D9B253A589B00184FB5 /* RequestChatCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestChatCell.swift; sourceTree = "<group>"; };
+		FB8F2E85258EC0F000022853 /* BackgroundTaskManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskManager.swift; sourceTree = "<group>"; };
 		FB9B684325654ACF00DE0E64 /* Configuration.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Configuration.storekit; sourceTree = "<group>"; };
 		FBA2AA272550601A00A471F6 /* LikeDisklikeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeDisklikeButton.swift; sourceTree = "<group>"; };
 		FBA2AA2A2552D3F300A471F6 /* UniversalTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniversalTableView.swift; sourceTree = "<group>"; };
@@ -868,6 +870,7 @@
 				FB79DA6A252C834C00A7AA56 /* LocationService.swift */,
 				FBB33FC5256BD80900A597BF /* ScreenRecordingManager.swift */,
 				FB28FE9F258418410011DC3A /* ScreenProtectorManager.swift */,
+				FB8F2E85258EC0F000022853 /* BackgroundTaskManager.swift */,
 				FB28FEA32584E85C0011DC3A /* DataDelegateService.swift */,
 			);
 			path = Managers;
@@ -1353,6 +1356,7 @@
 				FB3C5BDE253F5F3900CD44E6 /* RoundButton.swift in Sources */,
 				FBA2AA442553072800A471F6 /* UniversalInfoCell.swift in Sources */,
 				FB18217F24B2442800FFFC87 /* UIColorExtension.swift in Sources */,
+				FB8F2E86258EC0F000022853 /* BackgroundTaskManager.swift in Sources */,
 				FBB26EBC2546F3250081CF2C /* PeopleInfoViewController.swift in Sources */,
 				FB3727602540D7EC00906FBE /* AnimationCustomView.swift in Sources */,
 				FBFFB86E25629E85007343ED /* MRecieptAppStrore.swift in Sources */,

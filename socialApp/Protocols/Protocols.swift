@@ -93,7 +93,7 @@ protocol AcceptChatCollectionViewDelegate: class {
 protocol MessageControllerDelegate: class {
     var isInitiateDeleteChat: Bool { get set }
     var chat:MChat { get set }
-    var lastMessage: MMessage? { get }
+    var lastMessage: MMessage? { get set }
     
     func newMessage()
     func showChatAlert(text: String)
