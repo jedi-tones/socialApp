@@ -63,10 +63,9 @@ class BackgroundTaskManager {
                                                          chat: lastChat,
                                                          isOpen: false,
                                                          lastMessage: acceptChatDelegate.lastMessageInSelectedChat) { _ in
-            acceptChatDelegate.acceptChatCollectionViewDelegate = nil
+            acceptChatDelegate.messageCollectionViewDelegate = nil
             complition()
         }
-        
     }
     
     func submitBackgoundTaskShort() {
@@ -79,6 +78,7 @@ class BackgroundTaskManager {
                 self.backgroundTaskID = UIBackgroundTaskIdentifier.invalid
             }
             
+            //do some func:
             exitCurrentOpenMessage {
                 // End the task assertion.
                 UIApplication.shared.endBackgroundTask(self.backgroundTaskID!)

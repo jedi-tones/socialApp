@@ -25,8 +25,8 @@ class AcceptChatDataProvider: AcceptChatListenerDelegate {
     var lastSelectedChat: MChat?
     var lastMessageInSelectedChat: MMessage?
      
-    weak var mainTabBarDelegate: MainTabBarDelegate?
     weak var acceptChatCollectionViewDelegate: AcceptChatCollectionViewDelegate?
+    weak var mainTabBarDelegate: MainTabBarDelegate?
     weak var messageCollectionViewDelegate: MessageControllerDelegate? {
         didSet {
             if let selectedMessageCollectionView = messageCollectionViewDelegate {
@@ -39,7 +39,7 @@ class AcceptChatDataProvider: AcceptChatListenerDelegate {
                 chatWasOpenClose(isWasOpen: false,
                                  lastMessage: lastMessageInSelectedChat,
                                  chat: lastSelectedChat)
-                lastSelectedChat = nil
+               // lastSelectedChat = nil
             }
         }
     }
@@ -94,12 +94,12 @@ class AcceptChatDataProvider: AcceptChatListenerDelegate {
                 //changedMessage not last seen massage in closed chat
                 if !isLastSeenMessage {
                     //and this chat don't open
-                    if chat.friendId != lastSelectedChat?.friendId || lastSelectedChat == nil {
-                        PopUpService.shared.showMessagePopUp(header: chat.friendUserName,
-                                                             text: chat.lastMessage,
-                                                             time: chat.date.getFormattedDate(format: "HH:mm"),
-                                                             imageStringURL: chat.friendUserImageString)
-                    }
+                    
+                    PopUpService.shared.showMessagePopUp(header: chat.friendUserName,
+                                                         text: chat.lastMessage,
+                                                         time: chat.date.getFormattedDate(format: "HH:mm"),
+                                                         imageStringURL: chat.friendUserImageString)
+                    
                 }
             }
         }

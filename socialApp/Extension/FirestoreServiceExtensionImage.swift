@@ -28,6 +28,45 @@ extension FirestoreService {
                                             })
     }
     
+    //MARK: updateAvatarInChats
+    
+    func updateAvatarInChats(currentUserID: String,
+                             avatarLink: String,
+                             acceptChatsDelegate: AcceptChatListenerDelegate?,
+                             likeDelegate: LikeDislikeListenerDelegate?) {
+       
+        let maxBatchDocumentCount = 500
+        let acceptChatBatchStride = acceptChatsDelegate?.acceptChats.chunked(into: maxBatchDocumentCount)
+        
+        acceptChatBatchStride?.forEach({ acceptChats in
+            let batch = db.batch()
+            acceptChats.forEach({ chat in
+                let friendAcceptChatRef = usersReference.document([chat.friendId,
+                                                                   MFirestorCollection.acceptChats.rawValue,
+                                                                   currentUserID].joined(separator: "/"))
+                batch.setData([MChat.CodingKeys.friendUserImageString.rawValue : avatarLink],
+                              forDocument: friendAcceptChatRef,
+                              merge: true)
+            })
+            batch.commit()
+        })
+        
+        let likeChatBatchStride = likeDelegate?.likePeople.chunked(into: maxBatchDocumentCount)
+       
+        likeChatBatchStride?.forEach({ likeChats in
+            let batch = db.batch()
+            likeChats.forEach({ chat in
+                let friendAcceptChatRef = usersReference.document([chat.friendId,
+                                                                   MFirestorCollection.requestsChats.rawValue,
+                                                                   currentUserID].joined(separator: "/"))
+                batch.setData([MChat.CodingKeys.friendUserImageString.rawValue : avatarLink],
+                              forDocument: friendAcceptChatRef,
+                              merge: true)
+            })
+            batch.commit()
+        })
+    }
+    
     //MARK:  saveAvatar
     func saveAvatar(image: UIImage?, id: String, oldImageString: String? = nil, complition: @escaping (Result<String, Error>) -> Void) {
         

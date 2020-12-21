@@ -120,6 +120,7 @@
 		FB8F2E9A2590025100022853 /* DeeplinkNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8F2E992590025100022853 /* DeeplinkNavigator.swift */; };
 		FB8F2E9E259003C100022853 /* PushNotificationParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8F2E9D259003C100022853 /* PushNotificationParser.swift */; };
 		FB8F2EC725903D8600022853 /* NavigationControllerWithComplition.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8F2EC625903D8600022853 /* NavigationControllerWithComplition.swift */; };
+		FB8F2ECB2590FB6600022853 /* ArrayExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8F2ECA2590FB6600022853 /* ArrayExtension.swift */; };
 		FBA2AA282550601A00A471F6 /* LikeDisklikeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA2AA272550601A00A471F6 /* LikeDisklikeButton.swift */; };
 		FBA2AA2B2552D3F400A471F6 /* UniversalTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA2AA2A2552D3F300A471F6 /* UniversalTableView.swift */; };
 		FBA2AA2E2552D7D000A471F6 /* MCellType.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA2AA2D2552D7D000A471F6 /* MCellType.swift */; };
@@ -367,6 +368,7 @@
 		FB8F2E992590025100022853 /* DeeplinkNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkNavigator.swift; sourceTree = "<group>"; };
 		FB8F2E9D259003C100022853 /* PushNotificationParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationParser.swift; sourceTree = "<group>"; };
 		FB8F2EC625903D8600022853 /* NavigationControllerWithComplition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationControllerWithComplition.swift; sourceTree = "<group>"; };
+		FB8F2ECA2590FB6600022853 /* ArrayExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayExtension.swift; sourceTree = "<group>"; };
 		FB9B684325654ACF00DE0E64 /* Configuration.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Configuration.storekit; sourceTree = "<group>"; };
 		FBA2AA272550601A00A471F6 /* LikeDisklikeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeDisklikeButton.swift; sourceTree = "<group>"; };
 		FBA2AA2A2552D3F300A471F6 /* UniversalTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniversalTableView.swift; sourceTree = "<group>"; };
@@ -803,6 +805,7 @@
 			children = (
 				FBB3D4A6255DBB5600A3B832 /* UserDefaultsExtension.swift */,
 				FB79DA4825234EDA00A7AA56 /* DateExtension.swift */,
+				FB8F2ECA2590FB6600022853 /* ArrayExtension.swift */,
 				FB8C3D782535F4C500184FB5 /* StringExtension.swift */,
 				FBE5A1082559D87000060D97 /* UNNotificationAttachment.swift */,
 				FB8C3D7C253606ED00184FB5 /* LocaleExtension.swift */,
@@ -1373,6 +1376,7 @@
 				FB78FF1D257A6D89004DA53E /* ReportPeopleOneLineButton.swift in Sources */,
 				FB3C5BDE253F5F3900CD44E6 /* RoundButton.swift in Sources */,
 				FBA2AA442553072800A471F6 /* UniversalInfoCell.swift in Sources */,
+				FB8F2ECB2590FB6600022853 /* ArrayExtension.swift in Sources */,
 				FB18217F24B2442800FFFC87 /* UIColorExtension.swift in Sources */,
 				FB8F2E86258EC0F000022853 /* BackgroundTaskManager.swift in Sources */,
 				FBB26EBC2546F3250081CF2C /* PeopleInfoViewController.swift in Sources */,

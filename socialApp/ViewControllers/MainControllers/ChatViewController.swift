@@ -348,8 +348,6 @@ extension ChatViewController {
         default:
             break
         }
-        
-       
     }
     
     //MARK: keyboardNotification

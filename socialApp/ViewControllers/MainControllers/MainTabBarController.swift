@@ -107,19 +107,19 @@ extension MainTabBarController: MainTabBarDelegate {
             default:
                 break
             }
-            
         })
     }
     
     //MARK: showChatWith
     func showChatWith(friendID: String) {
-        print("Show chat with \(friendID)")
         
         guard let chat = acceptChatsDelegate?.acceptChats.first(where: { $0.friendId == friendID}),
               let selectedVC = selectedViewController,
               let navVC = selectedVC as? NavigationControllerWithComplition,
               let visibleVC = navVC.visibleViewController else { return  }
         //if this chat, don't already open
+        print("\n lastselect \(acceptChatsDelegate?.lastSelectedChat?.friendId )")
+        print("\n needShow \(friendID )")
         guard acceptChatsDelegate?.lastSelectedChat?.friendId != friendID else { return }
         
         let chatVC = ChatViewController(currentPeopleDelegate: currentPeopleDelegate,
