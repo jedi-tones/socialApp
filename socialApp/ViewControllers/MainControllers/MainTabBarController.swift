@@ -17,6 +17,9 @@ class MainTabBarController: UITabBarController{
     private weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     private weak var acceptChatsDelegate: AcceptChatListenerDelegate?
     private weak var requestChatsDelegate: RequestChatListenerDelegate?
+    private weak var messageDelegate: MessageListenerDelegate?
+    private weak var reportDelegate: ReportsListnerDelegate?
+    private weak var peopleDelegate: PeopleListenerDelegate?
     
     init(currentPeopleDelegate: CurrentPeopleDataDelegate, isNewLogin: Bool) {
         self.currentPeopleDelegate = currentPeopleDelegate
@@ -47,6 +50,8 @@ extension MainTabBarController {
         }
         view.backgroundColor = .myWhiteColor()
         
+        DeeplinkNavigator.shared.setupDelegate(mainTabBarDelegate: self)
+        
         let appearance = tabBar.standardAppearance.copy()
         appearance.backgroundImage = UIImage()
         appearance.shadowImage = UIImage()
@@ -69,7 +74,7 @@ extension MainTabBarController {
    
 }
 
-
+//MARK: - MainTabBarDelegate
 extension MainTabBarController: MainTabBarDelegate {
     func renewBadge() {
         guard let acceptChatDelegate = acceptChatsDelegate,
@@ -105,8 +110,37 @@ extension MainTabBarController: MainTabBarDelegate {
             
         })
     }
+    
+    //MARK: showChatWith
+    func showChatWith(friendID: String) {
+        print("Show chat with \(friendID)")
+        
+        guard let chat = acceptChatsDelegate?.acceptChats.first(where: { $0.friendId == friendID}),
+              let selectedVC = selectedViewController,
+              let navVC = selectedVC as? NavigationControllerWithComplition,
+              let visibleVC = navVC.visibleViewController else { return  }
+        //if this chat, don't already open
+        guard acceptChatsDelegate?.lastSelectedChat?.friendId != friendID else { return }
+        
+        let chatVC = ChatViewController(currentPeopleDelegate: currentPeopleDelegate,
+                                        chat: chat,
+                                        messageDelegate: messageDelegate,
+                                        acceptChatDelegate: acceptChatsDelegate,
+                                        reportDelegate: reportDelegate,
+                                        peopleDelegate: peopleDelegate,
+                                        requestDelegate: requestChatsDelegate)
+        
+        if navVC.viewControllers.first != visibleVC {
+            navVC.popToRootViewController(animated: false) {
+                navVC.pushViewController(chatVC, animated: true)
+            }
+        } else {
+            navVC.pushViewController(chatVC, animated: true)
+        }
+    }
 }
-//MARK: setupControllers
+
+//MARK: - setupControllers
 extension MainTabBarController {
     
     private func setupControllers(){
@@ -124,6 +158,10 @@ extension MainTabBarController {
             
             self.acceptChatsDelegate = acceptChatsDelegate
             self.requestChatsDelegate = requestChatsDelegate
+            self.messageDelegate = messageDelegate
+            self.reportDelegate = reportsDelegate
+            self.peopleDelegate = peopleDelegate
+            
             
             let profileVC = ProfileViewController(currentPeopleDelegate: newCurrentPeopleDelegate,
                                                   peopleListnerDelegate: peopleDelegate,
@@ -171,6 +209,7 @@ extension MainTabBarController {
             PopUpService.shared.dismisPopUp(name: MAnimamationName.loading.rawValue) {}
             //renew tabBar badge after load all VC
             renewBadge()
+            
         }
     }
     
@@ -182,7 +221,7 @@ extension MainTabBarController {
                                               isHidden: Bool = false,
                                               withoutBackImage: Bool = false) -> UIViewController {
         
-        let navController = UINavigationController(rootViewController: rootViewController)
+        let navController = NavigationControllerWithComplition(rootViewController: rootViewController)
         navController.tabBarItem.imageInsets = UIEdgeInsets(top: 15, left: 0, bottom: 0, right: 0)
         navController.tabBarItem.image = image
         navController.tabBarItem.tag = tag

@@ -86,6 +86,9 @@ class PeopleView: UIView {
     @objc private func likeTapped(sender: Any) {
         guard let sender = sender as? LikeDislikePeopleButton else { return }
         guard let people = sender.actionPeople else { return }
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
+        
         sender.play { [weak self] in
             self?.buttonDelegate?.likePeople(people: people)
         }
@@ -94,6 +97,9 @@ class PeopleView: UIView {
     @objc private func dislikeTapped(sender: Any) {
         guard let sender = sender as? LikeDislikePeopleButton else { return }
         guard let people = sender.actionPeople else { return }
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.warning)
+        
         sender.play { [weak self] in
             self?.buttonDelegate?.dislikePeople(people: people)
         }

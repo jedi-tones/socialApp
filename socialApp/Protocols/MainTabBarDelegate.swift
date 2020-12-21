@@ -10,4 +10,5 @@ import Foundation
 
 protocol MainTabBarDelegate: class {
     func renewBadge()
+    func showChatWith(friendID: String)
 }

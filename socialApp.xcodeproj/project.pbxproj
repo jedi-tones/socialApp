@@ -115,6 +115,11 @@
 		FB8C3D9C253A589B00184FB5 /* RequestChatCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8C3D9B253A589B00184FB5 /* RequestChatCell.swift */; };
 		FB8F2E86258EC0F000022853 /* BackgroundTaskManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8F2E85258EC0F000022853 /* BackgroundTaskManager.swift */; };
 		FB8F2E8A258FC8C900022853 /* MainTabBarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8F2E89258FC8C900022853 /* MainTabBarDelegate.swift */; };
+		FB8F2E922590010300022853 /* MDeeplinkTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8F2E912590010300022853 /* MDeeplinkTypes.swift */; };
+		FB8F2E96259001AA00022853 /* DeeplinkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8F2E95259001AA00022853 /* DeeplinkManager.swift */; };
+		FB8F2E9A2590025100022853 /* DeeplinkNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8F2E992590025100022853 /* DeeplinkNavigator.swift */; };
+		FB8F2E9E259003C100022853 /* PushNotificationParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8F2E9D259003C100022853 /* PushNotificationParser.swift */; };
+		FB8F2EC725903D8600022853 /* NavigationControllerWithComplition.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8F2EC625903D8600022853 /* NavigationControllerWithComplition.swift */; };
 		FBA2AA282550601A00A471F6 /* LikeDisklikeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA2AA272550601A00A471F6 /* LikeDisklikeButton.swift */; };
 		FBA2AA2B2552D3F400A471F6 /* UniversalTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA2AA2A2552D3F300A471F6 /* UniversalTableView.swift */; };
 		FBA2AA2E2552D7D000A471F6 /* MCellType.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA2AA2D2552D7D000A471F6 /* MCellType.swift */; };
@@ -357,6 +362,11 @@
 		FB8C3D9B253A589B00184FB5 /* RequestChatCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestChatCell.swift; sourceTree = "<group>"; };
 		FB8F2E85258EC0F000022853 /* BackgroundTaskManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskManager.swift; sourceTree = "<group>"; };
 		FB8F2E89258FC8C900022853 /* MainTabBarDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarDelegate.swift; sourceTree = "<group>"; };
+		FB8F2E912590010300022853 /* MDeeplinkTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MDeeplinkTypes.swift; sourceTree = "<group>"; };
+		FB8F2E95259001AA00022853 /* DeeplinkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkManager.swift; sourceTree = "<group>"; };
+		FB8F2E992590025100022853 /* DeeplinkNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkNavigator.swift; sourceTree = "<group>"; };
+		FB8F2E9D259003C100022853 /* PushNotificationParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationParser.swift; sourceTree = "<group>"; };
+		FB8F2EC625903D8600022853 /* NavigationControllerWithComplition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationControllerWithComplition.swift; sourceTree = "<group>"; };
 		FB9B684325654ACF00DE0E64 /* Configuration.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Configuration.storekit; sourceTree = "<group>"; };
 		FBA2AA272550601A00A471F6 /* LikeDisklikeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeDisklikeButton.swift; sourceTree = "<group>"; };
 		FBA2AA2A2552D3F300A471F6 /* UniversalTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniversalTableView.swift; sourceTree = "<group>"; };
@@ -570,6 +580,7 @@
 				FBB34008256D645900A597BF /* MTag.swift */,
 				FB21A1BA24E59705000A2E91 /* MChat.swift */,
 				FB78FEDB2577B3ED004DA53E /* MDislike.swift */,
+				FB8F2E912590010300022853 /* MDeeplinkTypes.swift */,
 				FBFFB86D25629E85007343ED /* MRecieptAppStrore.swift */,
 				FB15FCF22513A71F00B765D3 /* MMessage.swift */,
 				FBB33FAB256A84EB00A597BF /* MCollectionViewGalleryElement.swift */,
@@ -668,6 +679,7 @@
 			children = (
 				FB79DA77252CF9CA00A7AA56 /* CLLocationCoordinate2DExtension.swift */,
 				FB61B54824FE9581002761ED /* UIAlertExtension.swift */,
+				FB8F2EC625903D8600022853 /* NavigationControllerWithComplition.swift */,
 				FB79DA55252501E100A7AA56 /* UIApplicationExtension.swift */,
 				FBEF608B24A8F3FF0005F947 /* UIButtonExtension.swift */,
 				FB8C3D822536089A00184FB5 /* UIDatePickerExtension.swift */,
@@ -862,11 +874,14 @@
 				FBB4F3572511526C00ACFE90 /* CryptoService.swift */,
 				FBE5A1052559C15100060D97 /* PushNotificationService.swift */,
 				FB454E4A255BEEED007D1E71 /* PushMessagingService.swift */,
+				FB8F2E9D259003C100022853 /* PushNotificationParser.swift */,
 				FBE5A0F625558C3400060D97 /* PopUpService.swift */,
 				FBFFB865255F15AC007343ED /* PurchasesService.swift */,
 				FBB3B25E2509011200440632 /* StorageService.swift */,
 				FBF293DC25065E2800F7B5F1 /* FirestoreService.swift */,
 				FBB3B268250F82B800440632 /* ListenerService.swift */,
+				FB8F2E95259001AA00022853 /* DeeplinkManager.swift */,
+				FB8F2E992590025100022853 /* DeeplinkNavigator.swift */,
 				FBF293D824FFB33300F7B5F1 /* Validators.swift */,
 				FB61A7FA251E6311005DCC78 /* UserDefaultsService.swift */,
 				FB79DA6A252C834C00A7AA56 /* LocationService.swift */,
@@ -1403,6 +1418,7 @@
 				FBA2AA352552F84F00A471F6 /* UniversalButtonCell.swift in Sources */,
 				FBB33FB0256A86CA00A597BF /* CollectionViewInfoCell.swift in Sources */,
 				FB8C3D6A2535D71B00184FB5 /* InterestsSelectionViewController.swift in Sources */,
+				FB8F2E96259001AA00022853 /* DeeplinkManager.swift in Sources */,
 				FBD301A9257FF32300D38AE9 /* AuthView.swift in Sources */,
 				FB3351D52568521D007AFDDF /* MGallery.swift in Sources */,
 				FB207CB42520C544007AA232 /* MessageError.swift in Sources */,
@@ -1437,6 +1453,7 @@
 				FBD3023C2583CE6500D38AE9 /* ScreenProtectViewController.swift in Sources */,
 				FBB33FB7256A9A2600A597BF /* MPremiumInfo.swift in Sources */,
 				FB454E4B255BEEED007D1E71 /* PushMessagingService.swift in Sources */,
+				FB8F2EC725903D8600022853 /* NavigationControllerWithComplition.swift in Sources */,
 				FB18217B24B2261F00FFFC87 /* MainTabBarController.swift in Sources */,
 				FB454E96255C1EAA007D1E71 /* MPushMessage.swift in Sources */,
 				FB78FEE02577CA9D004DA53E /* ReportsDataProvider.swift in Sources */,
@@ -1471,6 +1488,7 @@
 				FB8C3D832536089A00184FB5 /* UIDatePickerExtension.swift in Sources */,
 				FBB340452571311000A597BF /* MDefaultsDesires.swift in Sources */,
 				FB66288124A93ADC00650820 /* RegisterEmailViewController.swift in Sources */,
+				FB8F2E9A2590025100022853 /* DeeplinkNavigator.swift in Sources */,
 				FB61B53E24FAB785002761ED /* UIViewExtension.swift in Sources */,
 				FB28FEA42584E85C0011DC3A /* DataDelegateService.swift in Sources */,
 				FB8C3D7D253606EE00184FB5 /* LocaleExtension.swift in Sources */,
@@ -1531,6 +1549,7 @@
 				FB8C3D6E2535D94D00184FB5 /* DateOfBirthViewController.swift in Sources */,
 				FB1062DA24AE69250012C4D4 /* LoginViewController.swift in Sources */,
 				FBF2927F2512828C0090BA9E /* LoadingView.swift in Sources */,
+				FB8F2E9E259003C100022853 /* PushNotificationParser.swift in Sources */,
 				FB61B54724FE7F23002761ED /* AuthService.swift in Sources */,
 				FBB26EDE254B0E960081CF2C /* PeopleDataProvider.swift in Sources */,
 				FB79DA78252CF9CA00A7AA56 /* CLLocationCoordinate2DExtension.swift in Sources */,
@@ -1542,6 +1561,7 @@
 				FBFFB858255ED105007343ED /* PurchaseButton.swift in Sources */,
 				FBFFB862255F14F6007343ED /* MPurchases.swift in Sources */,
 				FBD30174257E62EC00D38AE9 /* MAnimamationName.swift in Sources */,
+				FB8F2E922590010300022853 /* MDeeplinkTypes.swift in Sources */,
 				FB8C3D792535F4C500184FB5 /* StringExtension.swift in Sources */,
 				FB61A7FB251E6312005DCC78 /* UserDefaultsService.swift in Sources */,
 				FB8C3D9C253A589B00184FB5 /* RequestChatCell.swift in Sources */,
@@ -1588,7 +1608,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.02.24;
+				MARKETING_VERSION = 1.02.25;
 				PRODUCT_BUNDLE_IDENTIFIER = "art.jedi-tones.flava.MyNotificationService";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1611,7 +1631,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.02.24;
+				MARKETING_VERSION = 1.02.25;
 				PRODUCT_BUNDLE_IDENTIFIER = "art.jedi-tones.flava.MyNotificationService";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1755,7 +1775,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.02.24;
+				MARKETING_VERSION = 1.02.25;
 				PRODUCT_BUNDLE_IDENTIFIER = "art.jedi-tones.flava";
 				PRODUCT_NAME = Flava;
 				SWIFT_VERSION = 5.0;
@@ -1780,7 +1800,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.02.24;
+				MARKETING_VERSION = 1.02.25;
 				PRODUCT_BUNDLE_IDENTIFIER = "art.jedi-tones.flava";
 				PRODUCT_NAME = Flava;
 				SWIFT_VERSION = 5.0;

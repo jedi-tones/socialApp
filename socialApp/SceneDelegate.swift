@@ -47,6 +47,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
+        
+        DeeplinkManager.shared.checkDeeplink()
         UIApplication.shared.applicationIconBadgeNumber = 0
         UserDefaults.extensions.badge = 0
         NotificationCenter.default.post(name: NSNotification.Name("sceneDidBecomeActive"), object: nil)

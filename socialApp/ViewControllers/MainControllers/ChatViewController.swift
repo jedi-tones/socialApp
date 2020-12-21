@@ -133,6 +133,7 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
         
         navigationItem.titleView = titleView
         navigationItem.backButtonTitle = ""
+        navigationController?.setNavigationBarHidden(false, animated: true)
         let barButtonItem = UIBarButtonItem(image: UIImage(systemName: "ellipsis"),
                                             style: .done,
                                             target: self,
@@ -311,9 +312,10 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
                     case .success():
                         //send notification to friend
                         if chat.fcmKey != "" {
-                            PushMessagingService.shared.sendMessageToToken(token: chat.fcmKey,
-                                                                           header: currentPeopleDelegate.currentPeople.displayName,
-                                                                           text: "Фото")
+                            PushMessagingService.shared.sendChatMessageToToken(token: chat.fcmKey,
+                                                                               chatFriendID: currentPeopleDelegate.currentPeople.senderId,
+                                                                               header: currentPeopleDelegate.currentPeople.displayName,
+                                                                               text: "Фото")
                         } else {
                             //push to topic
                             PushMessagingService.shared.sendMessageToUser(currentUser: currentPeopleDelegate.currentPeople,
@@ -385,9 +387,10 @@ extension ChatViewController {
             //send notification to friend
             guard let chat = self?.chat else { return }
             if chat.fcmKey != "" {
-                PushMessagingService.shared.sendMessageToToken(token: chat.fcmKey,
-                                                               header: MAdmin.displayName.rawValue,
-                                                               text: text)
+                PushMessagingService.shared.sendChatMessageToToken(token: chat.fcmKey,
+                                                                   chatFriendID: currentPeopleDelegate.currentPeople.senderId,
+                                                                   header: MAdmin.displayName.rawValue,
+                                                                   text: text)
             } else {
                 //push to topic
                 PushMessagingService.shared.sendMessageToUser(currentUser: currentPeopleDelegate.currentPeople,
@@ -412,9 +415,10 @@ extension ChatViewController {
             //send notification to friend
             guard let chat = self?.chat else { return }
             if chat.fcmKey != "" {
-                PushMessagingService.shared.sendMessageToToken(token: chat.fcmKey,
-                                                               header: MAdmin.displayName.rawValue,
-                                                               text: text)
+                PushMessagingService.shared.sendChatMessageToToken(token: chat.fcmKey,
+                                                                   chatFriendID: currentPeopleDelegate.currentPeople.senderId,
+                                                                   header: MAdmin.displayName.rawValue,
+                                                                   text: text)
             } else {
                 //push to topic
                 PushMessagingService.shared.sendMessageToUser(currentUser: currentPeopleDelegate.currentPeople,
@@ -723,9 +727,10 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
             case .success():
                 //send notification to friend
                 if strongChat.fcmKey != "" {
-                    PushMessagingService.shared.sendMessageToToken(token: strongChat.fcmKey,
-                                                                   header: currentPeopleDelegate.currentPeople.displayName,
-                                                                   text: text)
+                    PushMessagingService.shared.sendChatMessageToToken(token: strongChat.fcmKey,
+                                                                       chatFriendID: currentPeopleDelegate.currentPeople.senderId,
+                                                                       header: currentPeopleDelegate.currentPeople.displayName,
+                                                                       text: text)
                 } else {
                     //push to topic
                     PushMessagingService.shared.sendMessageToUser(currentUser: currentPeopleDelegate.currentPeople,

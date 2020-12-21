@@ -109,11 +109,11 @@ extension PushNotificationService: UNUserNotificationCenterDelegate {
         
         Apphud.handlePushNotification(apsInfo: userInfo)
         Messaging.messaging().appDidReceiveMessage(userInfo)
-      
-        if let userName = userInfo["user"] as? String {
-                print("\n USER is \(userName) \n")
-        }
         
+        //parse for check deeplink
+        DeeplinkManager.shared.handleRemoteNotification(userInfo)
+       
+        /*
         switch response.actionIdentifier {
         case UNNotificationDefaultActionIdentifier:
             print("default action")
@@ -126,7 +126,7 @@ extension PushNotificationService: UNUserNotificationCenterDelegate {
         default:
             print("Unknown action")
         }
-        
+        */
         completionHandler()
     }
 }

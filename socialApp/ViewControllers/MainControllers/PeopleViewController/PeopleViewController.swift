@@ -72,18 +72,21 @@ class PeopleViewController: UIViewController, UICollectionViewDelegate {
         setupNotification()
         reloadData()
        // getPeople()
+        
+        DeeplinkManager.shared.checkDeeplink()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: true)
         setNeedsStatusBarAppearanceUpdate()
+       
     }
     
     //MARK:  setup VC
     private func setup() {
-        
-        
+        //check deeplink
+        DeeplinkManager.shared.checkDeeplink()
         view.backgroundColor = .myWhiteColor()
         navigationItem.backButtonTitle = ""
     }
