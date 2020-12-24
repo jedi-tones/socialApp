@@ -9,12 +9,14 @@
 import Foundation
 
 enum MLocation: String {
+    case geohash
     case longitude
     case latitude
     
     var defaultValue: Double {
         switch self {
-    
+        case .geohash:
+            return 0
         case .longitude:
            return 37.559796
         case .latitude:

@@ -131,6 +131,9 @@
 		FBA2AA442553072800A471F6 /* UniversalInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA2AA432553072800A471F6 /* UniversalInfoCell.swift */; };
 		FBA2AA482553086D00A471F6 /* SetupChatMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA2AA472553086D00A471F6 /* SetupChatMenu.swift */; };
 		FBA2AA4B2554747000A471F6 /* MatchViewPopUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA2AA4A2554746E00A471F6 /* MatchViewPopUp.swift */; };
+		FBA462412593E06800D3AEC2 /* AdminPanelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA462402593E06800D3AEC2 /* AdminPanelViewController.swift */; };
+		FBA462452593E53700D3AEC2 /* MAdminPanelSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA462442593E53700D3AEC2 /* MAdminPanelSettings.swift */; };
+		FBA462932594CB4700D3AEC2 /* FireStoreServiceExtensionAdmin.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA462922594CB4700D3AEC2 /* FireStoreServiceExtensionAdmin.swift */; };
 		FBA94D1E24F55CBE000DA5D5 /* SectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA94D1D24F55CBE000DA5D5 /* SectionHeader.swift */; };
 		FBB26EAE254585DB0081CF2C /* ChatTitleStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBB26EAD254585DB0081CF2C /* ChatTitleStackView.swift */; };
 		FBB26EB42546E49B0081CF2C /* MAdmin.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBB26EB32546E49B0081CF2C /* MAdmin.swift */; };
@@ -380,6 +383,9 @@
 		FBA2AA432553072800A471F6 /* UniversalInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniversalInfoCell.swift; sourceTree = "<group>"; };
 		FBA2AA472553086D00A471F6 /* SetupChatMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupChatMenu.swift; sourceTree = "<group>"; };
 		FBA2AA4A2554746E00A471F6 /* MatchViewPopUp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchViewPopUp.swift; sourceTree = "<group>"; };
+		FBA462402593E06800D3AEC2 /* AdminPanelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminPanelViewController.swift; sourceTree = "<group>"; };
+		FBA462442593E53700D3AEC2 /* MAdminPanelSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAdminPanelSettings.swift; sourceTree = "<group>"; };
+		FBA462922594CB4700D3AEC2 /* FireStoreServiceExtensionAdmin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireStoreServiceExtensionAdmin.swift; sourceTree = "<group>"; };
 		FBA94D1D24F55CBE000DA5D5 /* SectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeader.swift; sourceTree = "<group>"; };
 		FBB26EAD254585DB0081CF2C /* ChatTitleStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTitleStackView.swift; sourceTree = "<group>"; };
 		FBB26EB32546E49B0081CF2C /* MAdmin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAdmin.swift; sourceTree = "<group>"; };
@@ -551,6 +557,7 @@
 				FBB33FDB256C14E400A597BF /* AboutViewController */,
 				FBD301B92580245400D38AE9 /* ContactsViewController */,
 				FBB26EBB2546F3250081CF2C /* PeopleInfoViewController.swift */,
+				FBA462402593E06800D3AEC2 /* AdminPanelViewController.swift */,
 				FBD30163257D5A9800D38AE9 /* WebViewController.swift */,
 				FBD302412583CE8C00D38AE9 /* ScreenProtectViewController */,
 				FB78FEEF25784178004DA53E /* ReportViewController */,
@@ -838,6 +845,7 @@
 				FBB26EC62548452C0081CF2C /* MAppSettings.swift */,
 				FB79DA8A252DF0D600A7AA56 /* MProfileSettings.swift */,
 				FBA2AA382552FCE300A471F6 /* MChatSettings.swift */,
+				FBA462442593E53700D3AEC2 /* MAdminPanelSettings.swift */,
 			);
 			path = CellsModel;
 			sourceTree = "<group>";
@@ -1187,6 +1195,7 @@
 			isa = PBXGroup;
 			children = (
 				FB3351AC256694AE007AFDDF /* FirestoreServiceExtensionImage.swift */,
+				FBA462922594CB4700D3AEC2 /* FireStoreServiceExtensionAdmin.swift */,
 				FB3351C62566A355007AFDDF /* FirestoreServiceExtensionChatAction.swift */,
 				FB3351B82566A0DC007AFDDF /* FirestoreServiceExtensionGetData.swift */,
 				FB3351B0256694FF007AFDDF /* FirestoreServiceExtensionDeleteData.swift */,
@@ -1382,6 +1391,7 @@
 				FBB26EBC2546F3250081CF2C /* PeopleInfoViewController.swift in Sources */,
 				FB3727602540D7EC00906FBE /* AnimationCustomView.swift in Sources */,
 				FBFFB86E25629E85007343ED /* MRecieptAppStrore.swift in Sources */,
+				FBA462412593E06800D3AEC2 /* AdminPanelViewController.swift in Sources */,
 				FB79DA4925234EDA00A7AA56 /* DateExtension.swift in Sources */,
 				FBB3B265250ACA0700440632 /* MGender.swift in Sources */,
 				FB8C3D432533A22800184FB5 /* SelectionTableViewCell.swift in Sources */,
@@ -1485,6 +1495,7 @@
 				FBA2AA2E2552D7D000A471F6 /* MCellType.swift in Sources */,
 				FBB26EE8254C12AC0081CF2C /* CountOfUnreadMessageLabel.swift in Sources */,
 				FB21A1BB24E59705000A2E91 /* MChat.swift in Sources */,
+				FBA462932594CB4700D3AEC2 /* FireStoreServiceExtensionAdmin.swift in Sources */,
 				FBFFB866255F15AC007343ED /* PurchasesService.swift in Sources */,
 				FB3351B92566A0DC007AFDDF /* FirestoreServiceExtensionGetData.swift in Sources */,
 				FB3727942541A18600906FBE /* MVirtualLocation.swift in Sources */,
@@ -1514,6 +1525,7 @@
 				FBB26EEB254C2D440081CF2C /* MessagesDataProvider.swift in Sources */,
 				FBEF609324A90C840005F947 /* UIImageViewExtension.swift in Sources */,
 				FB37279025419CA400906FBE /* MSearchSettings.swift in Sources */,
+				FBA462452593E53700D3AEC2 /* MAdminPanelSettings.swift in Sources */,
 				FBB3D4A7255DBB5600A3B832 /* UserDefaultsExtension.swift in Sources */,
 				FB61B54924FE9581002761ED /* UIAlertExtension.swift in Sources */,
 				FB18217D24B2268E00FFFC87 /* PeopleViewController.swift in Sources */,
@@ -1612,7 +1624,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.02.25;
+				MARKETING_VERSION = 1.02.26;
 				PRODUCT_BUNDLE_IDENTIFIER = "art.jedi-tones.flava.MyNotificationService";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1635,7 +1647,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.02.25;
+				MARKETING_VERSION = 1.02.26;
 				PRODUCT_BUNDLE_IDENTIFIER = "art.jedi-tones.flava.MyNotificationService";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1779,7 +1791,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.02.25;
+				MARKETING_VERSION = 1.02.26;
 				PRODUCT_BUNDLE_IDENTIFIER = "art.jedi-tones.flava";
 				PRODUCT_NAME = Flava;
 				SWIFT_VERSION = 5.0;
@@ -1804,7 +1816,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.02.25;
+				MARKETING_VERSION = 1.02.26;
 				PRODUCT_BUNDLE_IDENTIFIER = "art.jedi-tones.flava";
 				PRODUCT_NAME = Flava;
 				SWIFT_VERSION = 5.0;

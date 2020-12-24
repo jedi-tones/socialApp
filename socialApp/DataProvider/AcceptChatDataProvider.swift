@@ -58,6 +58,8 @@ class AcceptChatDataProvider: AcceptChatListenerDelegate {
                                                selector: #selector(sceneDidChanged(notifivation:)),
                                                name: UIApplication.didEnterBackgroundNotification,
                                                object: nil)
+        NotificationCenter.addObsorverToUserAvatarInChatsNeedUpdate(observer: self,
+                                                                    selector: #selector(updateAvatarInFriendsChats(notification:)))
     }
     
     func reloadData(changeType: MTypeOfListenerChanges, chat: MChat, messageIsChanged: Bool?) {
@@ -116,6 +118,15 @@ extension AcceptChatDataProvider {
         default:
             break
         }
+    }
+    
+    @objc private func updateAvatarInFriendsChats(notification: Notification) {
+        guard let data = notification.userInfo as? [String: String],
+              let imageString = data[MChat.CodingKeys.friendUserImageString.rawValue] else { return }
+        FirestoreService.shared.updateAvatarInChats(currentUserID: userID,
+                                                    avatarLink: imageString,
+                                                    acceptChatsDelegate: self,
+                                                    likeDelegate: nil)
     }
     
     //MARK: chatWasOpenClose

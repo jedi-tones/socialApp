@@ -102,11 +102,9 @@ extension LocationService: CLLocationManagerDelegate {
                 switch result {
                 
                 case .success(_):
-                    var people = UserDefaultsService.shared.getMpeople()
-                    people?.location = coordinate
-                    UserDefaultsService.shared.saveMpeople(people: people)
+                    NotificationCenter.postCoordinatesIsUpdate()
                 case .failure(let error):
-                    fatalError(error.localizedDescription)
+                    PopUpService.shared.showInfo(text: "Ошибка: \(error.localizedDescription)")
                 }
             }
         }

@@ -265,8 +265,6 @@ extension ProfileViewController: UICollectionViewDelegate {
                 vc.hidesBottomBarWhenPushed = true
                 navigationController?.pushViewController(vc, animated: true)
                 
-                collectionView.deselectItem(at: indexPath, animated: true)
-                
             case .setupSearch:
                 let vc = EditSearchSettingsViewController(currentPeopleDelegate: currentPeopleDelegate,
                                                           peopleListnerDelegate: peopleListnerDelegate,
@@ -276,8 +274,6 @@ extension ProfileViewController: UICollectionViewDelegate {
                 vc.hidesBottomBarWhenPushed = true
                 navigationController?.pushViewController(vc, animated: true)
                 
-                collectionView.deselectItem(at: indexPath, animated: true)
-                
             case .appSettings:
                 let vc = AppSettingsViewController(currentPeopleDelegate: currentPeopleDelegate,
                                                    acceptChatDelegate: acceptChatsDelegate,
@@ -286,26 +282,25 @@ extension ProfileViewController: UICollectionViewDelegate {
                 vc.hidesBottomBarWhenPushed = true
                 navigationController?.pushViewController(vc, animated: true)
                 
-                collectionView.deselectItem(at: indexPath, animated: true)
             case .contacts:
                 let contactsVC = ContactsViewController()
                 contactsVC.hidesBottomBarWhenPushed = true
                 navigationController?.pushViewController(contactsVC, animated: true)
                 
-                collectionView.deselectItem(at: indexPath, animated: true)
             case .aboutInformation:
-               
-               
                 let aboutVC = AboutViewController()
                 aboutVC.hidesBottomBarWhenPushed = true
                 navigationController?.pushViewController(aboutVC, animated: true)
-
-                collectionView.deselectItem(at: indexPath, animated: true)
+                
             case .adminPanel:
-                break
+                let aboutVC = AdminPanelViewController()
+                aboutVC.hidesBottomBarWhenPushed = true
+                navigationController?.pushViewController(aboutVC, animated: true)
+                
             default:
                 break
             }
+            collectionView.deselectItem(at: indexPath, animated: true)
         }
         
     }

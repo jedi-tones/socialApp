@@ -67,6 +67,7 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
         removeMessageListner()
         removeListners()
         acceptChatDelegate?.messageCollectionViewDelegate = nil
+        acceptChatDelegate?.lastSelectedChat = nil
     }
     
     override func viewDidLoad() {
@@ -129,7 +130,14 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
         if let layout = messagesCollectionView.collectionViewLayout as? MessagesCollectionViewFlowLayout {
             layout.textMessageSizeCalculator.outgoingAvatarSize = .zero
             layout.textMessageSizeCalculator.incomingAvatarSize = .zero
+            layout.setMessageIncomingMessageBottomLabelAlignment(.init(textAlignment: .left, textInsets: .zero))
+            layout.setMessageOutgoingMessageBottomLabelAlignment(.init(textAlignment: .right, textInsets: .init(top: 0,
+                                                                                                                left: 0,
+                                                                                                                bottom: 0,
+                                                                                                                right: 8)))
         }
+        
+       
         
         navigationItem.titleView = titleView
         navigationItem.backButtonTitle = ""
@@ -575,9 +583,12 @@ extension ChatViewController: MessagesDataSource {
         guard let messageDelegate = messageDelegate else { fatalError() }
         let sawAllMessageText = chat.friendSawAllMessageInChat ? "Просмотрено" : "Отправлено"
         let color: UIColor = chat.friendSawAllMessageInChat ? .myLabelColor() : .myGrayColor()
+        let titleParagraphStyle = NSMutableParagraphStyle()
+        titleParagraphStyle.alignment = .right
         let attributedString = NSAttributedString(string: sawAllMessageText,
                                                   attributes: [NSAttributedString.Key.font : UIFont.avenirRegular(size: 12),
-                                                               NSAttributedString.Key.foregroundColor : color])
+                                                               NSAttributedString.Key.foregroundColor : color,
+                                                               NSAttributedString.Key.paragraphStyle : titleParagraphStyle])
         let isLastMessage = indexPath.row == messageDelegate.messages.count - 1
         if isFromCurrentSender(message: message) && isLastMessage {
             return attributedString

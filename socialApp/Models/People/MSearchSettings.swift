@@ -20,7 +20,7 @@ enum MSearchSettings: String {
     
         case .distance:
            //max distance - half of equator line
-           return 20000
+           return 1000
         case .minRange:
             return 18
         case .maxRange:

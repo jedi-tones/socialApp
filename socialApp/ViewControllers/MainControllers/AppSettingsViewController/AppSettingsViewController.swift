@@ -170,8 +170,6 @@ extension AppSettingsViewController {
                     cell.layoutIfNeeded()
                     return cell
                 }
-                
-                
             }
         )
     }
@@ -254,9 +252,8 @@ extension AppSettingsViewController {
                     PopUpService.shared.showInfo(text: "Ошибка: \(error)")
                 }
             }
-            
-            
         }
+        
         let cancelAction = UIAlertAction(title: "Продолжу общение",
                                          style: .default) { [weak self] _ in
             self?.collectionView.deselectItem(at: pressedIndexPath, animated: true)

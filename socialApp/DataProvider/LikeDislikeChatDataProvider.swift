@@ -17,6 +17,26 @@ class LikeDislikeChatDataProvider: LikeDislikeListenerDelegate {
     init(userID: String){
         self.userID =  userID
     }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    private func configure() {
+        NotificationCenter.addObsorverToUserAvatarInChatsNeedUpdate(observer: self,
+                                                                    selector: #selector(updateAvatarInFriendsChats(notification:)))
+    }
+}
+
+extension LikeDislikeChatDataProvider {
+    @objc private func updateAvatarInFriendsChats(notification: Notification) {
+        guard let data = notification.userInfo as? [String: String],
+              let imageString = data[MChat.CodingKeys.friendUserImageString.rawValue] else { return }
+        FirestoreService.shared.updateAvatarInChats(currentUserID: userID,
+                                                    avatarLink: imageString,
+                                                    acceptChatsDelegate: nil,
+                                                    likeDelegate: self)
+    }
 }
 
 extension LikeDislikeChatDataProvider {

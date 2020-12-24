@@ -7,8 +7,160 @@
 //
 
 import Foundation
+import FirebaseFirestore
+import GeoFire
 
 extension FirestoreService {
+    
+    func getPeoplePaginate(currentPeople: MPeople,
+                           likeChat: [MChat],
+                           dislikeChat: [MDislike],
+                           acceptChat: [MChat],
+                           reports: [MReports],
+                           complition: @escaping(Result<[MPeople], Error>)-> Void) {
+        var peopleNearby: [MPeople] = []
+        
+        let likeChatID = likeChat.map { chat -> String in
+            chat.friendId
+        }
+        let dislikeChatID = dislikeChat.map { dislikeChat -> String in
+            dislikeChat.dislikePeopleID
+        }
+        let acceptChatID = acceptChat.map { chat -> String in
+            chat.friendId
+        }
+        let reportsID = reports.map { report -> String in
+            report.reportUserID
+        }
+        
+        var usersID = likeChatID + dislikeChatID + acceptChatID + reportsID
+        usersID.append(currentPeople.senderId)
+        
+        let minRange = currentPeople.searchSettings[MSearchSettings.minRange.rawValue] ?? MSearchSettings.minRange.defaultValue
+        let maxRange = currentPeople.searchSettings[MSearchSettings.maxRange.rawValue] ?? MSearchSettings.maxRange.defaultValue
+        
+        var needCheckActiveUser = MSearchSettings.onlyActive.defaultValue == 0 ? false : true
+        if let currentPeopleSettings = currentPeople.searchSettings[MSearchSettings.onlyActive.rawValue]  {
+            needCheckActiveUser = currentPeopleSettings == 0 ? false : true
+        }
+        
+       
+        let radiusSearch = currentPeople.searchSettings[MSearchSettings.distance.rawValue] ?? MSearchSettings.distance.defaultValue
+       
+        //geohash search has
+        //The latitude of  GeoPoint in the range [-90, 90].
+        //The longitude of  GeoPoint in the range [-180, 180].
+        //with large search area, need search without geohash
+        if radiusSearch <= 1000 {
+            searchPeopleWithGeoHash(radiusSearch: radiusSearch,
+                                    usersID: usersID,
+                                    minRange: minRange,
+                                    maxRange: maxRange,
+                                    needCheckActiveUser: needCheckActiveUser,
+                                    currentPeople: currentPeople) { result in
+                switch result {
+                
+                case .success(let mPeoples):
+                    complition(.success(mPeoples))
+                case .failure(let error):
+                    complition(.failure(error))
+                }
+            }
+        } else {
+            
+        }
+        
+    }
+    
+    private func searchPeopleWithGeoHash(radiusSearch: Int,
+                                         usersID: [String],
+                                         minRange: Int,
+                                         maxRange: Int,
+                                         needCheckActiveUser: Bool,
+                                         currentPeople: MPeople,
+                                         complition: @escaping(Result<[MPeople], Error>)-> Void) {
+        
+        var peopleNearby: [MPeople] = []
+        
+        let centerLocation = currentPeople.location
+        let metrIntoKmScale = 1000
+        let diametrToRadiusScale = 2
+        let geoRadius = radiusSearch * metrIntoKmScale / diametrToRadiusScale
+        
+        //set bounds of location
+        let queryBounds = GFUtils.queryBounds(forLocation: centerLocation,
+                                              withRadius: Double(geoRadius))
+    
+        
+        let queries = queryBounds.compactMap { (any) -> Query? in
+            guard let bound = any as? GFGeoQueryBounds else { return nil }
+            return usersReference
+                .order(by: MPeople.CodingKeys.geohash.rawValue)
+                .start(at: [bound.startValue])
+                .end(at: [bound.endValue])
+        }
+        
+        var compliteGetDataQueries = 0 {
+            didSet {
+                if compliteGetDataQueries == queries.count {
+                    complition(.success(peopleNearby))
+                }
+            }
+        }
+        
+        for (index, query) in queries.enumerated() {
+             
+            query.whereField(
+                MPeople.CodingKeys.isActive.rawValue, isEqualTo: true
+            ).whereField(
+                MPeople.CodingKeys.isBlocked.rawValue, isEqualTo: false
+            ).whereField(
+                MPeople.CodingKeys.isIncognito.rawValue, isEqualTo: false
+            ).whereField(
+                MPeople.CodingKeys.gender.rawValue, isEqualTo: MLookingFor.compareGender(gender: currentPeople.lookingFor)
+            ).getDocuments { querySnapshot, error in
+                if let error = error {
+                    complition(.failure(error))
+                } else {
+                    guard let snapshot = querySnapshot else {
+                        complition(.failure(FirestoreError.snapshotNotExist))
+                        return
+                    }
+                    
+                    snapshot.documents.forEach { queryDocumentSnapshot in
+                        if var people = MPeople(documentSnap: queryDocumentSnapshot) {
+                            
+                            //check distance to people and append to him
+                            //let distance = LocationService.shared.getDistance(currentPeople: currentPeople, newPeople: people)
+                            let distance = GFUtils.distance(from: CLLocation(latitude: currentPeople.location.latitude,
+                                                                             longitude: currentPeople.location.longitude),
+                                                            to: CLLocation(latitude: people.location.latitude,
+                                                                           longitude: people.location.longitude))
+                            let distanceKM = Int(distance / 1000)
+                            people.distance = distanceKM
+                            //check dateOfBirth
+                            let age = people.dateOfBirth.getAge()
+                            //check is active
+                            if needCheckActiveUser {
+                                guard  people.lastActiveDate.checkIsActiveUser() else { return }
+                            }
+                            //check current people not in users array
+                            guard !usersID.contains(people.senderId) else { return }
+                            //check distance and age
+                            if age >= minRange && age <= maxRange && distanceKM <= radiusSearch {
+                                peopleNearby.append(people)
+                            }
+                        }
+                        print("\n index \(index) people  count \(peopleNearby.count)")
+                    }
+                    compliteGetDataQueries += 1
+                }
+            }
+        }
+    }
+    
+
+    
     //MARK: getPeople
     func getPeople(currentPeople: MPeople,
                    likeChat: [MChat],
@@ -35,16 +187,15 @@ extension FirestoreService {
         var usersID = likeChatID + dislikeChatID + acceptChatID + reportsID
         usersID.append(currentPeople.senderId)
         
-        
         let minRange = currentPeople.searchSettings[MSearchSettings.minRange.rawValue] ?? MSearchSettings.minRange.defaultValue
         let maxRange = currentPeople.searchSettings[MSearchSettings.maxRange.rawValue] ?? MSearchSettings.maxRange.defaultValue
-        
        
         var needCheckActiveUser = MSearchSettings.onlyActive.defaultValue == 0 ? false : true
         if let currentPeopleSettings = currentPeople.searchSettings[MSearchSettings.onlyActive.rawValue]  {
             needCheckActiveUser = currentPeopleSettings == 0 ? false : true
         }
        
+   
         usersReference.whereField(
             MPeople.CodingKeys.isActive.rawValue, isEqualTo: true
         ).whereField(

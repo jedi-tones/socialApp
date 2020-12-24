@@ -26,6 +26,15 @@ class PeopleDataProvider: PeopleListenerDelegate {
     
     init(userID: String) {
         self.userID = userID
+        setup()
+    }
+    
+    private func setup() {
+        NotificationCenter.addObsorverCoordinatesIsUpdate(observer: self, selector: #selector(updateDistanceToPeople))
+    }
+    
+    @objc private func updateDistanceToPeople() {
+        print("\n distance is updated \n")
     }
     
     //MARK: work with collectionView
@@ -51,17 +60,19 @@ extension PeopleDataProvider {
                    reportsDelegate: ReportsListnerDelegate,
                    complition: @escaping (Result<[MPeople], Error>) -> Void) {
         
-        FirestoreService.shared.getPeople(currentPeople: currentPeople,
-                                          likeChat: likeDislikeDelegate.likePeople,
-                                          dislikeChat: likeDislikeDelegate.dislikePeople,
-                                          acceptChat: acceptChatsDelegate.acceptChats,
-                                          reports: reportsDelegate.reports) {[weak self] result in
+        FirestoreService.shared.getPeoplePaginate(currentPeople: currentPeople,
+                                                  likeChat: likeDislikeDelegate.likePeople,
+                                                  dislikeChat: likeDislikeDelegate.dislikePeople,
+                                                  acceptChat: acceptChatsDelegate.acceptChats,
+                                                  reports: reportsDelegate.reports) {[weak self] result in
             switch result {
             
             case .success(let peoples):
                 self?.peopleNearby = peoples
                 let scrollToFirst = peoples.isEmpty ? false : true
+                //let scrollToFirst = false
                 self?.reloadData(reloadSection: peoples.count == 1 ? true : false, animating: true, scrollToFirst: scrollToFirst)
+                print("\n reload")
                 complition(.success(peoples))
             case .failure(let error):
                 complition(.failure(error))
@@ -78,7 +89,7 @@ extension PeopleDataProvider {
         guard let index = peopleIndex else { return }
         let peopleToRemove = sortedPeopleNearby[index]
        
-        //need scroll only count collection > 1 and elemt last in collection
+        //need scroll only count collection > 1 and if elemt last in collection
         let needScroll = (index != sortedPeopleNearby.count - 1) || sortedPeopleNearby.count == 1 ? false : true
         
         let indexPathToScroll = needScroll ? IndexPath(item: index - 1, section: 0) : nil

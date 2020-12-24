@@ -29,6 +29,15 @@ extension NotificationCenter {
         NotificationCenter.default.post(name: NSNotification.Name("firebaseMessageTokenInChats"), object: nil, userInfo: data)
     }
     
+    static func postUserAvatarInChatsNeedUpdate(newImageStringURL: String) {
+        let data = [MChat.CodingKeys.friendUserImageString.rawValue : newImageStringURL]
+        NotificationCenter.default.post(name: NSNotification.Name("userAvatarWasUpdated"), object: nil, userInfo: data)
+    }
+    
+    static func postCoordinatesIsUpdate() {
+        NotificationCenter.default.post(name: NSNotification.Name("coordinatesIsUpdate"), object: nil)
+    }
+    
     static func addObsorverToCurrentUser(observer: Any, selector: Selector) {
         NotificationCenter.default.addObserver(observer,
                                                selector: selector,
@@ -61,6 +70,20 @@ extension NotificationCenter {
         NotificationCenter.default.addObserver(observer,
                                                selector: selector,
                                                name: NSNotification.Name("firebaseMessageTokenInChats"),
+                                               object: nil)
+    }
+    
+    static func addObsorverToUserAvatarInChatsNeedUpdate(observer: Any, selector: Selector) {
+        NotificationCenter.default.addObserver(observer,
+                                               selector: selector,
+                                               name: NSNotification.Name("userAvatarWasUpdated"),
+                                               object: nil)
+    }
+    
+    static func addObsorverCoordinatesIsUpdate(observer: Any, selector: Selector) {
+        NotificationCenter.default.addObserver(observer,
+                                               selector: selector,
+                                               name: NSNotification.Name("coordinatesIsUpdate"),
                                                object: nil)
     }
 }

@@ -14,6 +14,7 @@ class MainTabBarController: UITabBarController{
     
     private var isNewLogin: Bool
     private var dataDelegateService: DataDelegateService
+    
     private weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     private weak var acceptChatsDelegate: AcceptChatListenerDelegate?
     private weak var requestChatsDelegate: RequestChatListenerDelegate?
@@ -113,14 +114,13 @@ extension MainTabBarController: MainTabBarDelegate {
     //MARK: showChatWith
     func showChatWith(friendID: String) {
         
-        guard let chat = acceptChatsDelegate?.acceptChats.first(where: { $0.friendId == friendID}),
+        guard let acceptChatDelegate = acceptChatsDelegate,
+              let chat = acceptChatsDelegate?.acceptChats.first(where: { $0.friendId == friendID}),
               let selectedVC = selectedViewController,
               let navVC = selectedVC as? NavigationControllerWithComplition,
               let visibleVC = navVC.visibleViewController else { return  }
         //if this chat, don't already open
-        print("\n lastselect \(acceptChatsDelegate?.lastSelectedChat?.friendId )")
-        print("\n needShow \(friendID )")
-        guard acceptChatsDelegate?.lastSelectedChat?.friendId != friendID else { return }
+        guard acceptChatDelegate.lastSelectedChat?.friendId != friendID else { return }
         
         let chatVC = ChatViewController(currentPeopleDelegate: currentPeopleDelegate,
                                         chat: chat,

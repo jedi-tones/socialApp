@@ -13,6 +13,7 @@ pod 'Firebase/Firestore'
 pod 'FirebaseFirestoreSwift'
 pod 'Firebase/Storage'
 pod 'Firebase/Messaging'
+pod 'GeoFire/Utils'
 
 pod 'SDWebImage', '~> 5.0'
 pod 'MessageKit'

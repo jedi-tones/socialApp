@@ -76,6 +76,7 @@ extension DataDelegateService {
         Apphud.start(apiKey: "app_LDXecjNbEuvUBtpd3J9kw75A6cH14n",
                      userID: currentPeopleID,
                      observerMode: false)
+     //   Apphud.start(apiKey: "app_LDXecjNbEuvUBtpd3J9kw75A6cH14n")
     }
     
     private func updateFCMKey() {
@@ -135,7 +136,7 @@ extension DataDelegateService {
                                                     switch result {
                                                     
                                                     case .success(_):
-                                                        
+                                                        updateFCMKey()
                                                         peopleDelegate.getPeople(currentPeople: people,
                                                                                  likeDislikeDelegate: likeDislikeDelegate,
                                                                                  acceptChatsDelegate: acceptChatsDelegate,
@@ -144,12 +145,11 @@ extension DataDelegateService {
                                                                                     switch result {
                                                                                     
                                                                                     case .success(_):
+                                                                                        
+                                                                                        //set complition before check subscribstion, for load screen, when Apphud API offline
+                                                                                        complition(.success(()))
                                                                                         //check active subscribtion
-                                                                                        PurchasesService.shared.checkSubscribtion(currentPeople: people) { _ in
-                                                                                            
-                                                                                            updateFCMKey()
-                                                                                            complition(.success(()))
-                                                                                        }
+                                                                                        PurchasesService.shared.checkSubscribtion(currentPeople: people) { _ in }
                                                                                     case .failure(let error):
                                                                                         complition(.failure(error))
                                                                                     }

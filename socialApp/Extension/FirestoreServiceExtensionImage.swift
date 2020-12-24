@@ -36,39 +36,48 @@ extension FirestoreService {
                              likeDelegate: LikeDislikeListenerDelegate?) {
        
         let maxBatchDocumentCount = 500
-        let acceptChatBatchStride = acceptChatsDelegate?.acceptChats.chunked(into: maxBatchDocumentCount)
         
-        acceptChatBatchStride?.forEach({ acceptChats in
-            let batch = db.batch()
-            acceptChats.forEach({ chat in
-                let friendAcceptChatRef = usersReference.document([chat.friendId,
-                                                                   MFirestorCollection.acceptChats.rawValue,
-                                                                   currentUserID].joined(separator: "/"))
-                batch.setData([MChat.CodingKeys.friendUserImageString.rawValue : avatarLink],
-                              forDocument: friendAcceptChatRef,
-                              merge: true)
+        if let acceptChatsDelegate = acceptChatsDelegate {
+
+        let acceptChatBatchStride = acceptChatsDelegate.acceptChats.chunked(into: maxBatchDocumentCount)
+            
+            acceptChatBatchStride.forEach({ acceptChats in
+                let batch = db.batch()
+                acceptChats.forEach({ chat in
+                    let friendAcceptChatRef = usersReference.document([chat.friendId,
+                                                                       MFirestorCollection.acceptChats.rawValue,
+                                                                       currentUserID].joined(separator: "/"))
+                    batch.setData([MChat.CodingKeys.friendUserImageString.rawValue : avatarLink],
+                                  forDocument: friendAcceptChatRef,
+                                  merge: true)
+                })
+                batch.commit()
             })
-            batch.commit()
-        })
+        }
         
-        let likeChatBatchStride = likeDelegate?.likePeople.chunked(into: maxBatchDocumentCount)
-       
-        likeChatBatchStride?.forEach({ likeChats in
-            let batch = db.batch()
-            likeChats.forEach({ chat in
-                let friendAcceptChatRef = usersReference.document([chat.friendId,
-                                                                   MFirestorCollection.requestsChats.rawValue,
-                                                                   currentUserID].joined(separator: "/"))
-                batch.setData([MChat.CodingKeys.friendUserImageString.rawValue : avatarLink],
-                              forDocument: friendAcceptChatRef,
-                              merge: true)
+        if let likeDelegate = likeDelegate {
+            let likeChatBatchStride = likeDelegate.likePeople.chunked(into: maxBatchDocumentCount)
+            
+            likeChatBatchStride.forEach({ likeChats in
+                let batch = db.batch()
+                likeChats.forEach({ chat in
+                    let friendAcceptChatRef = usersReference.document([chat.friendId,
+                                                                       MFirestorCollection.requestsChats.rawValue,
+                                                                       currentUserID].joined(separator: "/"))
+                    batch.setData([MChat.CodingKeys.friendUserImageString.rawValue : avatarLink],
+                                  forDocument: friendAcceptChatRef,
+                                  merge: true)
+                })
+                batch.commit()
             })
-            batch.commit()
-        })
+        }
     }
     
     //MARK:  saveAvatar
-    func saveAvatar(image: UIImage?, id: String, oldImageString: String? = nil, complition: @escaping (Result<String, Error>) -> Void) {
+    func saveAvatar(image: UIImage?,
+                    id: String,
+                    oldImageString: String? = nil,
+                    complition: @escaping (Result<String, Error>) -> Void) {
         
         guard let avatar = image else { return }
         
@@ -99,6 +108,8 @@ extension FirestoreService {
                                                             if let error = error {
                                                                 complition(.failure(error))
                                                             } else {
+                                                                //send notification, for update avatars in chat
+                                                                NotificationCenter.postUserAvatarInChatsNeedUpdate(newImageStringURL: userImageString)
                                                                 //edit current user from UserDefaults for save request to server
                                                                 if var people = UserDefaultsService.shared.getMpeople() {
                                                                     people.userImage = userImageString
@@ -117,7 +128,10 @@ extension FirestoreService {
     }
     
     //MARK: updateAvatar
-    func updateAvatar(galleryImage: MGallery, currentAvatarURL: String, id: String, complition:@escaping(Result<String, Error>) -> Void) {
+    func updateAvatar(galleryImage: MGallery,
+                      currentAvatarURL: String,
+                      id: String,
+                      complition:@escaping(Result<String, Error>) -> Void) {
         
         //set current image to profile image
         usersReference.document(id).setData(
@@ -129,6 +143,8 @@ extension FirestoreService {
                 if let error = error {
                     complition(.failure(error))
                 } else {
+                    //send notification, for update avatars in chat
+                    NotificationCenter.postUserAvatarInChatsNeedUpdate(newImageStringURL: galleryImage.photo)
                     //edit current user from UserDefaults for save request to server
                     if var people = UserDefaultsService.shared.getMpeople() {
                         people.userImage = galleryImage.photo

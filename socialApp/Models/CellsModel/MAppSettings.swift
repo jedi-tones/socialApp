@@ -15,17 +15,6 @@ enum MAppSettings: Int, CaseIterable, CollectionCellModel {
     case logOut
     case terminateAccaunt
     
-    func image() -> UIImage?  {
-        switch self {
-        
-        case .about:
-            return nil
-        case .logOut:
-            return nil
-        case .terminateAccaunt:
-            return UIImage(systemName: "magnifyingglass") ?? #imageLiteral(resourceName: "disclouser")
-        }
-    }
     
     func description() -> String  {
         switch self {
@@ -39,16 +28,6 @@ enum MAppSettings: Int, CaseIterable, CollectionCellModel {
         }
     }
     
-    func cellType() -> MCellType {
-        switch self {
-        case .about:
-            return .infoCell
-        case .logOut:
-            return .buttonCell
-        case .terminateAccaunt:
-            return .buttonCell
-        }
-    }
 }
 
 extension MAppSettings: Hashable {

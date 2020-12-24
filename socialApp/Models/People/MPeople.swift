@@ -43,6 +43,7 @@ struct MPeople: Hashable, Codable, SenderType {
     
     var searchSettings: [String: Int]
     var location: CLLocationCoordinate2D
+    var geohash: String
     var distance: Int
     
     init(senderId: String,
@@ -74,6 +75,7 @@ struct MPeople: Hashable, Codable, SenderType {
          authType: MAuthType,
          searchSettings: [String: Int],
          location: CLLocationCoordinate2D,
+         geohash: String,
          distance: Int) {
         
         self.senderId = senderId
@@ -105,6 +107,7 @@ struct MPeople: Hashable, Codable, SenderType {
         self.authType = authType
         self.searchSettings = searchSettings
         self.location = location
+        self.geohash = geohash
         self.distance = distance
     }
     
@@ -139,6 +142,7 @@ struct MPeople: Hashable, Codable, SenderType {
         searchSettings = [:]
         location = CLLocationCoordinate2D(latitude: MLocation.latitude.defaultValue,
                                           longitude: MLocation.longitude.defaultValue)
+        geohash = String(MLocation.geohash.defaultValue)
         distance = 0
     }
     //MARK: documentSnapshot
@@ -198,16 +202,18 @@ struct MPeople: Hashable, Codable, SenderType {
             self.reportList = []
         }
         if let fcmKey = documet["fcmKey"] as? String { self.fcmKey = fcmKey } else { self.fcmKey = "" }
-        if let location = documet["location"] as? [String:Double] {
-            let latitude = location[MLocation.latitude.rawValue] ?? MLocation.latitude.defaultValue
-            let longitude = location[MLocation.longitude.rawValue] ?? MLocation.longitude.defaultValue
+        if let location = documet["location"] as? [String:Any] {
+            let latitude = location[MLocation.latitude.rawValue] as? Double ?? MLocation.latitude.defaultValue
+            let longitude = location[MLocation.longitude.rawValue] as? Double ?? MLocation.longitude.defaultValue
             let clLocation = CLLocationCoordinate2D(latitude: latitude,
                                                     longitude: longitude)
             self.location = clLocation
         } else {
             self.location = CLLocationCoordinate2D(latitude: MLocation.latitude.defaultValue,
                                                         longitude: MLocation.longitude.defaultValue)
-            
+        }
+        if let geohash = documet[MLocation.geohash.rawValue] as? String { self.geohash = geohash } else {
+            self.geohash = String(MLocation.geohash.defaultValue)
         }
         if let searchSettings = documet["searchSettings"] as? [String: Int] {
             if let distance = searchSettings[MSearchSettings.distance.rawValue] {
@@ -314,14 +320,17 @@ struct MPeople: Hashable, Codable, SenderType {
         }
         
         if let fcmKey = documet["fcmKey"] as? String { self.fcmKey = fcmKey } else { self.fcmKey = "" }
-        if let location = documet["location"] as? [String:Double] {
-            let latitude = location[MLocation.latitude.rawValue] ?? MLocation.latitude.defaultValue
-            let longitude = location[MLocation.longitude.rawValue] ?? MLocation.longitude.defaultValue
+        if let location = documet["location"] as? [String:Any] {
+            let latitude = location[MLocation.latitude.rawValue] as? Double ?? MLocation.latitude.defaultValue
+            let longitude = location[MLocation.longitude.rawValue] as? Double ?? MLocation.longitude.defaultValue
             let clLocation = CLLocationCoordinate2D(latitude: latitude,
                                                     longitude: longitude)
             self.location = clLocation
-        } else { self.location = CLLocationCoordinate2D(latitude: MLocation.latitude.defaultValue,
-                                                        longitude: MLocation.longitude.defaultValue)}
+        } else {
+            self.location = CLLocationCoordinate2D(latitude: MLocation.latitude.defaultValue,
+                                                        longitude: MLocation.longitude.defaultValue)
+        }
+        if let geohash = documet[MLocation.geohash.rawValue] as? String { self.geohash = geohash } else { self.geohash = String(MLocation.geohash.defaultValue) }
         
         if let searchSettings = documet["searchSettings"] as? [String: Int] {
             if let distance = searchSettings[MSearchSettings.distance.rawValue] {
@@ -394,6 +403,7 @@ struct MPeople: Hashable, Codable, SenderType {
         guard let mail = data["mail"] as? String else { return nil }
         guard let authType = data["authType"] as? MAuthType else { return nil }
         guard let searchSettings = data["searchSettings"] as? [String: Int] else { return nil}
+        guard let geohash = data["geohash"] as? String else { return nil }
         guard let senderId = data["senderId"] as? String else { return nil }
         guard let distance = data["distance"] as? Int else { return nil }
         
@@ -425,6 +435,7 @@ struct MPeople: Hashable, Codable, SenderType {
         self.mail = mail
         self.authType = authType
         self.searchSettings = searchSettings
+        self.geohash = geohash
         self.senderId = senderId
         self.distance = distance
     }
@@ -455,6 +466,7 @@ struct MPeople: Hashable, Codable, SenderType {
         case reportList
         case fcmKey
         case location
+        case geohash
         case mail
         case authType
         case searchSettings

@@ -11,6 +11,7 @@ import FirebaseFirestore
 import FirebaseFirestoreSwift
 import FirebaseAuth
 import MapKit
+import GeoFire
 
 class FirestoreService {
     
@@ -465,30 +466,31 @@ class FirestoreService {
     
     
     //MARK: saveLocation
-    func saveLocation(userID: String, longitude: Double, latitude: Double, complition: @escaping (Result<[String:Double],Error>) -> Void) {
+    func saveLocation(userID: String, longitude: Double, latitude: Double, complition: @escaping (Result<(),Error>) -> Void) {
+        
+        let clLocation = CLLocationCoordinate2D(latitude: latitude,
+                                              longitude: longitude)
+        let geohash = GFUtils.geoHash(forLocation: clLocation, withPrecision: 20)
         usersReference.document(userID).setData([MPeople.CodingKeys.location.rawValue : [MLocation.longitude.rawValue:longitude,
-                                                                                         MLocation.latitude.rawValue:latitude]],
+                                                                                         MLocation.latitude.rawValue:latitude,
+                                                                                         MLocation.geohash.rawValue:geohash]],
                                                 merge: true) { error in
             if let error = error {
                 complition(.failure(error))
             } else {
-                let location = [MLocation.longitude.rawValue:longitude,
-                                MLocation.latitude.rawValue:latitude]
                 
                 if var people = UserDefaultsService.shared.getMpeople() {
-                    people.location = CLLocationCoordinate2D(latitude: latitude,
-                                                             longitude: longitude)
+                    people.location = clLocation
+                    people.geohash = geohash
                     UserDefaultsService.shared.saveMpeople(people: people)
                     NotificationCenter.postCurrentUserNeedUpdate()
-                    complition(.success(location))
+                    complition(.success(()))
                 } else {
                     complition(.failure(UserDefaultsError.cantGetData))
                 }
             }
         }
     }
-    
-  
 }
 
 extension FirestoreService {
