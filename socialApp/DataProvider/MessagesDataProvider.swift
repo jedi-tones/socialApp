@@ -25,16 +25,19 @@ class MessagesDataProvider: MessageListenerDelegate {
 
 extension MessagesDataProvider {
     
-    func getAllMessages(currentUserId: String, chat: MChat, complition: @escaping (Result<[MMessage], Error>) -> Void) {
+    func getMessages(currentUserId: String, chat: MChat, complition: @escaping (Result<[MMessage], Error>) -> Void) {
+        let firstLoadMessage = messages.first
+       
+        
         FirestoreService.shared.getAllMessagesInChat(currentUserID: currentUserId,
+                                                     firstLoadMessage: firstLoadMessage,
                                                      chat: chat) {[unowned self] result in
             switch result {
             
             case .success(let newMessages):
-                self.messages = newMessages
-                self.messages.sort { lhs, rhs -> Bool in
-                    lhs.sentDate < rhs.sentDate
-                }
+                messages.append(contentsOf: newMessages)
+                messages.sort {$0.sentDate < $1.sentDate}
+                
                 complition(.success(newMessages))
             case .failure(let error):
                 complition(.failure(error))
@@ -43,8 +46,9 @@ extension MessagesDataProvider {
     }
     
     func setupListener(chat: MChat) {
-        
-        ListenerService.shared.messageListener(chat: chat) {[weak self] result in
+        let firstLoadMessage = messages.sorted {$0.sentDate < $1.sentDate}.last
+        print("first message to listen \(firstLoadMessage?.content)")
+        ListenerService.shared.messageListener(chat: chat, firstLoadMessage: firstLoadMessage) {[weak self] result in
             switch result {
             
             case .success(let message):

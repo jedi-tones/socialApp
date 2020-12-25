@@ -10,7 +10,8 @@ import Foundation
 
 class PeopleDataProvider: PeopleListenerDelegate {
     
-    
+    private var userID: String
+    private var lastPeople: MPeople?
     weak var peopleCollectionViewDelegate: PeopleCollectionViewDelegate?
     
     var peopleNearby: [MPeople] = [] {
@@ -18,11 +19,16 @@ class PeopleDataProvider: PeopleListenerDelegate {
             sortedPeopleNearby = peopleNearby.sorted { p1, p2  in
                 p1.distance < p2.distance
             }
+            lastPeople = sortedPeopleNearby.last
         }
     }
-    var sortedPeopleNearby: [MPeople] = []
+    var sortedPeopleNearby: [MPeople] = [] {
+        didSet {
+            checkAndLoadMorePeople()
+        }
+    }
     
-    var userID: String
+    
     
     init(userID: String) {
         self.userID = userID
@@ -53,6 +59,14 @@ class PeopleDataProvider: PeopleListenerDelegate {
 }
 
 extension PeopleDataProvider {
+    
+    private func checkAndLoadMorePeople() {
+        if sortedPeopleNearby.count <= 2 {
+           
+            
+        }
+    }
+    
     //MARK:  get requestChats
     func getPeople(currentPeople: MPeople,
                    likeDislikeDelegate: LikeDislikeListenerDelegate,

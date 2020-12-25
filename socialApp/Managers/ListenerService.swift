@@ -248,9 +248,21 @@ class ListenerService {
     }
     
     //MARK: messageListener
-    func messageListener(chat:MChat, complition: @escaping (Result<MMessage,Error>)->Void) {
+    func messageListener(chat:MChat, firstLoadMessage: MMessage?, complition: @escaping (Result<MMessage,Error>)->Void) {
         
-        messageListner = acceptChatsRef.document(chat.friendId).collection(MFirestorCollection.messages.rawValue).addSnapshotListener({ snapshot, error in
+        var refMessages = acceptChatsRef
+            .document(chat.friendId)
+            .collection(MFirestorCollection.messages.rawValue)
+            .order(by: MMessage.CodingKeys.sentDate.rawValue, descending: true)
+            
+        if let firstLoadMessage = firstLoadMessage {
+            refMessages = acceptChatsRef
+                .document(chat.friendId)
+                .collection(MFirestorCollection.messages.rawValue)
+                .order(by: MMessage.CodingKeys.sentDate.rawValue)
+                .start(after: [Timestamp(date: firstLoadMessage.sentDate)])
+        }
+            refMessages.addSnapshotListener({ snapshot, error in
             guard let snapshot = snapshot else { fatalError("Cant get snapshot of message")}
             
             snapshot.documentChanges.forEach { document in

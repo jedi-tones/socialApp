@@ -347,6 +347,7 @@ extension ChatsViewController {
     }
 }
 
+
 //MARK:  AcceptChatCollectionViewDelegate
 extension ChatsViewController: AcceptChatCollectionViewDelegate {
     
@@ -412,7 +413,7 @@ extension ChatsViewController: UICollectionViewDelegate {
                                             reportDelegate: reportDelegate,
                                             peopleDelegate: peopleDelegate,
                                             requestDelegate: requestChatsDelegate)
-            chatVC.acceptChatDelegate = acceptChatDelegate
+            
             navigationController?.pushViewController(chatVC, animated: true)
             FirestoreService.shared.updateLastActiveDate(id: currentPeopleDelegate.currentPeople.senderId)
         }

@@ -173,7 +173,7 @@ protocol MessageListenerDelegate: class {
     var messages:[MMessage] { get set }
     var messageControllerDelegate: MessageControllerDelegate? { get set }
     
-    func getAllMessages(currentUserId: String, chat: MChat, complition: @escaping (Result<[MMessage], Error>) -> Void)
+    func getMessages(currentUserId: String, chat: MChat, complition: @escaping (Result<[MMessage], Error>) -> Void)
     func setupListener(chat: MChat)
     func removeListener()
 }

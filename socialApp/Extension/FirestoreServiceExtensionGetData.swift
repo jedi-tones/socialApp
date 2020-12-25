@@ -12,13 +12,13 @@ import GeoFire
 
 extension FirestoreService {
     
+    //MARK: getPeoplePaginate
     func getPeoplePaginate(currentPeople: MPeople,
                            likeChat: [MChat],
                            dislikeChat: [MDislike],
                            acceptChat: [MChat],
                            reports: [MReports],
                            complition: @escaping(Result<[MPeople], Error>)-> Void) {
-        var peopleNearby: [MPeople] = []
         
         let likeChatID = likeChat.map { chat -> String in
             chat.friendId
@@ -52,6 +52,7 @@ extension FirestoreService {
         //The longitude of  GeoPoint in the range [-180, 180].
         //with large search area, need search without geohash
         if radiusSearch <= 1000 {
+            
             searchPeopleWithGeoHash(radiusSearch: radiusSearch,
                                     usersID: usersID,
                                     minRange: minRange,
@@ -61,17 +62,32 @@ extension FirestoreService {
                 switch result {
                 
                 case .success(let mPeoples):
+                    print("search WithGeoHash")
                     complition(.success(mPeoples))
                 case .failure(let error):
                     complition(.failure(error))
                 }
             }
         } else {
-            
+            searchPeopleWithoutGeoHash(radiusSearch: radiusSearch,
+                                    usersID: usersID,
+                                    minRange: minRange,
+                                    maxRange: maxRange,
+                                    needCheckActiveUser: needCheckActiveUser,
+                                    currentPeople: currentPeople) { result in
+                switch result {
+                
+                case .success(let mPeoples):
+                    print("search WithoutGeoHash")
+                    complition(.success(mPeoples))
+                case .failure(let error):
+                    complition(.failure(error))
+                }
+            }
         }
-        
     }
     
+    //MARK: search WithGeoHash
     private func searchPeopleWithGeoHash(radiusSearch: Int,
                                          usersID: [String],
                                          minRange: Int,
@@ -109,24 +125,20 @@ extension FirestoreService {
         }
         
         for (index, query) in queries.enumerated() {
-             
-            query.whereField(
-                MPeople.CodingKeys.isActive.rawValue, isEqualTo: true
-            ).whereField(
-                MPeople.CodingKeys.isBlocked.rawValue, isEqualTo: false
-            ).whereField(
-                MPeople.CodingKeys.isIncognito.rawValue, isEqualTo: false
-            ).whereField(
-                MPeople.CodingKeys.gender.rawValue, isEqualTo: MLookingFor.compareGender(gender: currentPeople.lookingFor)
-            ).getDocuments { querySnapshot, error in
-                if let error = error {
-                    complition(.failure(error))
-                } else {
+            query
+                .whereField(MPeople.CodingKeys.isActive.rawValue, isEqualTo: true)
+                .whereField(MPeople.CodingKeys.isBlocked.rawValue, isEqualTo: false)
+                .whereField(MPeople.CodingKeys.isIncognito.rawValue, isEqualTo: false)
+                .whereField(MPeople.CodingKeys.gender.rawValue, isEqualTo: MLookingFor.compareGender(gender: currentPeople.lookingFor))
+                .getDocuments { querySnapshot, error in
+                    if let error = error {
+                        complition(.failure(error))
+                    } else {
                     guard let snapshot = querySnapshot else {
                         complition(.failure(FirestoreError.snapshotNotExist))
                         return
                     }
-                    
+                        print("document count \(snapshot.documents.count)")
                     snapshot.documents.forEach { queryDocumentSnapshot in
                         if var people = MPeople(documentSnap: queryDocumentSnapshot) {
                             
@@ -136,6 +148,7 @@ extension FirestoreService {
                                                                              longitude: currentPeople.location.longitude),
                                                             to: CLLocation(latitude: people.location.latitude,
                                                                            longitude: people.location.longitude))
+                            
                             let distanceKM = Int(distance / 1000)
                             people.distance = distanceKM
                             //check dateOfBirth
@@ -149,6 +162,7 @@ extension FirestoreService {
                             //check distance and age
                             if age >= minRange && age <= maxRange && distanceKM <= radiusSearch {
                                 peopleNearby.append(people)
+                                print("people \(people.displayName)")
                             }
                         }
                         print("\n index \(index) people  count \(peopleNearby.count)")
@@ -159,9 +173,58 @@ extension FirestoreService {
         }
     }
     
-
+    //MARK: search WithoutGeoHash
+    private func searchPeopleWithoutGeoHash(radiusSearch: Int,
+                                            usersID: [String],
+                                            minRange: Int,
+                                            maxRange: Int,
+                                            needCheckActiveUser: Bool,
+                                            currentPeople: MPeople,
+                                            complition: @escaping(Result<[MPeople], Error>)-> Void) {
+        
+        var peopleNearby: [MPeople] = []
+        
+        usersReference
+            .whereField(MPeople.CodingKeys.isActive.rawValue, isEqualTo: true)
+            .whereField(MPeople.CodingKeys.isBlocked.rawValue, isEqualTo: false)
+            .whereField(MPeople.CodingKeys.isIncognito.rawValue, isEqualTo: false)
+            .whereField(MPeople.CodingKeys.gender.rawValue, isEqualTo: MLookingFor.compareGender(gender: currentPeople.lookingFor))
+            .order(by: MPeople.CodingKeys.geohash.rawValue, descending: false)
+            .getDocuments { snapshot, error in
+            if let error = error {
+                complition(.failure(error))
+            } else {
+                guard let snapshot = snapshot else {
+                    complition(.failure(FirestoreError.snapshotNotExist))
+                    return
+                }
+                snapshot.documents.forEach { queryDocumentSnapshot in
+                    if var people = MPeople(documentSnap: queryDocumentSnapshot) {
+                        
+                        //check distance to people and append to him
+                        let distance = LocationService.shared.getDistance(currentPeople: currentPeople, newPeople: people)
+                        let range = currentPeople.searchSettings[MSearchSettings.distance.rawValue] ?? MSearchSettings.distance.defaultValue
+                        //check dateOfBirth
+                        let age = people.dateOfBirth.getAge()
+                        //check is active
+                        if needCheckActiveUser {
+                            guard  people.lastActiveDate.checkIsActiveUser() else { return }
+                        }
+                        //check current people not in users array
+                        guard !usersID.contains(people.senderId) else { return }
+                        //check distance and age
+                        if distance <= range && age >= minRange && age <= maxRange {
+                            people.distance = distance
+                            peopleNearby.append(people)
+                        }
+                    }
+                }
+                complition(.success(peopleNearby))
+            }
+        }
+    }
     
-    //MARK: getPeople
+    //MARK: getPeople deprecated
     func getPeople(currentPeople: MPeople,
                    likeChat: [MChat],
                    dislikeChat: [MDislike],
@@ -280,12 +343,28 @@ extension FirestoreService {
         }
     }
     
-    func getAllMessagesInChat(currentUserID: String, chat: MChat, complition: @escaping (Result<[MMessage],Error>)-> Void) {
-        let reference = usersReference
+    func getAllMessagesInChat(currentUserID: String,
+                              firstLoadMessage: MMessage? = nil,
+                              chat: MChat,
+                              complition: @escaping (Result<[MMessage],Error>)-> Void) {
+        var reference = usersReference
             .document(currentUserID)
             .collection(MFirestorCollection.acceptChats.rawValue)
             .document(chat.friendId)
             .collection(MFirestorCollection.messages.rawValue)
+            .order(by: MMessage.CodingKeys.sentDate.rawValue, descending: true)
+            .limit(to: 20)
+        
+        if let firstLoadMessage = firstLoadMessage {
+            reference = usersReference
+                .document(currentUserID)
+                .collection(MFirestorCollection.acceptChats.rawValue)
+                .document(chat.friendId)
+                .collection(MFirestorCollection.messages.rawValue)
+                .order(by: MMessage.CodingKeys.sentDate.rawValue, descending: true)
+                .start(after: [Timestamp(date: firstLoadMessage.sentDate)])
+                .limit(to: 20)
+        }
         
         var messages: [MMessage] = []
         

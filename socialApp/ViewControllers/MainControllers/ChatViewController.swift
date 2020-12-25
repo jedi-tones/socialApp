@@ -189,7 +189,7 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
         guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("CurrentPeopleDelegate is nil in ChatVC")}
         
         loadingMessagesImage.play()
-        messageDelegate?.getAllMessages(currentUserId: currentPeopleDelegate.currentPeople.senderId,
+        messageDelegate?.getMessages(currentUserId: currentPeopleDelegate.currentPeople.senderId,
                                         chat: chat,
                                         complition: {[weak self] result in
                                             switch result {
@@ -452,16 +452,35 @@ extension ChatViewController {
     //MARK: profileTapped
     @objc private func chatSettingsTapped() {
         guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("CurrentPeopleDelegate is nil in ChatVC")}
+        let firstMessageBeforeLoad = messageDelegate?.messages.first
+        messageDelegate?.getMessages(currentUserId: currentPeopleDelegate.currentPeople.senderId,
+                                     chat: chat,
+                                     complition: {[weak self] result in
+                                        switch result {
+                                        
+                                        case .success(_):
+                                            self?.messagesCollectionView.reloadData()
+                                            self?.messagesCollectionView.scrollToItem(at: IndexPath(item: 19, section: 0),
+                                                                                      at: .top,
+                                                                                      animated: false)
+                                            self?.messagesCollectionView.scrollToItem(at: IndexPath(item: 17, section: 0),
+                                                                                      at: .top,
+                                                                                      animated: true)
+                                            PopUpService.shared.showInfo(text: "Загрузили")
+                                        case .failure(_):
+                                            PopUpService.shared.showInfo(text: "Ошибка загрузки сообщений")
+                                        }
+                                     })
         
-        let settingsVC = SetupChatMenu(currentPeopleDelegate: currentPeopleDelegate,
-                                       chat: chat,
-                                       reportDelegate: reportDelegate,
-                                       peopleDelegate: peopleDelegate,
-                                       requestDelegate: requestDelegate,
-                                       messageControllerDelegate: self)
-        
-        settingsVC.hidesBottomBarWhenPushed = true
-        navigationController?.pushViewController(settingsVC, animated: true)
+//        let settingsVC = SetupChatMenu(currentPeopleDelegate: currentPeopleDelegate,
+//                                       chat: chat,
+//                                       reportDelegate: reportDelegate,
+//                                       peopleDelegate: peopleDelegate,
+//                                       requestDelegate: requestDelegate,
+//                                       messageControllerDelegate: self)
+//
+//        settingsVC.hidesBottomBarWhenPushed = true
+//        navigationController?.pushViewController(settingsVC, animated: true)
     }
 }
 
@@ -765,7 +784,7 @@ extension ChatViewController {
         view.addSubview(loadingMessagesImage)
         
         NSLayoutConstraint.activate([
-            loadingMessagesImage.topAnchor.constraint(equalTo: view.topAnchor),
+            loadingMessagesImage.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             loadingMessagesImage.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             loadingMessagesImage.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             loadingMessagesImage.trailingAnchor.constraint(equalTo: view.trailingAnchor)
