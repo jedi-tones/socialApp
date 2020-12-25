@@ -452,18 +452,23 @@ extension ChatViewController {
     //MARK: profileTapped
     @objc private func chatSettingsTapped() {
         guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("CurrentPeopleDelegate is nil in ChatVC")}
-        let firstMessageBeforeLoad = messageDelegate?.messages.first
+
         messageDelegate?.getMessages(currentUserId: currentPeopleDelegate.currentPeople.senderId,
                                      chat: chat,
                                      complition: {[weak self] result in
                                         switch result {
                                         
-                                        case .success(_):
+                                        case .success(let newMessages):
                                             self?.messagesCollectionView.reloadData()
-                                            self?.messagesCollectionView.scrollToItem(at: IndexPath(item: 19, section: 0),
+                                            let newMessagesCount = newMessages.count
+                                            let indexFirstElementBeforeLoad = newMessagesCount > 0 ? newMessagesCount - 1 : 0
+                                            let scrollCount = newMessagesCount > 0 ? 3 : 0
+                                            self?.messagesCollectionView.scrollToItem(at: IndexPath(item: indexFirstElementBeforeLoad,
+                                                                                                    section: 0),
                                                                                       at: .top,
                                                                                       animated: false)
-                                            self?.messagesCollectionView.scrollToItem(at: IndexPath(item: 17, section: 0),
+                                            self?.messagesCollectionView.scrollToItem(at: IndexPath(item: indexFirstElementBeforeLoad - scrollCount,
+                                                                                                    section: 0),
                                                                                       at: .top,
                                                                                       animated: true)
                                             PopUpService.shared.showInfo(text: "Загрузили")

@@ -47,7 +47,7 @@ extension MessagesDataProvider {
     
     func setupListener(chat: MChat) {
         let firstLoadMessage = messages.sorted {$0.sentDate < $1.sentDate}.last
-        print("first message to listen \(firstLoadMessage?.content)")
+        
         ListenerService.shared.messageListener(chat: chat, firstLoadMessage: firstLoadMessage) {[weak self] result in
             switch result {
             
