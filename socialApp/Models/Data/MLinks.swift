@@ -9,7 +9,7 @@
 import Foundation
 
 enum MLinks: String {
-    case email = "flava.social.app@gmail.com"
+    case email = "support@flava.app"
     case termsOfServiceLink = "https://flava.app/terms/"
     case privacyLink = "https://flava.app/privacy/"
     case site = "https://flava.app"

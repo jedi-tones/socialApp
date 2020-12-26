@@ -10,10 +10,15 @@ import UIKit
 
 class AboutView: UIView {
     
-    private let siteButton = OneLineButton(info: "Наш сайт", font: .avenirBold(size: 16))
-    private let termsOfServiceButton = OneLineButton(info: "Условия и положения", font: .avenirBold(size: 16))
-    private let privacyButton = OneLineButton(info: "Политика конфиденциальности", font: .avenirBold(size: 16))
-    
+    private let siteButton = OneLineButton(info: "Наш сайт",
+                                           font: .avenirBold(size: 16))
+    private let termsOfServiceButton = OneLineButton(info: "Условия и положения",
+                                                     font: .avenirBold(size: 16))
+    private let privacyButton = OneLineButton(info: "Политика конфиденциальности",
+                                              font: .avenirBold(size: 16))
+    private var versionLabel = UILabel(labelText: "",
+                                      textFont: .avenirBold(size: 16),
+                                      linesCount: 0)
     init(){
         super.init(frame: .zero)
         setup()
@@ -26,6 +31,13 @@ class AboutView: UIView {
     
     private func setup(){
         backgroundColor = .myWhiteColor()
+        let version = getAppCurrentVersionNumber() ?? "1.0.22*"
+        versionLabel.text = "Версия программы: \(version)"
+    }
+    
+    private func getAppCurrentVersionNumber() -> String? {
+        let nsObject = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as AnyObject?
+        return nsObject as? String
     }
     
     func configure(delegate: Any?,siteButtonSelector: Selector, termsOfServiceSelector: Selector, privacyButtonSelector: Selector){
@@ -41,10 +53,12 @@ extension AboutView {
         termsOfServiceButton.translatesAutoresizingMaskIntoConstraints = false
         privacyButton.translatesAutoresizingMaskIntoConstraints = false
         siteButton.translatesAutoresizingMaskIntoConstraints = false
+        versionLabel.translatesAutoresizingMaskIntoConstraints = false
         
         addSubview(siteButton)
         addSubview(termsOfServiceButton)
         addSubview(privacyButton)
+        addSubview(versionLabel)
         
         NSLayoutConstraint.activate([
             siteButton.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 20),
@@ -55,6 +69,10 @@ extension AboutView {
             
             privacyButton.topAnchor.constraint(equalTo: termsOfServiceButton.bottomAnchor, constant: 20),
             privacyButton.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            
+            versionLabel.topAnchor.constraint(equalTo: privacyButton.bottomAnchor, constant: 20),
+            versionLabel.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            versionLabel.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -20),
         ])
     }
 }

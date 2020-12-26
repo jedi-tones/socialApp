@@ -134,6 +134,7 @@
 		FBA462412593E06800D3AEC2 /* AdminPanelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA462402593E06800D3AEC2 /* AdminPanelViewController.swift */; };
 		FBA462452593E53700D3AEC2 /* MAdminPanelSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA462442593E53700D3AEC2 /* MAdminPanelSettings.swift */; };
 		FBA462932594CB4700D3AEC2 /* FireStoreServiceExtensionAdmin.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA462922594CB4700D3AEC2 /* FireStoreServiceExtensionAdmin.swift */; };
+		FBA462A02597882300D3AEC2 /* EditProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA4629F2597882300D3AEC2 /* EditProfileView.swift */; };
 		FBA94D1E24F55CBE000DA5D5 /* SectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA94D1D24F55CBE000DA5D5 /* SectionHeader.swift */; };
 		FBB26EAE254585DB0081CF2C /* ChatTitleStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBB26EAD254585DB0081CF2C /* ChatTitleStackView.swift */; };
 		FBB26EB42546E49B0081CF2C /* MAdmin.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBB26EB32546E49B0081CF2C /* MAdmin.swift */; };
@@ -386,6 +387,7 @@
 		FBA462402593E06800D3AEC2 /* AdminPanelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminPanelViewController.swift; sourceTree = "<group>"; };
 		FBA462442593E53700D3AEC2 /* MAdminPanelSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAdminPanelSettings.swift; sourceTree = "<group>"; };
 		FBA462922594CB4700D3AEC2 /* FireStoreServiceExtensionAdmin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireStoreServiceExtensionAdmin.swift; sourceTree = "<group>"; };
+		FBA4629F2597882300D3AEC2 /* EditProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileView.swift; sourceTree = "<group>"; };
 		FBA94D1D24F55CBE000DA5D5 /* SectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeader.swift; sourceTree = "<group>"; };
 		FBB26EAD254585DB0081CF2C /* ChatTitleStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTitleStackView.swift; sourceTree = "<group>"; };
 		FBB26EB32546E49B0081CF2C /* MAdmin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAdmin.swift; sourceTree = "<group>"; };
@@ -551,7 +553,7 @@
 				FB79DA81252DECEB00A7AA56 /* ProfileViewController */,
 				FB79DA9B2530E9A800A7AA56 /* EditPhotoViewController */,
 				FBB33FE6256C156F00A597BF /* PurchasesViewController */,
-				FB1062DB24B09F6C0012C4D4 /* EditProfileViewController.swift */,
+				FBA462A32597882F00D3AEC2 /* EditProfileViewController */,
 				FB3727982541CAD500906FBE /* EditSearchSettingsViewController.swift */,
 				FBD301CD2580278900D38AE9 /* AppSettingsViewController */,
 				FBB33FDB256C14E400A597BF /* AboutViewController */,
@@ -876,6 +878,23 @@
 				FBD30169257E505F00D38AE9 /* logo_eye.json */,
 			);
 			path = Animation;
+			sourceTree = "<group>";
+		};
+		FBA462A32597882F00D3AEC2 /* EditProfileViewController */ = {
+			isa = PBXGroup;
+			children = (
+				FB1062DB24B09F6C0012C4D4 /* EditProfileViewController.swift */,
+				FBA462A62597884100D3AEC2 /* View */,
+			);
+			path = EditProfileViewController;
+			sourceTree = "<group>";
+		};
+		FBA462A62597884100D3AEC2 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				FBA4629F2597882300D3AEC2 /* EditProfileView.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		FBA94D1C24F55AC2000DA5D5 /* Managers */ = {
@@ -1396,6 +1415,7 @@
 				FBB3B265250ACA0700440632 /* MGender.swift in Sources */,
 				FB8C3D432533A22800184FB5 /* SelectionTableViewCell.swift in Sources */,
 				FBF293DD25065E2800F7B5F1 /* FirestoreService.swift in Sources */,
+				FBA462A02597882300D3AEC2 /* EditProfileView.swift in Sources */,
 				FBB3D4A3255DAD2500A3B832 /* MActionType.swift in Sources */,
 				FBB4F35A25116D7300ACFE90 /* DefaultImage.swift in Sources */,
 				FBB3D492255D595D00A3B832 /* MPushMessageToTopic.swift in Sources */,

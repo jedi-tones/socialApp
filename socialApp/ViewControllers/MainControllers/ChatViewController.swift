@@ -13,7 +13,7 @@ import InputBarAccessoryView
 
 class ChatViewController: MessagesViewController, MessageControllerDelegate  {
     
-    var chat:MChat {
+     var chat:MChat {
         didSet {
             chatIsChanged()
         }
@@ -24,6 +24,8 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
         }
     }
     
+    private var moreMessageLoadInProgress = false
+    private var lastLoadedMessageCount = 0
     private let loadingMessagesImage = AnimationCustomView(name: MAnimamationName.loading.rawValue,
                                                    loopMode: .loop,
                                                    contentMode: .scaleAspectFit,
@@ -194,7 +196,8 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
                                         complition: {[weak self] result in
                                             switch result {
                                             
-                                            case .success(_):
+                                            case .success(let loadedMessages):
+                                                self?.lastLoadedMessageCount = loadedMessages.count
                                                 self?.messagesCollectionView.reloadData()
                                                 self?.messagesCollectionView.scrollToBottom()
                                                 self?.addMessageListener()
@@ -214,6 +217,47 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
                                                 PopUpService.shared.showInfo(text: "Ошибка загрузки сообщений")
                                             }
                                         })
+    }
+    
+    //MARK: needLoadMoreMessages
+    private func needLoadMoreMessages() {
+        guard let currentPeopleDelegate = currentPeopleDelegate else { return }
+        guard let messageDelegate = messageDelegate else { return }
+        
+        let limitMessageToLoad = 20
+        
+               //don't start load, while loading in progress
+        guard  moreMessageLoadInProgress == false,
+               //don't start load, if previus load < limit to load, don't have any message in firestore
+               lastLoadedMessageCount == limitMessageToLoad else { return }
+        
+        moreMessageLoadInProgress = true
+        PopUpService.shared.showProcessingInfo(text: "Загружаем сообщения")
+        messageDelegate.getMessages(currentUserId: currentPeopleDelegate.currentPeople.senderId,
+                                     chat: chat,
+                                     complition: {[weak self] result in
+                                        switch result {
+                                        
+                                        case .success(let newMessages):
+                                            self?.lastLoadedMessageCount = newMessages.count
+                                            self?.messagesCollectionView.reloadData()
+                                            let newMessagesCount = newMessages.count
+                                            let indexFirstElementBeforeLoad = newMessagesCount > 0 ? newMessagesCount - 1 : 0
+                              
+                                            //scroll to last message, before load without animate
+                                            self?.messagesCollectionView.scrollToItem(at: IndexPath(item: indexFirstElementBeforeLoad,
+                                                                                                    section: 0),
+                                                                                      at: .top,
+                                                                                      animated: false)
+
+                                            self?.moreMessageLoadInProgress = false
+                                            PopUpService.shared.dismisProcessingInfo(comlition: nil)
+                                        case .failure(_):
+                                            self?.moreMessageLoadInProgress = false
+                                            PopUpService.shared.dismisProcessingInfo(comlition: nil)
+                                            PopUpService.shared.showInfo(text: "Ошибка загрузки сообщений")
+                                        }
+                                     })
     }
     
     //MARK: newMessage
@@ -453,39 +497,15 @@ extension ChatViewController {
     @objc private func chatSettingsTapped() {
         guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("CurrentPeopleDelegate is nil in ChatVC")}
 
-        messageDelegate?.getMessages(currentUserId: currentPeopleDelegate.currentPeople.senderId,
-                                     chat: chat,
-                                     complition: {[weak self] result in
-                                        switch result {
-                                        
-                                        case .success(let newMessages):
-                                            self?.messagesCollectionView.reloadData()
-                                            let newMessagesCount = newMessages.count
-                                            let indexFirstElementBeforeLoad = newMessagesCount > 0 ? newMessagesCount - 1 : 0
-                                            let scrollCount = newMessagesCount > 0 ? 3 : 0
-                                            self?.messagesCollectionView.scrollToItem(at: IndexPath(item: indexFirstElementBeforeLoad,
-                                                                                                    section: 0),
-                                                                                      at: .top,
-                                                                                      animated: false)
-                                            self?.messagesCollectionView.scrollToItem(at: IndexPath(item: indexFirstElementBeforeLoad - scrollCount,
-                                                                                                    section: 0),
-                                                                                      at: .top,
-                                                                                      animated: true)
-                                            PopUpService.shared.showInfo(text: "Загрузили")
-                                        case .failure(_):
-                                            PopUpService.shared.showInfo(text: "Ошибка загрузки сообщений")
-                                        }
-                                     })
-        
-//        let settingsVC = SetupChatMenu(currentPeopleDelegate: currentPeopleDelegate,
-//                                       chat: chat,
-//                                       reportDelegate: reportDelegate,
-//                                       peopleDelegate: peopleDelegate,
-//                                       requestDelegate: requestDelegate,
-//                                       messageControllerDelegate: self)
-//
-//        settingsVC.hidesBottomBarWhenPushed = true
-//        navigationController?.pushViewController(settingsVC, animated: true)
+        let settingsVC = SetupChatMenu(currentPeopleDelegate: currentPeopleDelegate,
+                                       chat: chat,
+                                       reportDelegate: reportDelegate,
+                                       peopleDelegate: peopleDelegate,
+                                       requestDelegate: requestDelegate,
+                                       messageControllerDelegate: self)
+
+        settingsVC.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(settingsVC, animated: true)
     }
 }
 
@@ -621,6 +641,13 @@ extension ChatViewController: MessagesDataSource {
         }
     }
 
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard let messageDelegate = messageDelegate else { return }
+        
+        if scrollView.contentOffset.y <= 0  {
+            needLoadMoreMessages()
+        }
+    }
 }
 
 //MARK: MessagesLayoutDelegate
@@ -783,6 +810,7 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
     }
 }
 
+//MARK: setupConstraints
 extension ChatViewController {
     private func setupConstraints() {
         loadingMessagesImage.translatesAutoresizingMaskIntoConstraints = false

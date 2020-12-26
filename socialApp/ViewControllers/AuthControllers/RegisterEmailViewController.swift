@@ -43,11 +43,13 @@ class RegisterEmailViewController: UIViewController {
     private let passwordTextField = OneLineTextField(isSecureText: true,
                                              tag: 1,
                                              opacity: 1,
-                                             isEnable: true)
+                                             isEnable: true,
+                                             placeHoledText: "Пароль")
     private let confirmPasswordTextField = OneLineTextField(isSecureText: true,
                                                     tag: 2,
                                                     opacity: 1,
-                                                    isEnable: true)
+                                                    isEnable: true,
+                                                    placeHoledText: "Пароль")
     
     private let signUpButton = RoundButton(newBackgroundColor: .myLabelColor(),
                                 newBorderColor: .myLabelColor(),

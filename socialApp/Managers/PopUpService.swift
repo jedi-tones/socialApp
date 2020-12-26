@@ -362,4 +362,35 @@ extension PopUpService {
         let contentView = EKNoteMessageView(with: labelContent)
         SwiftEntryKit.display(entry: contentView, using: attributes)
     }
+    
+     func showProcessingInfo(text: String) {
+        var attributes = EKAttributes()
+        attributes = .topNote
+        attributes.displayMode = .inferred
+        attributes.displayDuration = .infinity
+        attributes.name = "Top Info with activity"
+        attributes.hapticFeedbackType = .success
+        attributes.popBehavior = .animated(animation: .translation)
+        attributes.entryBackground = .color(color: .init(.myLightGrayColor()))
+        
+        let style = EKProperty.LabelStyle(
+            font: .avenirRegular(size: 14),
+            color: .black,
+            alignment: .center,
+            displayMode: .inferred
+        )
+        let labelContent = EKProperty.LabelContent(
+            text: text,
+            style: style
+        )
+        let contentView = EKProcessingNoteMessageView(
+            with: labelContent,
+            activityIndicator: .medium
+        )
+        SwiftEntryKit.display(entry: contentView, using: attributes)
+    }
+    
+    func dismisProcessingInfo(comlition: (()-> Void)?) {
+        SwiftEntryKit.dismiss(.specific(entryName: "Top Info with activity"), with: comlition)
+    }
 }
