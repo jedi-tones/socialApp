@@ -135,6 +135,7 @@
 		FBA462452593E53700D3AEC2 /* MAdminPanelSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA462442593E53700D3AEC2 /* MAdminPanelSettings.swift */; };
 		FBA462932594CB4700D3AEC2 /* FireStoreServiceExtensionAdmin.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA462922594CB4700D3AEC2 /* FireStoreServiceExtensionAdmin.swift */; };
 		FBA462A02597882300D3AEC2 /* EditProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA4629F2597882300D3AEC2 /* EditProfileView.swift */; };
+		FBA462AC2597952000D3AEC2 /* EditProfileViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA462AB2597952000D3AEC2 /* EditProfileViewDelegate.swift */; };
 		FBA94D1E24F55CBE000DA5D5 /* SectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA94D1D24F55CBE000DA5D5 /* SectionHeader.swift */; };
 		FBB26EAE254585DB0081CF2C /* ChatTitleStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBB26EAD254585DB0081CF2C /* ChatTitleStackView.swift */; };
 		FBB26EB42546E49B0081CF2C /* MAdmin.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBB26EB32546E49B0081CF2C /* MAdmin.swift */; };
@@ -388,6 +389,7 @@
 		FBA462442593E53700D3AEC2 /* MAdminPanelSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAdminPanelSettings.swift; sourceTree = "<group>"; };
 		FBA462922594CB4700D3AEC2 /* FireStoreServiceExtensionAdmin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireStoreServiceExtensionAdmin.swift; sourceTree = "<group>"; };
 		FBA4629F2597882300D3AEC2 /* EditProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileView.swift; sourceTree = "<group>"; };
+		FBA462AB2597952000D3AEC2 /* EditProfileViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileViewDelegate.swift; sourceTree = "<group>"; };
 		FBA94D1D24F55CBE000DA5D5 /* SectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeader.swift; sourceTree = "<group>"; };
 		FBB26EAD254585DB0081CF2C /* ChatTitleStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTitleStackView.swift; sourceTree = "<group>"; };
 		FBB26EB32546E49B0081CF2C /* MAdmin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAdmin.swift; sourceTree = "<group>"; };
@@ -1048,6 +1050,7 @@
 				FBD301AF257FF62500D38AE9 /* AuthViewControllerDelegate.swift */,
 				FB03C4CF258A5B020000B8D3 /* CurrentPeopleDataDelegate.swift */,
 				FB8F2E89258FC8C900022853 /* MainTabBarDelegate.swift */,
+				FBA462AB2597952000D3AEC2 /* EditProfileViewDelegate.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -1558,6 +1561,7 @@
 				FBB33FED256D10D700A597BF /* TagsCollectionView.swift in Sources */,
 				FB03C4D0258A5B020000B8D3 /* CurrentPeopleDataDelegate.swift in Sources */,
 				FB61A76F251CB97D005DCC78 /* DataSourceError.swift in Sources */,
+				FBA462AC2597952000D3AEC2 /* EditProfileViewDelegate.swift in Sources */,
 				FBF6289524F678C300DCD4AC /* SectionsChats.swift in Sources */,
 				FBA2AA392552FCE300A471F6 /* MChatSettings.swift in Sources */,
 				FB8C3D8B25371AE900184FB5 /* MLabels.swift in Sources */,
