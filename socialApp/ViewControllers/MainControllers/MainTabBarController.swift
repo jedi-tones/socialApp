@@ -45,6 +45,7 @@ class MainTabBarController: UITabBarController{
 }
 
 extension MainTabBarController {
+    //MARK: setup
     private func setup() {
         if isNewLogin {
             PopUpService.shared.showAnimateView(name: MAnimamationName.loading.rawValue)
@@ -77,6 +78,9 @@ extension MainTabBarController {
 
 //MARK: - MainTabBarDelegate
 extension MainTabBarController: MainTabBarDelegate {
+    
+    
+    //MARK: renewBadge
     func renewBadge() {
         guard let acceptChatDelegate = acceptChatsDelegate,
               let requestChatDelegate = requestChatsDelegate else { return }

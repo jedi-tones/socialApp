@@ -202,7 +202,7 @@ class ListenerService {
             guard let snapshot = snapshot else { return }
             
             snapshot.documentChanges.forEach { changes in
-                guard var chat = MChat(documentSnap: changes.document) else { fatalError(ChatError.getUserData.localizedDescription)}
+                guard var chat = MChat(documentSnap: changes.document) else { return }
                 
                 switch changes.type {
                 

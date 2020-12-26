@@ -17,6 +17,7 @@ class RequestChatDataProvider: RequestChatListenerDelegate {
                 $0.date > $1.date
             }
             mainTabBarDelegate?.renewBadge()
+            sendNotification()
         }
     }
     var sortedRequestChats: [MChat] = []
@@ -26,6 +27,10 @@ class RequestChatDataProvider: RequestChatListenerDelegate {
    
     init(userID: String) {
         self.userID = userID
+    }
+    
+    private func sendNotification() {
+        NotificationCenter.postRequestCountIsChange(requestCount: requestChats.count)
     }
 }
 

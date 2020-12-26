@@ -34,6 +34,11 @@ extension NotificationCenter {
         NotificationCenter.default.post(name: NSNotification.Name("userAvatarWasUpdated"), object: nil, userInfo: data)
     }
     
+    static func postRequestCountIsChange(requestCount: Int) {
+        let data = ["requestCount" : requestCount]
+        NotificationCenter.default.post(name: NSNotification.Name("requestCountIsChange"), object: nil, userInfo: data)
+    }
+    
     static func postCoordinatesIsUpdate() {
         NotificationCenter.default.post(name: NSNotification.Name("coordinatesIsUpdate"), object: nil)
     }
@@ -80,10 +85,18 @@ extension NotificationCenter {
                                                object: nil)
     }
     
+    static func addObsorverRequestCountIsChange(observer: Any, selector: Selector) {
+        NotificationCenter.default.addObserver(observer,
+                                               selector: selector,
+                                               name: NSNotification.Name("requestCountIsChange"),
+                                               object: nil)
+    }
+    
     static func addObsorverCoordinatesIsUpdate(observer: Any, selector: Selector) {
         NotificationCenter.default.addObserver(observer,
                                                selector: selector,
                                                name: NSNotification.Name("coordinatesIsUpdate"),
                                                object: nil)
     }
+    
 }

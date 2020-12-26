@@ -99,8 +99,9 @@ class ChatsViewController: UIViewController {
     //MARK: checkPeopleNearbyIsEmpty
     private func checkAcceptChatsIsEmpty()  {
         //if nearby people empty set
-        guard let acceptChatDelegate = acceptChatDelegate?.acceptChats else { fatalError() }
-        if acceptChatDelegate.isEmpty {
+        guard let acceptChatDelegate = acceptChatDelegate else { return }
+        let chatsCount = acceptChatDelegate.acceptChats.count - acceptChatDelegate.staticCellCount
+        if chatsCount == .zero {
             emptyView.hide(hidden: false)
             navigationItem.searchController = nil
         } else {
@@ -137,6 +138,7 @@ extension ChatsViewController {
         
         collectionView.register(ActiveChatsCell.self, forCellWithReuseIdentifier: ActiveChatsCell.reuseID)
         collectionView.register(NewChatsCell.self, forCellWithReuseIdentifier: NewChatsCell.reuseID)
+        collectionView.register(NewRequestCell.self, forCellWithReuseIdentifier: NewRequestCell.reuseID)
         collectionView.register(SectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: SectionHeader.reuseId)
     }
     
@@ -148,7 +150,7 @@ extension ChatsViewController {
             
             switch section {
             case .newChats:
-                return self.createWaitingChatsLayout(isEmpty: isEmptyNewSection)
+                return self.createNewChatsLayout(isEmpty: isEmptyNewSection)
             case .activeChats:
                 return self.createActiveChatsLayout(isEmpty: isEmptyActiveSection)
             }
@@ -199,7 +201,7 @@ extension ChatsViewController {
     }
     
     //MARK:  createWaitingChatsLayout
-    private func createWaitingChatsLayout(isEmpty: Bool) -> NSCollectionLayoutSection {
+    private func createNewChatsLayout(isEmpty: Bool) -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1),
                                               heightDimension: .estimated(80))
         
@@ -264,10 +266,19 @@ extension ChatsViewController {
                                            indexPath: indexPath)
                     
                 case .newChats:
-                    return self?.configure(cellType: NewChatsCell.self,
-                                           currentUser: currentPeopleDelegate.currentPeople,
-                                           value: chat,
-                                           indexPath: indexPath)
+                    //if static first cell
+                    if indexPath.item == 0 {
+                        guard let cell = self?.collectionView?.dequeueReusableCell(withReuseIdentifier: NewRequestCell.reuseID, for: indexPath) as? NewRequestCell else { fatalError("Can't dequeue cell type NewRequestCell") }
+                        //get requestMessageCount from lastMessage text
+                        let requestCount = Int(chat.lastMessage) ?? 0
+                        cell.configure(requestCount: requestCount)
+                        return cell
+                    } else {
+                        return self?.configure(cellType: NewChatsCell.self,
+                                               currentUser: currentPeopleDelegate.currentPeople,
+                                               value: chat,
+                                               indexPath: indexPath)
+                    }
                 }
             })
     }
@@ -281,7 +292,11 @@ extension ChatsViewController {
             
             guard let section = SectionsChats(rawValue: indexPath.section) else { fatalError("Unknown section")}
             
-            guard let itemsInSection = self?.collectionView?.numberOfItems(inSection: indexPath.section) else { fatalError("Can't get count of items")}
+            guard var itemsInSection = self?.collectionView?.numberOfItems(inSection: indexPath.section) else { fatalError("Can't get count of items")}
+            
+            if section == .newChats {
+                itemsInSection -= self?.acceptChatDelegate?.staticCellCount ?? 0
+            }
             
             reuseSectionHeader.configure(text: section.description(count: itemsInSection),
                                          font: .avenirRegular(size: 12),
@@ -303,14 +318,13 @@ extension ChatsViewController {
         
         let newChats = filtredAcceptChats.filter { filtredAcceptChat -> Bool in
             filtredAcceptChat.isNewChat
-        }
+        }.sorted{ $0.createChatDate > $1.createChatDate }
         
         let activeChats = filtredAcceptChats.filter { filtredAcceptChat -> Bool in
             !filtredAcceptChat.isNewChat
         }
         
         if let dataSource = dataSource {
-            
             //for correct update cell data in collectionView
             var snapshot = dataSource.snapshot()
             snapshot.deleteAllItems()
@@ -318,31 +332,14 @@ extension ChatsViewController {
             snapshot.appendItems(newChats, toSection: .newChats)
             snapshot.appendItems(activeChats, toSection: .activeChats)
             
-            dataSource.apply(snapshot, animatingDifferences: false) { [weak self] in
-                
-                self?.collectionView?.collectionViewLayout.invalidateLayout()
-                self?.collectionView?.layoutIfNeeded()
-                self?.collectionView?.setCollectionViewLayout(self?.setupCompositionalLayout(isEmptyActiveSection: activeChats.isEmpty,
-                                                                                             isEmptyNewSection: newChats.isEmpty) ?? UICollectionViewFlowLayout(),
-                                                              animated: false)
-            }
-            
-            
+            dataSource.apply(snapshot, animatingDifferences: false)
         } else {
             var snapshot = NSDiffableDataSourceSnapshot<SectionsChats,MChat>()
             snapshot.appendSections([.newChats, .activeChats])
             snapshot.appendItems(newChats, toSection: .newChats)
             snapshot.appendItems(activeChats, toSection: .activeChats)
             
-            dataSource?.apply(snapshot, animatingDifferences: false, completion: { [weak self] in
-                
-                self?.collectionView?.collectionViewLayout.invalidateLayout()
-                self?.collectionView?.layoutIfNeeded()
-                self?.collectionView?.setCollectionViewLayout(self?.setupCompositionalLayout(isEmptyActiveSection: activeChats.isEmpty,
-                                                                                             isEmptyNewSection: newChats.isEmpty) ?? UICollectionViewFlowLayout(),
-                                                              animated: false)
-                
-            })
+            dataSource?.apply(snapshot, animatingDifferences: false)
         }
     }
 }
@@ -363,7 +360,7 @@ extension ChatsViewController: AcceptChatCollectionViewDelegate {
             fallthrough
         default:
             renewDataSource(searchText: nil)
-            guard let sortedAcceptChats = acceptChatDelegate?.sortedAcceptChats else { fatalError("Can't get sorted accept chats")}
+            guard let sortedAcceptChats = acceptChatDelegate?.sortedAcceptChats else { return }
             //  if only one chat in collection, and this is update, need second renew, for correct update header (change new to active chat)
             if sortedAcceptChats.count == 1 {
                 renewDataSource(searchText: nil)
@@ -389,20 +386,27 @@ extension ChatsViewController: UICollectionViewDelegate {
         guard let section = SectionsChats(rawValue: indexPath.section) else { fatalError("Unknow section index")}
         guard let item = dataSource?.itemIdentifier(for: indexPath) else { fatalError(DataSourceError.unknownChatIdentificator.localizedDescription)}
         guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("Current people is nil in ChatsVC")}
+        guard let acceptChatDelegate = acceptChatDelegate else { return }
         
         switch section {
         case .newChats:
             
-            let chatVC = ChatViewController(currentPeopleDelegate: currentPeopleDelegate,
-                                            chat: item,
-                                            messageDelegate: messageDelegate,
-                                            acceptChatDelegate: acceptChatDelegate,
-                                            reportDelegate: reportDelegate,
-                                            peopleDelegate: peopleDelegate,
-                                            requestDelegate: requestChatsDelegate)
-            
-            navigationController?.pushViewController(chatVC, animated: true)
-            FirestoreService.shared.updateLastActiveDate(id: currentPeopleDelegate.currentPeople.senderId)
+            //if first static cell
+            if item.friendId == acceptChatDelegate.requestChatsCountName {
+                //select request tab bar item
+                tabBarController?.selectedIndex = 1
+            } else {
+                let chatVC = ChatViewController(currentPeopleDelegate: currentPeopleDelegate,
+                                                chat: item,
+                                                messageDelegate: messageDelegate,
+                                                acceptChatDelegate: acceptChatDelegate,
+                                                reportDelegate: reportDelegate,
+                                                peopleDelegate: peopleDelegate,
+                                                requestDelegate: requestChatsDelegate)
+                
+                navigationController?.pushViewController(chatVC, animated: true)
+                FirestoreService.shared.updateLastActiveDate(id: currentPeopleDelegate.currentPeople.senderId)
+            }
             
         case .activeChats:
             

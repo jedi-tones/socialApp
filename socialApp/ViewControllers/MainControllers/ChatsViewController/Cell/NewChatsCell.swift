@@ -59,7 +59,6 @@ class NewChatsCell: UICollectionViewCell,SelfConfiguringCell {
         backgroundColor = .myWhiteColor()
         frendImage.layer.cornerRadius = MDefaultLayer.smallCornerRadius.rawValue
         frendImage.clipsToBounds = true
-
     }
     
     override func prepareForReuse() {

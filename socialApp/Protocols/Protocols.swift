@@ -137,6 +137,8 @@ protocol RequestChatListenerDelegate: class {
 
 protocol AcceptChatListenerDelegate: class {
     var userID: String { get set }
+    var requestChatsCountName: String { get }
+    var staticCellCount: Int { get }
     var acceptChats: [MChat] { get set }
     var sortedAcceptChats: [MChat] { get }
     var lastSelectedChat: MChat? { get set }

@@ -136,6 +136,7 @@
 		FBA462932594CB4700D3AEC2 /* FireStoreServiceExtensionAdmin.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA462922594CB4700D3AEC2 /* FireStoreServiceExtensionAdmin.swift */; };
 		FBA462A02597882300D3AEC2 /* EditProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA4629F2597882300D3AEC2 /* EditProfileView.swift */; };
 		FBA462AC2597952000D3AEC2 /* EditProfileViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA462AB2597952000D3AEC2 /* EditProfileViewDelegate.swift */; };
+		FBA462B02597D2A700D3AEC2 /* NewRequestCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA462AF2597D2A700D3AEC2 /* NewRequestCell.swift */; };
 		FBA94D1E24F55CBE000DA5D5 /* SectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA94D1D24F55CBE000DA5D5 /* SectionHeader.swift */; };
 		FBB26EAE254585DB0081CF2C /* ChatTitleStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBB26EAD254585DB0081CF2C /* ChatTitleStackView.swift */; };
 		FBB26EB42546E49B0081CF2C /* MAdmin.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBB26EB32546E49B0081CF2C /* MAdmin.swift */; };
@@ -390,6 +391,7 @@
 		FBA462922594CB4700D3AEC2 /* FireStoreServiceExtensionAdmin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireStoreServiceExtensionAdmin.swift; sourceTree = "<group>"; };
 		FBA4629F2597882300D3AEC2 /* EditProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileView.swift; sourceTree = "<group>"; };
 		FBA462AB2597952000D3AEC2 /* EditProfileViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileViewDelegate.swift; sourceTree = "<group>"; };
+		FBA462AF2597D2A700D3AEC2 /* NewRequestCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewRequestCell.swift; sourceTree = "<group>"; };
 		FBA94D1D24F55CBE000DA5D5 /* SectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeader.swift; sourceTree = "<group>"; };
 		FBB26EAD254585DB0081CF2C /* ChatTitleStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTitleStackView.swift; sourceTree = "<group>"; };
 		FBB26EB32546E49B0081CF2C /* MAdmin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAdmin.swift; sourceTree = "<group>"; };
@@ -575,6 +577,7 @@
 				FBA94D1D24F55CBE000DA5D5 /* SectionHeader.swift */,
 				FB21A1B524E55F6C000A2E91 /* ActiveChatsCell.swift */,
 				FB21A1BE24E5ADE5000A2E91 /* NewChatsCell.swift */,
+				FBA462AF2597D2A700D3AEC2 /* NewRequestCell.swift */,
 			);
 			path = Cell;
 			sourceTree = "<group>";
@@ -1606,6 +1609,7 @@
 				FB61A7FB251E6312005DCC78 /* UserDefaultsService.swift in Sources */,
 				FB8C3D9C253A589B00184FB5 /* RequestChatCell.swift in Sources */,
 				FBEF607A24A602070005F947 /* SceneDelegate.swift in Sources */,
+				FBA462B02597D2A700D3AEC2 /* NewRequestCell.swift in Sources */,
 				FB78FEE825782440004DA53E /* ReportView.swift in Sources */,
 				FBB26EE1254B38B60081CF2C /* UserDefaultsError.swift in Sources */,
 			);

@@ -28,7 +28,7 @@ extension UIImageView {
         }
     }
     
-    convenience init (systemName: String, config: UIImage.SymbolConfiguration, tint: UIColor? = nil, frame: CGRect? = nil) {
+    convenience init (systemName: String, contentMode: UIView.ContentMode? = nil, config: UIImage.SymbolConfiguration, tint: UIColor? = nil, frame: CGRect? = nil) {
         self.init()
         
         if let newTint = tint {
@@ -36,6 +36,10 @@ extension UIImageView {
             self.image = UIImage(systemName: systemName, withConfiguration: config)?.withRenderingMode(.alwaysTemplate)
         } else {
             self.image = UIImage(systemName: systemName, withConfiguration: config)
+        }
+        
+        if let contentMode = contentMode {
+            self.contentMode = contentMode
         }
         
         if let newFrame = frame {

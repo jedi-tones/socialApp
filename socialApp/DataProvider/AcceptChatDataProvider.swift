@@ -10,6 +10,9 @@ import UIKit
 
 class AcceptChatDataProvider: AcceptChatListenerDelegate {
     
+    let requestChatsCountName = "RequestChatsCount"
+    let staticCellCount = 1
+    
     var userID: String
     var acceptChats: [MChat] = [] {
         didSet {
@@ -39,13 +42,13 @@ class AcceptChatDataProvider: AcceptChatListenerDelegate {
                 chatWasOpenClose(isWasOpen: false,
                                  lastMessage: lastMessageInSelectedChat,
                                  chat: lastSelectedChat)
-               // lastSelectedChat = nil
             }
         }
     }
     
     init(userID: String) {
         self.userID = userID
+        createRequestCountChat()
         configure()
     }
     
@@ -60,8 +63,11 @@ class AcceptChatDataProvider: AcceptChatListenerDelegate {
                                                object: nil)
         NotificationCenter.addObsorverToUserAvatarInChatsNeedUpdate(observer: self,
                                                                     selector: #selector(updateAvatarInFriendsChats(notification:)))
+        NotificationCenter.addObsorverRequestCountIsChange(observer: self,
+                                                           selector: #selector(requestCountIsChange(notification:)))
     }
     
+    //MARK: reloadData
     func reloadData(changeType: MTypeOfListenerChanges, chat: MChat, messageIsChanged: Bool?) {
         //for change tabbar badge
         
@@ -95,8 +101,6 @@ class AcceptChatDataProvider: AcceptChatListenerDelegate {
             if messageIsChanged == true {
                 //changedMessage not last seen massage in closed chat
                 if !isLastSeenMessage {
-                    //and this chat don't open
-                    
                     PopUpService.shared.showMessagePopUp(header: chat.friendUserName,
                                                          text: chat.lastMessage,
                                                          time: chat.date.getFormattedDate(format: "HH:mm"),
@@ -118,6 +122,19 @@ extension AcceptChatDataProvider {
         default:
             break
         }
+    }
+    
+    @objc private func requestCountIsChange(notification: Notification) {
+        guard
+            let data = notification.userInfo as? [String: Int],
+            let requestCount = data["requestCount"],
+            let index = acceptChats.firstIndex(where: {$0.friendId == requestChatsCountName })
+        else { return }
+        
+        acceptChats[index].lastMessage = String(requestCount)
+        acceptChats[index].date = Date()
+        acceptChatCollectionViewDelegate?.reloadDataSource(changeType: .update)
+        
     }
     
     @objc private func updateAvatarInFriendsChats(notification: Notification) {
@@ -145,8 +162,6 @@ extension AcceptChatDataProvider {
             }
         }
     }
-    
-   
 }
 
 extension AcceptChatDataProvider {
@@ -163,7 +178,7 @@ extension AcceptChatDataProvider {
 extension AcceptChatDataProvider {
     
     func calculateUnreadAndNewChats() -> Int {
-        let newChatsCount = acceptChats.filter { $0.isNewChat }.count
+        let newChatsCount = acceptChats.filter { $0.isNewChat }.count - staticCellCount
         var unreadMessageCount = 0
         acceptChats.forEach { unreadMessageCount += $0.unreadChatMessageCount }
         let eventCount = unreadMessageCount + newChatsCount
@@ -178,10 +193,11 @@ extension AcceptChatDataProvider {
             
             switch result {
             
-            case .success(let acceptChats):
-                self?.acceptChats = acceptChats
+            case .success(let chats):
+                self?.acceptChats.append(contentsOf: chats)
                 self?.checkInactiveChat()
-                complition(.success(acceptChats))
+                
+                complition(.success(chats))
             case .failure(let error):
                 complition(.failure(error))
             }
@@ -189,10 +205,12 @@ extension AcceptChatDataProvider {
     }
 }
 
-//MARK: checkInactiveChat
+
 extension AcceptChatDataProvider {
+    
+    //MARK: checkInactiveChat
     //check chat for timeOfLife
-    func checkInactiveChat() {
+    private func checkInactiveChat() {
         let strongUserID = userID
 
         let periodMinutesOfLifeChat = MChat.getDefaultPeriodMinutesOfLifeChat()
@@ -215,5 +233,27 @@ extension AcceptChatDataProvider {
                 }
             }
         }
+    }
+    
+    private func createRequestCountChat() {
+        guard let dateForFirstCell = Date().getDateYearAgo(years: 100) else { fatalError("dateForFirstCell init fail")}
+        
+        let requestCountChat = MChat(friendUserName: requestChatsCountName,
+                                     friendUserImageString: "",
+                                     lastMessage: "0",
+                                     lastMessageSenderID: "",
+                                     isNewChat: true,
+                                     friendId: requestChatsCountName,
+                                     unreadChatMessageCount: 0,
+                                     friendIsWantStopTimer: false,
+                                     currentUserIsWantStopTimer: false,
+                                     timerOfLifeIsStoped: true,
+                                     createChatDate: dateForFirstCell,
+                                     fcmKey: "",
+                                     friendInChat: false,
+                                     friendSawAllMessageInChat: true,
+                                     date: Date())
+        
+        acceptChats.append(requestCountChat)
     }
 }

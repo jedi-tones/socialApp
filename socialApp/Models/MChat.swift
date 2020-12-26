@@ -233,10 +233,13 @@ struct MChat: Hashable, Codable, ReprasentationModel {
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(friendId)
+        hasher.combine(lastMessage)
+        hasher.combine(isNewChat)
+        hasher.combine(date)
     }
     
     static func == (lhs: MChat, rhs: MChat) -> Bool {
-        return lhs.friendId == rhs.friendId
+        return lhs.friendId == rhs.friendId 
     }
     
     static func getDefaultPeriodMinutesOfLifeChat() -> Int {

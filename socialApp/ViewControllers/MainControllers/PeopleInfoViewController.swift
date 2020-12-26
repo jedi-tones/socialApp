@@ -105,6 +105,7 @@ class PeopleInfoViewController: UIViewController {
 
 extension PeopleInfoViewController: PeopleButtonTappedDelegate {
     
+    //MARK: timeTapped
     func timeTapped() {
         guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate in PeopleInfoVC is nil")}
         
@@ -119,6 +120,7 @@ extension PeopleInfoViewController: PeopleButtonTappedDelegate {
         }
     }
     
+    //MARK: likePeople
      func likePeople(people: MPeople) {
         
         guard let requestChatsDelegate = requestChatsDelegate else { fatalError("Can't get requestChatsDelegate") }
@@ -173,6 +175,7 @@ extension PeopleInfoViewController: PeopleButtonTappedDelegate {
         }
      }
     
+    //MARK: dislikePeople
      func dislikePeople(people: MPeople) {
         
         guard let requestChatsDelegate = requestChatsDelegate else { fatalError("Can't get requestChatsDelegate") }
@@ -202,6 +205,7 @@ extension PeopleInfoViewController: PeopleButtonTappedDelegate {
         }
     }
     
+    //MARK: reportTapped
     func reportTapped(people: MPeople) {
         guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate in PeopleInfoVC is nil")}
         
