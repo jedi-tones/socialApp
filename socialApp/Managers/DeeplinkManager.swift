@@ -20,7 +20,6 @@ class DeeplinkManager {
         }
         
         DeeplinkNavigator.shared.proceedToDeeplink(deeplinkType)
-        
     }
     
     func resetDeeplink() {

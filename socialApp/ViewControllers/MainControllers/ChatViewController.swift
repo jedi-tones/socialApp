@@ -66,7 +66,7 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
     }
     
     deinit {
-        removeMessageListner()
+        messageDelegate?.removeListener()
         removeListners()
         acceptChatDelegate?.messageCollectionViewDelegate = nil
         acceptChatDelegate?.lastSelectedChat = nil
@@ -101,10 +101,6 @@ class ChatViewController: MessagesViewController, MessageControllerDelegate  {
     //MARK: addMessageListener
     private func addMessageListener() {
         messageDelegate?.setupListener(chat: chat)
-    }
-    
-    private func removeMessageListner() {
-        messageDelegate?.removeListener()
     }
     
     func chatsCollectionWasUpdate(chat: MChat) {
@@ -396,7 +392,6 @@ extension ChatViewController {
         switch notification.name {
         case UIApplication.didBecomeActiveNotification:
             acceptChatDelegate?.messageCollectionViewDelegate = self
-            print("get back!!!!")
         default:
             break
         }
@@ -642,8 +637,7 @@ extension ChatViewController: MessagesDataSource {
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard let messageDelegate = messageDelegate else { return }
-        
+       
         if scrollView.contentOffset.y <= 0  {
             needLoadMoreMessages()
         }

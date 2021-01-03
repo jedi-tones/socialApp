@@ -71,7 +71,7 @@ extension AppSettingsViewController {
         guard let acceptChatDelegate = acceptChatDelegate else { fatalError("acceptChatDelegate is nil on AppSettingsVC")}
         guard let likeDislikeDelegate = likeDislikeDelegate else { fatalError("likeDislikeDelegate is nil on AppSettingsVC")}
         
-        currentPeopleDelegate.deletePeople()
+        
         Apphud.logout()
         PushMessagingService.shared.logOutUnsabscribe(currentUserID: currentPeopleDelegate.currentPeople.senderId,
                                                       acceptChats: acceptChatDelegate.acceptChats)
@@ -89,7 +89,7 @@ extension AppSettingsViewController {
                     AuthService.shared.signOut(currentPeopleDelegate: currentPeopleDelegate) { result in
                         switch result {
                         case .success(_):
-                            return
+                            currentPeopleDelegate.deletePeople()
                         case .failure(let error):
                             fatalError(error.localizedDescription)
                         }

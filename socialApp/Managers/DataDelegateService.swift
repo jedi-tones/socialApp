@@ -10,12 +10,12 @@ import ApphudSDK
 
 class DataDelegateService {
     
-    private var acceptChatsDelegate: AcceptChatListenerDelegate
-    private var requestChatsDelegate: RequestChatListenerDelegate
-    private var peopleDelegate: PeopleListenerDelegate
-    private var likeDislikeDelegate: LikeDislikeListenerDelegate
-    private var messageDelegate: MessageListenerDelegate
-    private var reportsDelegate: ReportsListnerDelegate
+    private var acceptChatsDelegate: AcceptChatListenerDelegate?
+    private var requestChatsDelegate: RequestChatListenerDelegate?
+    private var peopleDelegate: PeopleListenerDelegate?
+    private var likeDislikeDelegate: LikeDislikeListenerDelegate?
+    private var messageDelegate: MessageListenerDelegate?
+    private var reportsDelegate: ReportsListnerDelegate?
     private var currentPeopleID: String
     
     init(currentPeopleID: String) {
@@ -28,15 +28,32 @@ class DataDelegateService {
         reportsDelegate = ReportsDataProvider(userID: currentPeopleID)
     }
     
+    deinit {
+        print("deinit DataDelegateService")
+        likeDislikeDelegate = nil
+        requestChatsDelegate = nil
+        acceptChatsDelegate = nil
+        peopleDelegate = nil
+        messageDelegate = nil
+        reportsDelegate = nil
+    }
+    
     func loadData(currentPeople: MPeople, complition: @escaping(_ acceptChatsDelegate: AcceptChatListenerDelegate,
                                                                 _ requestChatsDelegate: RequestChatListenerDelegate,
                                                                 _ peopleDelegate: PeopleListenerDelegate,
                                                                 _ likeDislikeDelegate: LikeDislikeListenerDelegate,
                                                                 _ messageDelegate: MessageListenerDelegate,
                                                                 _ reportsDelegate: ReportsListnerDelegate )->Void) {
+        guard let acceptChatsDelegate = acceptChatsDelegate,
+              let requestChatsDelegate = requestChatsDelegate,
+              let peopleDelegate = peopleDelegate,
+              let likeDislikeDelegate = likeDislikeDelegate,
+              let messageDelegate = messageDelegate,
+              let reportsDelegate = reportsDelegate else { return }
+        
         setup()
         setupApphud()
-        getPeopleData(people: currentPeople) { [unowned self]  result in
+        getPeopleData(people: currentPeople) { result in
             switch result {
             
             case .success():
@@ -87,7 +104,8 @@ extension DataDelegateService {
     //update fcmKey in chats
     @objc private func fcmKeyInChatsUpdate(notification: NSNotification) {
         guard let userInfo = notification.userInfo as? [String : String],
-              let fcmKey = userInfo[PushMessagingService.shared.notificationName] else { return }
+              let fcmKey = userInfo[PushMessagingService.shared.notificationName],
+              let acceptChatsDelegate = acceptChatsDelegate else { return }
         FirestoreService.shared.updateFCMKeyInChats(id: currentPeopleID,
                                                     fcmKey: fcmKey,
                                                     acceptChats: acceptChatsDelegate.acceptChats) { result in
@@ -104,6 +122,12 @@ extension DataDelegateService {
     //MARK: getPeopleData, location
     private func getPeopleData(people: MPeople, complition:@escaping(Result<(),Error>) -> Void) {
        
+        guard let likeDislikeDelegate = likeDislikeDelegate,
+              let reportsDelegate = reportsDelegate,
+              let requestChatsDelegate = requestChatsDelegate,
+              let acceptChatsDelegate = acceptChatsDelegate,
+              let peopleDelegate = peopleDelegate else { return }
+              
         if let virtualLocation = MVirtualLocation(rawValue: people.searchSettings[MSearchSettings.currentLocation.rawValue] ?? 0) {
             LocationService.shared.getCoordinate(userID: people.senderId,
                                                  virtualLocation: virtualLocation) {[unowned self] isAllowPermission in

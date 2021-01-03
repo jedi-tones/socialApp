@@ -137,6 +137,8 @@
 		FBA462A02597882300D3AEC2 /* EditProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA4629F2597882300D3AEC2 /* EditProfileView.swift */; };
 		FBA462AC2597952000D3AEC2 /* EditProfileViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA462AB2597952000D3AEC2 /* EditProfileViewDelegate.swift */; };
 		FBA462B02597D2A700D3AEC2 /* NewRequestCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA462AF2597D2A700D3AEC2 /* NewRequestCell.swift */; };
+		FBA462C225994E5900D3AEC2 /* zenRequestAlert.caf in Resources */ = {isa = PBXBuildFile; fileRef = FBA462BC25994E5800D3AEC2 /* zenRequestAlert.caf */; };
+		FBA462C325994E5900D3AEC2 /* messageAlert.caf in Resources */ = {isa = PBXBuildFile; fileRef = FBA462BD25994E5800D3AEC2 /* messageAlert.caf */; };
 		FBA94D1E24F55CBE000DA5D5 /* SectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA94D1D24F55CBE000DA5D5 /* SectionHeader.swift */; };
 		FBB26EAE254585DB0081CF2C /* ChatTitleStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBB26EAD254585DB0081CF2C /* ChatTitleStackView.swift */; };
 		FBB26EB42546E49B0081CF2C /* MAdmin.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBB26EB32546E49B0081CF2C /* MAdmin.swift */; };
@@ -392,6 +394,8 @@
 		FBA4629F2597882300D3AEC2 /* EditProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileView.swift; sourceTree = "<group>"; };
 		FBA462AB2597952000D3AEC2 /* EditProfileViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileViewDelegate.swift; sourceTree = "<group>"; };
 		FBA462AF2597D2A700D3AEC2 /* NewRequestCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewRequestCell.swift; sourceTree = "<group>"; };
+		FBA462BC25994E5800D3AEC2 /* zenRequestAlert.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = zenRequestAlert.caf; sourceTree = "<group>"; };
+		FBA462BD25994E5800D3AEC2 /* messageAlert.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = messageAlert.caf; sourceTree = "<group>"; };
 		FBA94D1D24F55CBE000DA5D5 /* SectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeader.swift; sourceTree = "<group>"; };
 		FBB26EAD254585DB0081CF2C /* ChatTitleStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTitleStackView.swift; sourceTree = "<group>"; };
 		FBB26EB32546E49B0081CF2C /* MAdmin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAdmin.swift; sourceTree = "<group>"; };
@@ -902,6 +906,15 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		FBA462B725994E5800D3AEC2 /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				FBA462BC25994E5800D3AEC2 /* zenRequestAlert.caf */,
+				FBA462BD25994E5800D3AEC2 /* messageAlert.caf */,
+			);
+			path = Sounds;
+			sourceTree = "<group>";
+		};
 		FBA94D1C24F55AC2000DA5D5 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
@@ -1200,6 +1213,7 @@
 				FBB3B25D2507C3BB00440632 /* socialApp.entitlements */,
 				FBEF607724A602070005F947 /* AppDelegate.swift */,
 				FBEF607924A602070005F947 /* SceneDelegate.swift */,
+				FBA462B725994E5800D3AEC2 /* Sounds */,
 				FBA94D1C24F55AC2000DA5D5 /* Managers */,
 				FBB34001256D421C00A597BF /* Protocols */,
 				FB21A1B924E596E3000A2E91 /* Models */,
@@ -1338,11 +1352,13 @@
 				FB78FE472572676D004DA53E /* searchLocation.json in Resources */,
 				FB78FE6325726EF8004DA53E /* wallet.json in Resources */,
 				FB78FE5125726CF8004DA53E /* explore.json in Resources */,
+				FBA462C225994E5900D3AEC2 /* zenRequestAlert.caf in Resources */,
 				FB78FEAB2573F90A004DA53E /* crossReady.json in Resources */,
 				FB78FE7425729A14004DA53E /* delivery.json in Resources */,
 				FB78FE672572706E004DA53E /* newsletter.json in Resources */,
 				FBD3016A257E505F00D38AE9 /* logo_eye.json in Resources */,
 				FB78FE7C2572A8DF004DA53E /* communication.json in Resources */,
+				FBA462C325994E5900D3AEC2 /* messageAlert.caf in Resources */,
 				FBE5A10F255ACF0600060D97 /* GoogleService-Info.plist in Resources */,
 				FBEF608124A6020A0005F947 /* Assets.xcassets in Resources */,
 				FBD3016E257E55F100D38AE9 /* loading_square.json in Resources */,
@@ -1652,7 +1668,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.02.26;
+				MARKETING_VERSION = 1.02.29;
 				PRODUCT_BUNDLE_IDENTIFIER = "art.jedi-tones.flava.MyNotificationService";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1675,7 +1691,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.02.26;
+				MARKETING_VERSION = 1.02.29;
 				PRODUCT_BUNDLE_IDENTIFIER = "art.jedi-tones.flava.MyNotificationService";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1819,7 +1835,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.02.26;
+				MARKETING_VERSION = 1.02.29;
 				PRODUCT_BUNDLE_IDENTIFIER = "art.jedi-tones.flava";
 				PRODUCT_NAME = Flava;
 				SWIFT_VERSION = 5.0;
@@ -1844,7 +1860,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.02.26;
+				MARKETING_VERSION = 1.02.29;
 				PRODUCT_BUNDLE_IDENTIFIER = "art.jedi-tones.flava";
 				PRODUCT_NAME = Flava;
 				SWIFT_VERSION = 5.0;

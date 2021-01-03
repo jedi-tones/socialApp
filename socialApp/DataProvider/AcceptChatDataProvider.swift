@@ -29,7 +29,7 @@ class AcceptChatDataProvider: AcceptChatListenerDelegate {
     var lastMessageInSelectedChat: MMessage?
      
     weak var acceptChatCollectionViewDelegate: AcceptChatCollectionViewDelegate?
-    weak var mainTabBarDelegate: MainTabBarDelegate?
+    weak var mainTabBarDelegate: MainTabBarDelegate? 
     weak var messageCollectionViewDelegate: MessageControllerDelegate? {
         didSet {
             if let selectedMessageCollectionView = messageCollectionViewDelegate {
@@ -53,6 +53,7 @@ class AcceptChatDataProvider: AcceptChatListenerDelegate {
     }
     
     deinit {
+        removeAcceptChatListener()
         NotificationCenter.default.removeObserver(self)
     }
     

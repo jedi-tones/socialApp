@@ -13,4 +13,5 @@ protocol EditProfileViewDelegate: class {
     func genderSelectTapped(selectedGender: String)
     func sexualitySelectTapped(selectedSexuality: String)
     func incognitoSwitchChanged()
+    func previewTapped()
 }

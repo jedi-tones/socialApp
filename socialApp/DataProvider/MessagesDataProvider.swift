@@ -21,6 +21,10 @@ class MessagesDataProvider: MessageListenerDelegate {
     init(userID: String) {
         self.userID = userID
     }
+    
+    deinit {
+        print("deinit message")
+    }
 }
 
 extension MessagesDataProvider {

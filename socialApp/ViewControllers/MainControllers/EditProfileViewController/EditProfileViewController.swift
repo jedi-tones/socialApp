@@ -13,7 +13,8 @@ import SDWebImage
 import MapKit
 
 class EditProfileViewController: UIViewController {
-
+    
+    private var isComeFromePreview = false
     private var editProfileView = EditProfileView()
     private weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     
@@ -110,6 +111,19 @@ class EditProfileViewController: UIViewController {
 }
 
 extension EditProfileViewController : EditProfileViewDelegate {
+    func previewTapped() {
+        guard let previewPeople = editProfileView.getData() else { return }
+        let previewVC = PeopleInfoViewController(currentPeopleDelegate: currentPeopleDelegate,
+                                                 peopleID: "",
+                                                 isFriend: true,
+                                                 isCurrentPeople: true,
+                                                 previewPeople: previewPeople,
+                                                 requestChatsDelegate: nil,
+                                                 peopleDelegate: nil,
+                                                 reportDelegate: nil)
+        navigationController?.pushViewController(previewVC, animated: true)
+    }
+    
     func editPhotosButtonTap() {
         let vc = EditPhotoViewController(currentPeopleDelegate: currentPeopleDelegate,
                                          isFirstSetup: false)

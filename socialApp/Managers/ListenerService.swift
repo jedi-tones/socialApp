@@ -254,7 +254,7 @@ class ListenerService {
             .document(chat.friendId)
             .collection(MFirestorCollection.messages.rawValue)
             .order(by: MMessage.CodingKeys.sentDate.rawValue, descending: true)
-            
+        
         if let firstLoadMessage = firstLoadMessage {
             refMessages = acceptChatsRef
                 .document(chat.friendId)
@@ -262,7 +262,8 @@ class ListenerService {
                 .order(by: MMessage.CodingKeys.sentDate.rawValue)
                 .start(after: [Timestamp(date: firstLoadMessage.sentDate)])
         }
-            refMessages.addSnapshotListener({ snapshot, error in
+        
+        messageListner = refMessages.addSnapshotListener({ snapshot, error in
             guard let snapshot = snapshot else { fatalError("Cant get snapshot of message")}
             
             snapshot.documentChanges.forEach { document in

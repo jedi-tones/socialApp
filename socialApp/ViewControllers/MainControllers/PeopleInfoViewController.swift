@@ -13,7 +13,8 @@ class PeopleInfoViewController: UIViewController {
     private var peopleID: String
     private var people: MPeople?
     private var isFriend: Bool
-    
+    private var isCurrentPeople: Bool
+    private var previewPeople: MPeople?
     private let peopleView = PeopleView()
     private let loadingView = LoadingView(name: MAnimamationName.loading.rawValue, isHidden: false)
     
@@ -25,6 +26,8 @@ class PeopleInfoViewController: UIViewController {
     init(currentPeopleDelegate: CurrentPeopleDataDelegate?,
          peopleID: String,
          isFriend: Bool,
+         isCurrentPeople: Bool = false,
+         previewPeople: MPeople? = nil,
          requestChatsDelegate: RequestChatListenerDelegate?,
          peopleDelegate: PeopleListenerDelegate?,
          reportDelegate: ReportsListnerDelegate?) {
@@ -32,6 +35,8 @@ class PeopleInfoViewController: UIViewController {
         self.currentPeopleDelegate = currentPeopleDelegate
         self.peopleID = peopleID
         self.isFriend = isFriend
+        self.isCurrentPeople = isCurrentPeople
+        self.previewPeople = previewPeople
         self.requestChatsDelegate = requestChatsDelegate
         self.peopleDelegate = peopleDelegate
         self.reportDelegate = reportDelegate
@@ -70,35 +75,51 @@ class PeopleInfoViewController: UIViewController {
         view.backgroundColor = .myWhiteColor()
         peopleView.animateLikeButton.isHidden = isFriend
         peopleView.animateDislikeButton.isHidden = isFriend
-    
-      
         
+        if isCurrentPeople {
+            peopleView.reportButton.isHidden = true
+            navigationItem.title = "Предпросмотр профиля"
+        }
     }
     
     func configure() {
         guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate in PeopleInfoVC is nil")}
         
-        FirestoreService.shared.getUserData(userID: peopleID, complition: { [weak self] result in
-            switch result {
-            
-            case .success(let mPeople):
-                //calculate distance to this people
-                let distance = LocationService.shared.getDistance(currentPeople: currentPeopleDelegate.currentPeople,
-                                                                  newPeople: mPeople)
-                var peopleWithDistanceInfo = mPeople
-                peopleWithDistanceInfo.distance = distance
-                self?.people = peopleWithDistanceInfo
-                self?.peopleView.configure(with: peopleWithDistanceInfo,
-                                           currentPeople: currentPeopleDelegate.currentPeople,
-                                           showPrivatePhoto: true,
-                                           buttonDelegate: self) {
-                    self?.loadingView.hide()
-                    
-                }
-            case .failure(let error):
-                fatalError(error.localizedDescription)
+        //if is current people preview
+        if isCurrentPeople {
+            var peopleForPreview = currentPeopleDelegate.currentPeople
+            if let previewPeople = previewPeople {
+                peopleForPreview = previewPeople
             }
-        })
+            peopleView.configure(with: peopleForPreview,
+                                 currentPeople: currentPeopleDelegate.currentPeople,
+                                 showPrivatePhoto: true,
+                                 buttonDelegate: self) { [weak self] in
+                self?.loadingView.hide()
+            }
+        } else {
+            FirestoreService.shared.getUserData(userID: peopleID, complition: { [weak self] result in
+                switch result {
+                
+                case .success(let mPeople):
+                    //calculate distance to this people
+                    let distance = LocationService.shared.getDistance(currentPeople: currentPeopleDelegate.currentPeople,
+                                                                      newPeople: mPeople)
+                    var peopleWithDistanceInfo = mPeople
+                    peopleWithDistanceInfo.distance = distance
+                    self?.people = peopleWithDistanceInfo
+                    self?.peopleView.configure(with: peopleWithDistanceInfo,
+                                               currentPeople: currentPeopleDelegate.currentPeople,
+                                               showPrivatePhoto: true,
+                                               buttonDelegate: self) {
+                        self?.loadingView.hide()
+                        
+                    }
+                case .failure(let error):
+                    fatalError(error.localizedDescription)
+                }
+            })
+        }
     }
 }
 

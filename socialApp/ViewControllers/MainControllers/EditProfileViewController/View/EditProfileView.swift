@@ -11,7 +11,7 @@ import UIKit
 class EditProfileView: UIView {
     private let scrollView = UIScrollView()
     private let gelleryScrollView = GalleryView(profileImage: "", gallery: [:], showPrivate: true, showProtectButton: true)
-    private let nameLabel = UILabel(labelText: "Вымышленное имя:",
+    private let nameLabel = UILabel(labelText: "Имя:",
                             textFont: .avenirRegular(size: 16),
                             textColor: .myGrayColor())
     private let aboutLabel = UILabel(labelText: "Обо мне:",
@@ -38,8 +38,11 @@ class EditProfileView: UIView {
                                     isEditable: true)
     
     private let editPhotosButton = RoundButton(newBackgroundColor: UIColor.myFirstButtonColor().withAlphaComponent(0.5),
-                                       title: "Редактировать",
+                                       title: "Редактировать фото",
                                        titleColor: .myFirstButtonLabelColor())
+    private let previewButton = RoundButton(newBackgroundColor: UIColor.myFirstButtonColor(),
+                                            title: "Предпросмотр профиля",
+                                            titleColor: .myFirstButtonLabelColor())
     private let incognitoLabel = UILabel(labelText: "Инкогнито",
                                 textFont: .avenirRegular(size: 16),
                                 textColor: .mySecondSatColor())
@@ -107,6 +110,7 @@ class EditProfileView: UIView {
         genderButton.addTarget(self, action: #selector(genderSelectTapped), for: .touchUpInside)
         sexualityButton.addTarget(self, action: #selector(sexualitySelectTapped), for: .touchUpInside)
         incognitoSwitch.addTarget(self, action: #selector(incognitoSwitchChanged), for: .touchUpInside)
+        previewButton.addTarget(self, action: #selector(previewTapped), for: .touchUpInside)
     }
     
     //MARK: setData
@@ -203,6 +207,10 @@ extension EditProfileView {
         }
     }
     
+    @objc private func previewTapped() {
+        delegate?.previewTapped()
+    }
+    
     
     //MARK: updateView
     @objc func updateView(notification: Notification?) {
@@ -291,6 +299,7 @@ extension EditProfileView {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         gelleryScrollView.translatesAutoresizingMaskIntoConstraints = false
         editPhotosButton.translatesAutoresizingMaskIntoConstraints = false
+        previewButton.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
         interestsTags.translatesAutoresizingMaskIntoConstraints = false
@@ -306,6 +315,7 @@ extension EditProfileView {
         addSubview(scrollView)
         scrollView.addSubview(gelleryScrollView)
         scrollView.addSubview(editPhotosButton)
+        scrollView.addSubview(previewButton)
         scrollView.addSubview(nameLabel)
         scrollView.addSubview(nameTextField)
         scrollView.addSubview(interestsTags)
@@ -329,11 +339,17 @@ extension EditProfileView {
             gelleryScrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
             gelleryScrollView.heightAnchor.constraint(equalTo: gelleryScrollView.widthAnchor),
             
-            editPhotosButton.bottomAnchor.constraint(equalTo: gelleryScrollView.bottomAnchor, constant: -10),
-            editPhotosButton.centerXAnchor.constraint(equalTo: gelleryScrollView.centerXAnchor),
+            editPhotosButton.bottomAnchor.constraint(equalTo: gelleryScrollView.bottomAnchor, constant: -25),
+            editPhotosButton.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 25),
+            editPhotosButton.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -25),
             editPhotosButton.heightAnchor.constraint(equalTo: editPhotosButton.widthAnchor, multiplier: 1.0/7.28),
             
-            nameLabel.topAnchor.constraint(equalTo: gelleryScrollView.bottomAnchor, constant: 35),
+            previewButton.topAnchor.constraint(equalTo: gelleryScrollView.bottomAnchor, constant: 35),
+            previewButton.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 25),
+            previewButton.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -25),
+            previewButton.heightAnchor.constraint(equalTo: previewButton.widthAnchor, multiplier: 1.0/7.28),
+            
+            nameLabel.topAnchor.constraint(equalTo: previewButton.bottomAnchor, constant: 35),
             nameLabel.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 25),
             nameLabel.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -25),
             

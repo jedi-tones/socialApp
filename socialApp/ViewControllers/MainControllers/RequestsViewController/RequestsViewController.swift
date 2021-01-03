@@ -15,12 +15,12 @@ class RequestsViewController: UIViewController {
     
     private var collectionView: UICollectionView?
    
-    var peopleDelegate: PeopleListenerDelegate
-    var requestChatDelegate: RequestChatListenerDelegate
-    var likeDislikeDelegate: LikeDislikeListenerDelegate
-    var acceptChatDelegate: AcceptChatListenerDelegate
-    var reportDelegate: ReportsListnerDelegate
-    var currentPeopleDelegate: CurrentPeopleDataDelegate
+    weak var peopleDelegate: PeopleListenerDelegate?
+    weak var requestChatDelegate: RequestChatListenerDelegate?
+    weak var likeDislikeDelegate: LikeDislikeListenerDelegate?
+    weak var acceptChatDelegate: AcceptChatListenerDelegate?
+    weak var reportDelegate: ReportsListnerDelegate?
+    weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     
     private var emptyView = EmptyView(imageName: "delivery",
                                       header: MLabels.emptyRequestChatHeader.rawValue,
@@ -55,7 +55,7 @@ class RequestsViewController: UIViewController {
     }
     
     deinit {
-        requestChatDelegate.removeListener()
+        requestChatDelegate?.removeListener()
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -82,12 +82,15 @@ class RequestsViewController: UIViewController {
     }
     
     private func setupListeners() {
-        requestChatDelegate.setupListener(reportsDelegate: reportDelegate)
+        if let reportDelegate = reportDelegate {
+            requestChatDelegate?.setupListener(reportsDelegate: reportDelegate)
+        }
         NotificationCenter.addObsorverToPremiumUpdate(observer: self, selector: #selector(premiumIsUpdated))
     }
     
     //MARK: checkPeopleNearbyIsEmpty
     private func checkRequestIsEmpty()  {
+        guard let requestChatDelegate = requestChatDelegate else  { return }
         
         if requestChatDelegate.requestChats.isEmpty {
             emptyView.hide(hidden: false)
@@ -99,6 +102,9 @@ class RequestsViewController: UIViewController {
     }
     
     private func configureHaveRequestView() {
+        guard let requestChatDelegate = requestChatDelegate,
+              let currentPeopleDelegate = currentPeopleDelegate else { return }
+        
         let countOfPeople = requestChatDelegate.requestChats.count
         if currentPeopleDelegate.currentPeople.isGoldMember || currentPeopleDelegate.currentPeople.isTestUser || countOfPeople == 0 {
             haveRequestGetPremiumView.configure(countOfPeople: countOfPeople, isHidden: true)
@@ -230,7 +236,7 @@ extension RequestsViewController {
                                                                         for: indexPath) as? RequestChatCell else {
                         fatalError("Can't dequeue cell type \(RequestChatCell.self)")
                     }
-                    if let currentPeople = self?.currentPeopleDelegate.currentPeople {
+                    if let currentPeople = self?.currentPeopleDelegate?.currentPeople {
                         cell.configure(with: chat, currentUser: currentPeople)
                     }
                     return cell
@@ -262,7 +268,7 @@ extension RequestsViewController: RequestChatCollectionViewDelegate {
     func reloadData() {
         checkRequestIsEmpty()
         configureHaveRequestView()
-        let sortedRequestChats = requestChatDelegate.sortedRequestChats
+        guard let sortedRequestChats = requestChatDelegate?.sortedRequestChats else { return }
         
         if let dataSource = dataSource {
             var snapshot = dataSource.snapshot()
@@ -287,6 +293,8 @@ extension RequestsViewController: RequestChatCollectionViewDelegate {
 //MARK: CollectionViewDelegate
 extension RequestsViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let currentPeopleDelegate = currentPeopleDelegate,
+              let requestChatDelegate = requestChatDelegate else { return }
         guard let section = SectionsRequests(rawValue: indexPath.section) else { fatalError("Unknow section index")}
         guard let item = dataSource?.itemIdentifier(for: indexPath) else { fatalError(DataSourceError.unknownChatIdentificator.localizedDescription)}
         
