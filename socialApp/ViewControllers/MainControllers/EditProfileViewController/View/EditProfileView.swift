@@ -54,7 +54,7 @@ class EditProfileView: UIView {
     
     private var selectedVisibleYValue: CGFloat?
     private var keybordMinYValue:CGFloat?
-    private var currentPeople: MPeople?
+    private var viewModel: EditProfileViewViewModelProtocol?
     weak var delegate: EditProfileViewDelegate?
     
     override init(frame: CGRect){
@@ -114,48 +114,41 @@ class EditProfileView: UIView {
     }
     
     //MARK: setData
-    func setData(people: MPeople){
-        currentPeople = people
+    func setData(viewModel: EditProfileViewViewModelProtocol){
+        self.viewModel = viewModel
         interestsTags.configure(unselectTags: [],
-                                selectedTags: people.interests)
+                                selectedTags: viewModel.interests)
         desireTags.configure(unselectTags: [],
-                             selectedTags: people.desires)
+                             selectedTags: viewModel.desires)
         
-        gelleryScrollView.setupImages(profileImage: people.userImage,
-                                      gallery: people.gallery,
+        gelleryScrollView.setupImages(profileImage: viewModel.userImage,
+                                      gallery: viewModel.gallery,
                                       showPrivate: true,
                                       showProtectButton: true,
                                       complition: {
                                         self.gelleryScrollView.layoutSubviews()
         })
         
-        nameTextField.text = people.displayName
-        advertTextView.text = people.advert
-        genderButton.infoLabel.text = people.gender
-        sexualityButton.infoLabel.text = people.sexuality
-        incognitoSwitch.isOn = people.isIncognito
+        nameTextField.text = viewModel.displayName
+        advertTextView.text = viewModel.advert
+        genderButton.infoLabel.text = viewModel.gender
+        sexualityButton.infoLabel.text = viewModel.sexuality
+        incognitoSwitch.isOn = viewModel.isIncognito
     }
     
     //MARK: getData
-    func getData() -> MPeople? {
-        guard let currentPeople = currentPeople else { return nil }
+    func getData() -> MPeople {
         
-        let name = nameTextField.text ?? ""
-        let advert = advertTextView.text ?? ""
-        let isIncognito = incognitoSwitch.isOn
-        let interestsSelectedTags = interestsTags.getSelectedTags()
-        let desiresSelectedTags = desireTags.getSelectedTags()
-        let gender = genderButton.infoLabel.text ?? MGender.man.rawValue
-        let sexuality = sexualityButton.infoLabel.text ?? MSexuality.straight.rawValue
+        guard let viewModel = viewModel else { fatalError("EditProfileViewViewModel is nil")}
         
-        var editedPeople = currentPeople
-        editedPeople.displayName = name
-        editedPeople.advert = advert
-        editedPeople.isIncognito = isIncognito
-        editedPeople.interests = interestsSelectedTags
-        editedPeople.desires = desiresSelectedTags
-        editedPeople.gender = gender
-        editedPeople.sexuality = sexuality
+        var editedPeople = viewModel.currentPeople
+        editedPeople.displayName = nameTextField.text ?? ""
+        editedPeople.advert = advertTextView.text ?? ""
+        editedPeople.isIncognito = incognitoSwitch.isOn
+        editedPeople.interests = interestsTags.getSelectedTags()
+        editedPeople.desires = desireTags.getSelectedTags()
+        editedPeople.gender = genderButton.infoLabel.text ?? MGender.man.rawValue
+        editedPeople.sexuality = sexualityButton.infoLabel.text ?? MSexuality.straight.rawValue
         
         return editedPeople
     }
@@ -199,9 +192,9 @@ extension EditProfileView {
     
     //MARK: incognitoSwitchChanged
     @objc private func incognitoSwitchChanged(){
-        guard let people = currentPeople else { return }
+        guard let viewModel = viewModel else { return }
         
-        if !PurchasesService.shared.checkActiveSubscribtionWithApphud() && !people.isTestUser {
+        if !PurchasesService.shared.checkActiveSubscribtionWithApphud() && !viewModel.isTestUser {
             delegate?.incognitoSwitchChanged()
             incognitoSwitch.isOn.toggle()
         }

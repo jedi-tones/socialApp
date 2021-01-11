@@ -8,6 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		C8C2ED28CC875473954C8551 /* Pods_socialApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 519929C6363CDB8EE7F5AFE7 /* Pods_socialApp.framework */; };
+		FB007A5325A8B4C100A10E1F /* EditProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB007A5225A8B4C100A10E1F /* EditProfileViewModel.swift */; };
+		FB007A5925A8B78000A10E1F /* EditProfileViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB007A5825A8B78000A10E1F /* EditProfileViewModelProtocol.swift */; };
+		FB007A6225A8B90A00A10E1F /* EditProfileViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB007A6125A8B90A00A10E1F /* EditProfileViewViewModel.swift */; };
+		FB007A6625A8B92100A10E1F /* EditProfileViewViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB007A6525A8B92100A10E1F /* EditProfileViewViewModelProtocol.swift */; };
+		FB007A6A25A8C97F00A10E1F /* FirestoreSaveProfileAfterEditViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB007A6925A8C97F00A10E1F /* FirestoreSaveProfileAfterEditViewModel.swift */; };
+		FB007A6E25A8C9BE00A10E1F /* FirestoreSaveProfileAfterEditViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB007A6D25A8C9BD00A10E1F /* FirestoreSaveProfileAfterEditViewModelProtocol.swift */; };
+		FB007A7325A8DB8C00A10E1F /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB007A7225A8DB8C00A10E1F /* Box.swift */; };
 		FB03C4CC258A4FF10000B8D3 /* CurrentPeopleDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB03C4CB258A4FF10000B8D3 /* CurrentPeopleDataProvider.swift */; };
 		FB03C4D0258A5B020000B8D3 /* CurrentPeopleDataDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB03C4CF258A5B020000B8D3 /* CurrentPeopleDataDelegate.swift */; };
 		FB09108024FA93E2006B72D5 /* UITextViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB09107F24FA93E2006B72D5 /* UITextViewExtension.swift */; };
@@ -263,6 +270,13 @@
 		519929C6363CDB8EE7F5AFE7 /* Pods_socialApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_socialApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A864411375E48564A6F68A6B /* Pods-socialApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-socialApp.release.xcconfig"; path = "Target Support Files/Pods-socialApp/Pods-socialApp.release.xcconfig"; sourceTree = "<group>"; };
 		BE11C4154A14226A757830CC /* Pods-socialApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-socialApp.debug.xcconfig"; path = "Target Support Files/Pods-socialApp/Pods-socialApp.debug.xcconfig"; sourceTree = "<group>"; };
+		FB007A5225A8B4C100A10E1F /* EditProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileViewModel.swift; sourceTree = "<group>"; };
+		FB007A5825A8B78000A10E1F /* EditProfileViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileViewModelProtocol.swift; sourceTree = "<group>"; };
+		FB007A6125A8B90A00A10E1F /* EditProfileViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileViewViewModel.swift; sourceTree = "<group>"; };
+		FB007A6525A8B92100A10E1F /* EditProfileViewViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileViewViewModelProtocol.swift; sourceTree = "<group>"; };
+		FB007A6925A8C97F00A10E1F /* FirestoreSaveProfileAfterEditViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreSaveProfileAfterEditViewModel.swift; sourceTree = "<group>"; };
+		FB007A6D25A8C9BD00A10E1F /* FirestoreSaveProfileAfterEditViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreSaveProfileAfterEditViewModelProtocol.swift; sourceTree = "<group>"; };
+		FB007A7225A8DB8C00A10E1F /* Box.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
 		FB03C4CB258A4FF10000B8D3 /* CurrentPeopleDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentPeopleDataProvider.swift; sourceTree = "<group>"; };
 		FB03C4CF258A5B020000B8D3 /* CurrentPeopleDataDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentPeopleDataDelegate.swift; sourceTree = "<group>"; };
 		FB09107F24FA93E2006B72D5 /* UITextViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextViewExtension.swift; sourceTree = "<group>"; };
@@ -536,6 +550,34 @@
 				FBE5A119255AE7D400060D97 /* UserNotificationsUI.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		FB007A5125A8B46600A10E1F /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				FB007A7125A8D7E700A10E1F /* EditProfile */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		FB007A5C25A8B78400A10E1F /* ViewModelProtocols */ = {
+			isa = PBXGroup;
+			children = (
+				FB007A5825A8B78000A10E1F /* EditProfileViewModelProtocol.swift */,
+				FB007A6525A8B92100A10E1F /* EditProfileViewViewModelProtocol.swift */,
+				FB007A6D25A8C9BD00A10E1F /* FirestoreSaveProfileAfterEditViewModelProtocol.swift */,
+			);
+			path = ViewModelProtocols;
+			sourceTree = "<group>";
+		};
+		FB007A7125A8D7E700A10E1F /* EditProfile */ = {
+			isa = PBXGroup;
+			children = (
+				FB007A5225A8B4C100A10E1F /* EditProfileViewModel.swift */,
+				FB007A6125A8B90A00A10E1F /* EditProfileViewViewModel.swift */,
+				FB007A6925A8C97F00A10E1F /* FirestoreSaveProfileAfterEditViewModel.swift */,
+			);
+			path = EditProfile;
 			sourceTree = "<group>";
 		};
 		FB18217824B225BD00FFFC87 /* AuthControllers */ = {
@@ -937,6 +979,7 @@
 				FB28FE9F258418410011DC3A /* ScreenProtectorManager.swift */,
 				FB8F2E85258EC0F000022853 /* BackgroundTaskManager.swift */,
 				FB28FEA32584E85C0011DC3A /* DataDelegateService.swift */,
+				FB007A7225A8DB8C00A10E1F /* Box.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -1067,6 +1110,7 @@
 				FB03C4CF258A5B020000B8D3 /* CurrentPeopleDataDelegate.swift */,
 				FB8F2E89258FC8C900022853 /* MainTabBarDelegate.swift */,
 				FBA462AB2597952000D3AEC2 /* EditProfileViewDelegate.swift */,
+				FB007A5C25A8B78400A10E1F /* ViewModelProtocols */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -1216,8 +1260,9 @@
 				FBA462B725994E5800D3AEC2 /* Sounds */,
 				FBA94D1C24F55AC2000DA5D5 /* Managers */,
 				FBB34001256D421C00A597BF /* Protocols */,
-				FB21A1B924E596E3000A2E91 /* Models */,
 				FBB26ED5254AFD420081CF2C /* DataProvider */,
+				FB21A1B924E596E3000A2E91 /* Models */,
+				FB007A5125A8B46600A10E1F /* ViewModels */,
 				FBEF609424A90DD60005F947 /* ViewControllers */,
 				FBB26EE3254C12420081CF2C /* View */,
 				FBEF608F24A908100005F947 /* Extension */,
@@ -1448,6 +1493,7 @@
 				FBD30164257D5A9800D38AE9 /* WebViewController.swift in Sources */,
 				FB8C3D652534A74900184FB5 /* SelectionTableViewHeader.swift in Sources */,
 				FBE5A1062559C15300060D97 /* PushNotificationService.swift in Sources */,
+				FB007A7325A8DB8C00A10E1F /* Box.swift in Sources */,
 				FB79DA9D2530E9C500A7AA56 /* EditPhotoCell.swift in Sources */,
 				FBB26ECA254845D90081CF2C /* SectionAppSettings.swift in Sources */,
 				FB8C3D8E25372BEB00184FB5 /* MTypeReports.swift in Sources */,
@@ -1462,6 +1508,7 @@
 				FBB33FF8256D24BB00A597BF /* TagsCollectionViewCell.swift in Sources */,
 				FBD3015D257D3C2000D38AE9 /* HaveRequestGetPremiumView.swift in Sources */,
 				FB78FE9F2573EF91004DA53E /* AnimateDislikeButton.swift in Sources */,
+				FB007A6625A8B92100A10E1F /* EditProfileViewViewModelProtocol.swift in Sources */,
 				FB1062DE24B0C8DF0012C4D4 /* EditableProfileImageView.swift in Sources */,
 				FBB26ED3254AFD130081CF2C /* AcceptChatDataProvider.swift in Sources */,
 				FB21A1BD24E59A31000A2E91 /* GradientView.swift in Sources */,
@@ -1478,6 +1525,7 @@
 				FBD301A9257FF32300D38AE9 /* AuthView.swift in Sources */,
 				FB3351D52568521D007AFDDF /* MGallery.swift in Sources */,
 				FB207CB42520C544007AA232 /* MessageError.swift in Sources */,
+				FB007A6225A8B90A00A10E1F /* EditProfileViewViewModel.swift in Sources */,
 				FBA94D1E24F55CBE000DA5D5 /* SectionHeader.swift in Sources */,
 				FB78FE882573CE57004DA53E /* LikeDislikePeopleButton.swift in Sources */,
 				FB8C3D3C2533961800184FB5 /* MSexuality.swift in Sources */,
@@ -1533,7 +1581,9 @@
 				FBEF607C24A602070005F947 /* AuthViewController.swift in Sources */,
 				FBB26EC3254843C60081CF2C /* AppSettingsViewController.swift in Sources */,
 				FB09108024FA93E2006B72D5 /* UITextViewExtension.swift in Sources */,
+				FB007A5325A8B4C100A10E1F /* EditProfileViewModel.swift in Sources */,
 				FB79DA7F252DE71900A7AA56 /* SectionsProfile.swift in Sources */,
+				FB007A6E25A8C9BE00A10E1F /* FirestoreSaveProfileAfterEditViewModelProtocol.swift in Sources */,
 				FBA2AA2E2552D7D000A471F6 /* MCellType.swift in Sources */,
 				FBB26EE8254C12AC0081CF2C /* CountOfUnreadMessageLabel.swift in Sources */,
 				FB21A1BB24E59705000A2E91 /* MChat.swift in Sources */,
@@ -1607,6 +1657,8 @@
 				FBB26EC72548452C0081CF2C /* MAppSettings.swift in Sources */,
 				FB8C3D6E2535D94D00184FB5 /* DateOfBirthViewController.swift in Sources */,
 				FB1062DA24AE69250012C4D4 /* LoginViewController.swift in Sources */,
+				FB007A5925A8B78000A10E1F /* EditProfileViewModelProtocol.swift in Sources */,
+				FB007A6A25A8C97F00A10E1F /* FirestoreSaveProfileAfterEditViewModel.swift in Sources */,
 				FBF2927F2512828C0090BA9E /* LoadingView.swift in Sources */,
 				FB8F2E9E259003C100022853 /* PushNotificationParser.swift in Sources */,
 				FB61B54724FE7F23002761ED /* AuthService.swift in Sources */,
@@ -1668,7 +1720,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.02.29;
+				MARKETING_VERSION = 1.02.30;
 				PRODUCT_BUNDLE_IDENTIFIER = "art.jedi-tones.flava.MyNotificationService";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1691,7 +1743,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.02.29;
+				MARKETING_VERSION = 1.02.30;
 				PRODUCT_BUNDLE_IDENTIFIER = "art.jedi-tones.flava.MyNotificationService";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1835,7 +1887,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.02.29;
+				MARKETING_VERSION = 1.02.30;
 				PRODUCT_BUNDLE_IDENTIFIER = "art.jedi-tones.flava";
 				PRODUCT_NAME = Flava;
 				SWIFT_VERSION = 5.0;
@@ -1860,7 +1912,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.02.29;
+				MARKETING_VERSION = 1.02.30;
 				PRODUCT_BUNDLE_IDENTIFIER = "art.jedi-tones.flava";
 				PRODUCT_NAME = Flava;
 				SWIFT_VERSION = 5.0;

@@ -44,7 +44,6 @@ extension FirestoreService {
             needCheckActiveUser = currentPeopleSettings == 0 ? false : true
         }
         
-       
         let radiusSearch = currentPeople.searchSettings[MSearchSettings.distance.rawValue] ?? MSearchSettings.distance.defaultValue
        
         //geohash search has
@@ -116,6 +115,7 @@ extension FirestoreService {
                 .end(at: [bound.endValue])
         }
         
+        //complite only when all queries is complite
         var compliteGetDataQueries = 0 {
             didSet {
                 if compliteGetDataQueries == queries.count {
@@ -124,7 +124,7 @@ extension FirestoreService {
             }
         }
         
-        for (index, query) in queries.enumerated() {
+        for (_, query) in queries.enumerated() {
             query
                 .whereField(MPeople.CodingKeys.isActive.rawValue, isEqualTo: true)
                 .whereField(MPeople.CodingKeys.isBlocked.rawValue, isEqualTo: false)
@@ -162,10 +162,8 @@ extension FirestoreService {
                             //check distance and age
                             if age >= minRange && age <= maxRange && distanceKM <= radiusSearch {
                                 peopleNearby.append(people)
-                                print("people \(people.displayName)")
                             }
                         }
-                        print("\n index \(index) people  count \(peopleNearby.count)")
                     }
                     compliteGetDataQueries += 1
                 }
@@ -210,12 +208,14 @@ extension FirestoreService {
                         if needCheckActiveUser {
                             guard  people.lastActiveDate.checkIsActiveUser() else { return }
                         }
+                        
                         //check current people not in users array
                         guard !usersID.contains(people.senderId) else { return }
                         //check distance and age
-                        if distance <= range && age >= minRange && age <= maxRange {
+                        if (distance <= range) && (age >= minRange) && (age <= maxRange) {
                             people.distance = distance
                             peopleNearby.append(people)
+                            
                         }
                     }
                 }

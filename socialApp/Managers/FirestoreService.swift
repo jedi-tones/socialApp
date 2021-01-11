@@ -469,11 +469,11 @@ class FirestoreService {
     func saveLocation(userID: String, longitude: Double, latitude: Double, complition: @escaping (Result<(),Error>) -> Void) {
         
         let clLocation = CLLocationCoordinate2D(latitude: latitude,
-                                              longitude: longitude)
+                                                longitude: longitude)
         let geohash = GFUtils.geoHash(forLocation: clLocation, withPrecision: 20)
         usersReference.document(userID).setData([MPeople.CodingKeys.location.rawValue : [MLocation.longitude.rawValue:longitude,
-                                                                                         MLocation.latitude.rawValue:latitude,
-                                                                                         MLocation.geohash.rawValue:geohash]],
+                                                                                         MLocation.latitude.rawValue:latitude],
+                                                 MPeople.CodingKeys.geohash.rawValue : geohash],
                                                 merge: true) { error in
             if let error = error {
                 complition(.failure(error))
@@ -503,7 +503,7 @@ extension FirestoreService {
             
             snapshot.documents.forEach { document in
                 element = T(documentSnap: document)
-                guard let elementTType = element else { fatalError("Cant convert doc to T type")}
+                guard let elementTType = element else { return }
                 elements.append(elementTType)
             }
             complition(elements)

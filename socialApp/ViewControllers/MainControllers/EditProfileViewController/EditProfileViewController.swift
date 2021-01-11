@@ -16,10 +16,10 @@ class EditProfileViewController: UIViewController {
     
     private var isComeFromePreview = false
     private var editProfileView = EditProfileView()
-    private weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
+    private var editProfileViewModel: EditProfileViewModelProtocol
     
     init(currentPeopleDelegate: CurrentPeopleDataDelegate?) {
-        self.currentPeopleDelegate = currentPeopleDelegate
+        self.editProfileViewModel = EditProfileViewModel(currentPeopleDelegate: currentPeopleDelegate)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -36,7 +36,7 @@ class EditProfileViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setupNavigationController()
-        registerNotification()
+       // registerNotification()
         setPeopleData()
     }
    
@@ -59,6 +59,10 @@ class EditProfileViewController: UIViewController {
     private func setupVC() {
         view.backgroundColor = .myWhiteColor()
         editProfileView.delegate = self
+        
+        editProfileViewModel.currentPeople.bind { [unowned self] _ in
+            self.premiumIsUpdated()
+        }
     }
     
     //MARK:  setupNavigationController
@@ -75,30 +79,24 @@ class EditProfileViewController: UIViewController {
     
     //MARK:  setPeopleData
     private func setPeopleData() {
-        
-        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil in EditProfileVC") }
-        let people = currentPeopleDelegate.currentPeople
-        
-        editProfileView.setData(people: people)
+        let viewViewModel = editProfileViewModel.editProfileViewViewModel() 
+        editProfileView.setData(viewModel: viewViewModel)
     }
     
     //MARK:  savePeopleData
     private func savePeopleData() {
-        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil in EditProfileVC") }
-        var people = currentPeopleDelegate.currentPeople
         
-        if let editedPeople = editProfileView.getData() {
-            people = editedPeople
-        }
+        let editedPeople = editProfileView.getData()
+        let firestoreSaveViewModel = editProfileViewModel.firestoreSaveProfileAfterEditViewModel(editedPeople: editedPeople)
         
-        FirestoreService.shared.saveProfileAfterEdit(id: people.senderId,
-                                                     name: people.displayName,
-                                                     advert: people.advert,
-                                                     gender: people.gender,
-                                                     sexuality: people.sexuality,
-                                                     interests: people.interests,
-                                                     desires: people.desires,
-                                                     isIncognito: people.isIncognito) { result in
+        FirestoreService.shared.saveProfileAfterEdit(id: firestoreSaveViewModel.id,
+                                                     name: firestoreSaveViewModel.displayName,
+                                                     advert: firestoreSaveViewModel.advert,
+                                                     gender: firestoreSaveViewModel.gender,
+                                                     sexuality: firestoreSaveViewModel.sexuality,
+                                                     interests: firestoreSaveViewModel.interests,
+                                                     desires: firestoreSaveViewModel.desires,
+                                                     isIncognito: firestoreSaveViewModel.isIncognito) { result in
             switch result {
             
             case .success():
@@ -112,12 +110,14 @@ class EditProfileViewController: UIViewController {
 
 extension EditProfileViewController : EditProfileViewDelegate {
     func previewTapped() {
-        guard let previewPeople = editProfileView.getData() else { return }
-        let previewVC = PeopleInfoViewController(currentPeopleDelegate: currentPeopleDelegate,
+        
+        let editedPeople = editProfileView.getData()
+        
+        let previewVC = PeopleInfoViewController(currentPeopleDelegate: editProfileViewModel.currentPeopleDelegate,
                                                  peopleID: "",
                                                  isFriend: true,
                                                  isCurrentPeople: true,
-                                                 previewPeople: previewPeople,
+                                                 previewPeople: editedPeople,
                                                  requestChatsDelegate: nil,
                                                  peopleDelegate: nil,
                                                  reportDelegate: nil)
@@ -125,7 +125,7 @@ extension EditProfileViewController : EditProfileViewDelegate {
     }
     
     func editPhotosButtonTap() {
-        let vc = EditPhotoViewController(currentPeopleDelegate: currentPeopleDelegate,
+        let vc = EditPhotoViewController(currentPeopleDelegate: editProfileViewModel.currentPeopleDelegate,
                                          isFirstSetup: false)
         navigationController?.pushViewController(vc, animated: true)
     }
@@ -164,7 +164,7 @@ extension EditProfileViewController : EditProfileViewDelegate {
                                         image: nil,
                                         okButtonText: "Перейти на Flava premium") { [weak self] in
             
-            let purchasVC = PurchasesViewController(currentPeopleDelegate: self?.currentPeopleDelegate)
+            let purchasVC = PurchasesViewController(currentPeopleDelegate: self?.editProfileViewModel.currentPeopleDelegate)
             purchasVC.modalPresentationStyle = .fullScreen
             self?.present(purchasVC, animated: true, completion: nil)
         }
