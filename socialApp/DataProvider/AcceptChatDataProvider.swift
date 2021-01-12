@@ -199,28 +199,43 @@ extension AcceptChatDataProvider {
                 self?.acceptChats.append(contentsOf: chats)
                 self?.checkInactiveChat()
                 
+                //try get and save to realm
+                self?.getAcceptChatsToRealm { (result) in
+                    switch result {
+                    
+                    case .success(_):
+                        complition(.success(chats))
+                    case .failure(let error):
+                        fatalError(error.localizedDescription)
+                    }
+                }
                 
-                complition(.success(chats))
+               
             case .failure(let error):
                 complition(.failure(error))
             }
         }
     }
     
-    private func addChatsToRealm() {
-        acceptChats.forEach { mChat in
-            ManageRealmObjectService.shared.addChatToRealm(chat: mChat) { [weak self] result in
-                switch result {
-                
-                case .success(let realmChat):
-                    self?.realmAcceptChats.append(realmChat)
-                case .failure(let error):
-                    fatalError(error.localizedDescription)
-                }
+    //MARK: getAcceptChatsToRealm
+    func getAcceptChatsToRealm(complition: @escaping (Result<[MChatRealm], Error>) -> Void) {
+       
+        //first get list of like people
+        FirestoreService.shared.getChatsToRealmModel(
+            userID: userID,
+            collection: MFirestorCollection.acceptChats) { result in
+            switch result {
+            
+            case .success(let realmChats):
+                ManageRealmObjectService.shared.addChatToRealm(chats: realmChats,
+                                                               complition: complition)
+            case .failure(let error):
+                complition(.failure(error))
             }
         }
         
     }
+    
 }
 
 

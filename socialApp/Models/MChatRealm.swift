@@ -10,7 +10,7 @@ import Foundation
 import RealmSwift
 import FirebaseFirestore
 
-class MChatRealm: Object,  {
+class MChatRealm: Object, Codable, ReprasentationModel {
     @objc dynamic var friendId = ""
     @objc dynamic var friendUserImageString = ""
     @objc dynamic var friendUserName = ""
@@ -30,16 +30,18 @@ class MChatRealm: Object,  {
     let messages = List<MMessageRealm>()
     
     override static func primaryKey() -> String? {
-        "friendID"
+        "friendId"
     }
     
-    override init() {
-        
+    static func == (lhs: MChatRealm, rhs: MChatRealm) -> Bool {
+        return lhs.friendId == rhs.friendId
     }
     
+   
     //MARK: QueryDocumentSnapshot
     //for init with ListenerService
-    init?(documentSnap: QueryDocumentSnapshot){
+    required convenience init?(documentSnap: QueryDocumentSnapshot){
+        self.init()
           let documet = documentSnap.data()
           
         if let friendUserName = documet["friendUserName"] as? String {
@@ -105,7 +107,8 @@ class MChatRealm: Object,  {
     
     //MARK: DocumentSnapshot
     //for get document from Firestore
-    init?(documentSnap: DocumentSnapshot){
+    required convenience init?(documentSnap: DocumentSnapshot){
+        self.init()
         guard let documet = documentSnap.data()  else { return nil }
           
         if let friendUserName = documet["friendUserName"] as? String {
@@ -189,5 +192,48 @@ class MChatRealm: Object,  {
             "date": date
         ]
         return rep
+    }
+    
+    //MARK: CodingKeys
+    enum CodingKeys: String, CodingKey {
+        case friendUserName
+        case friendUserImageString
+        case lastMessage
+        case lastMessageSenderID
+        case isNewChat
+        case friendId
+        case unreadChatMessageCount
+        case friendIsWantStopTimer
+        case currentUserIsWantStopTimer
+        case timerOfLifeIsStoped
+        case createChatDate
+        case fcmKey
+        case friendInChat
+        case friendSawAllMessageInChat
+        case date
+    }
+    
+  
+    
+    static func getDefaultPeriodMinutesOfLifeChat() -> Int {
+        //period of life is 1440 minute = 1 day
+        1440
+    }
+    
+    func contains(element: String?) -> Bool {
+        guard let element = element else { return true }
+        if element.isEmpty { return true }
+        
+        let lowercasedElement = element.lowercased()
+        
+        return friendUserName.lowercased().contains(lowercasedElement)
+    }
+    
+    func containsID(ID: String?) -> Bool {
+        guard let ID = ID else { return false }
+        
+        let lowercasedID = ID.lowercased()
+        
+        return friendId.lowercased().contains(lowercasedID)
     }
 }

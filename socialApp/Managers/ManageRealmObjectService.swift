@@ -16,14 +16,12 @@ class ManageRealmObjectService {
     
     private init() { }
     
-    func addChatToRealm(chat: MChat, complition: @escaping (Result<MChatRealm, Error>) -> Void) {
-        let realmChat = modelConverterService.createRealmChat(chat: chat)
-        realmService.appendToRealm(object: realmChat, complition: complition)
+    func addChatToRealm(chats: [MChatRealm], complition: @escaping (Result<[MChatRealm], Error>) -> Void) {
+        realmService.appendToRealm(objects: chats, complition: complition)
     }
     
-    func addMessageToRealm(message: MMessage,  complition: @escaping (Result<MMessageRealm, Error>) -> Void) {
-        let realmMessage = modelConverterService.createRealmMessage(message: message)
-        realmService.appendToRealm(object: realmMessage, complition: complition)
+    func logoutClearRealmData(complition: @escaping (Result<(),Error>)-> Void) {
+        realmService.deleteAllRealm(complition: complition)
     }
     
     

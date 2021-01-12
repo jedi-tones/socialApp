@@ -343,6 +343,28 @@ extension FirestoreService {
         }
     }
     
+    //MARK: getChatsToRealmModel
+    func getChatsToRealmModel(userID: String, collection: MFirestorCollection, complition: @escaping(Result<[MChatRealm], Error>)->Void) {
+        
+        let reference = usersReference.document(userID).collection(collection.rawValue)
+        var chats: [MChatRealm] = []
+        reference.getDocuments { snapshot, error in
+            if let error = error {
+                complition(.failure(error))
+            }
+            guard let snapshot = snapshot else {
+                complition(.failure(FirestoreError.snapshotNotExist))
+                return
+            }
+            snapshot.documents.forEach({ queryDocumentSnapshot in
+                if let chat = MChatRealm(documentSnap: queryDocumentSnapshot) {
+                    chats.append(chat)
+                }
+            })
+            complition(.success(chats))
+        }
+    }
+    
     func getAllMessagesInChat(currentUserID: String,
                               firstLoadMessage: MMessage? = nil,
                               chat: MChat,

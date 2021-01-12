@@ -7,13 +7,13 @@
 //
 
 import Foundation
+import RealmSwift
 
 class ModelConverterService {
     
      func createRealmChat(chat: MChat) -> MChatRealm {
         
         let realmChat = MChatRealm()
-        
         
         return realmChat
     }

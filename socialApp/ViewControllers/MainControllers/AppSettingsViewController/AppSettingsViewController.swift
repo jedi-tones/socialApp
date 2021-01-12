@@ -90,6 +90,16 @@ extension AppSettingsViewController {
                         switch result {
                         case .success(_):
                             currentPeopleDelegate.deletePeople()
+                            //clear data in Realm
+                            ManageRealmObjectService.shared.logoutClearRealmData { result in
+                                switch result {
+                                
+                                case .success():
+                                    return
+                                case .failure(let error):
+                                    fatalError(error.localizedDescription)
+                                }
+                            }
                         case .failure(let error):
                             fatalError(error.localizedDescription)
                         }
@@ -242,7 +252,16 @@ extension AppSettingsViewController {
                             
                             Apphud.logout()
                             currentPeopleDelegate.deletePeople()
-                            
+                            //clear data in Realm
+                            ManageRealmObjectService.shared.logoutClearRealmData { result in
+                                switch result {
+                                
+                                case .success():
+                                    return
+                                case .failure(let error):
+                                    fatalError(error.localizedDescription)
+                                }
+                            }
                             
                         case .failure(let error):
                             PopUpService.shared.showInfo(text: "Ошибка: \(error)")

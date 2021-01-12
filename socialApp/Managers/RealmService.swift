@@ -13,11 +13,11 @@ class RealmService {
     
     private let realm = try! Realm()
     
-    func appendToRealm<T: Object>(object: T, complition: @escaping(Result<T, Error>) -> Void) {
+    func appendToRealm<T: Object>(objects: [T], complition: @escaping(Result<[T], Error>) -> Void) {
         do {
             try realm.write {
-                realm.add(object, update: .all)
-                complition(.success(object))
+                realm.add(objects, update: .all)
+                complition(.success(objects))
             }
         } catch {
             complition(.failure(error))
@@ -28,6 +28,17 @@ class RealmService {
         do {
             try realm.write {
                 realm.delete(object)
+            }
+        } catch {
+            complition(.failure(error))
+        }
+    }
+    
+    func deleteAllRealm(complition: @escaping(Result<(), Error>) -> Void) {
+        do {
+            try realm.write {
+                realm.deleteAll()
+                complition(.success(()))
             }
         } catch {
             complition(.failure(error))
