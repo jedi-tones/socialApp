@@ -14,6 +14,7 @@ class AcceptChatDataProvider: AcceptChatListenerDelegate {
     let staticCellCount = 1
     
     var userID: String
+    private var realmAcceptChats: [MChatRealm] = []
     var acceptChats: [MChat] = [] {
         didSet {
             mainTabBarDelegate?.renewBadge()
@@ -198,11 +199,27 @@ extension AcceptChatDataProvider {
                 self?.acceptChats.append(contentsOf: chats)
                 self?.checkInactiveChat()
                 
+                
                 complition(.success(chats))
             case .failure(let error):
                 complition(.failure(error))
             }
         }
+    }
+    
+    private func addChatsToRealm() {
+        acceptChats.forEach { mChat in
+            ManageRealmObjectService.shared.addChatToRealm(chat: mChat) { [weak self] result in
+                switch result {
+                
+                case .success(let realmChat):
+                    self?.realmAcceptChats.append(realmChat)
+                case .failure(let error):
+                    fatalError(error.localizedDescription)
+                }
+            }
+        }
+        
     }
 }
 

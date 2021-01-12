@@ -28,6 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         PushMessagingService.shared.registerDelegate()
         PushNotificationService.shared.requestNotificationAuth()
         BackgroundTaskManager.shared.registerBackgroundTask()
+        RealmConfig.shared.setDefaultRealm()
         
         return true
     }

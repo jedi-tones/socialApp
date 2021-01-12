@@ -1,5 +1,5 @@
 # Uncomment the next line to define a global platform for your project
-#platform :ios, '13.1'
+# platform :ios, '13.1'
 
 target 'socialApp' do
   # Comment the next line if you don't want to use dynamic frameworks
@@ -21,6 +21,7 @@ pod 'lottie-ios'
 pod 'SwiftEntryKit', '1.2.6'
 pod "ApphudSDK"
 pod 'CHIPageControl/Aleppo'
+pod 'RealmSwift'
 
 end
 
@@ -33,4 +34,6 @@ post_install do |installer|
     end
   end
 end
+
+
 

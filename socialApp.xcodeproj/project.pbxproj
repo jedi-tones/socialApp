@@ -15,6 +15,7 @@
 		FB007A6A25A8C97F00A10E1F /* FirestoreSaveProfileAfterEditViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB007A6925A8C97F00A10E1F /* FirestoreSaveProfileAfterEditViewModel.swift */; };
 		FB007A6E25A8C9BE00A10E1F /* FirestoreSaveProfileAfterEditViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB007A6D25A8C9BD00A10E1F /* FirestoreSaveProfileAfterEditViewModelProtocol.swift */; };
 		FB007A7325A8DB8C00A10E1F /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB007A7225A8DB8C00A10E1F /* Box.swift */; };
+		FB007AA925ADD5FC00A10E1F /* RealmConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB007AA825ADD5FC00A10E1F /* RealmConfig.swift */; };
 		FB03C4CC258A4FF10000B8D3 /* CurrentPeopleDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB03C4CB258A4FF10000B8D3 /* CurrentPeopleDataProvider.swift */; };
 		FB03C4D0258A5B020000B8D3 /* CurrentPeopleDataDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB03C4CF258A5B020000B8D3 /* CurrentPeopleDataDelegate.swift */; };
 		FB09108024FA93E2006B72D5 /* UITextViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB09107F24FA93E2006B72D5 /* UITextViewExtension.swift */; };
@@ -28,6 +29,11 @@
 		FB18217B24B2261F00FFFC87 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18217A24B2261F00FFFC87 /* MainTabBarController.swift */; };
 		FB18217D24B2268E00FFFC87 /* PeopleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18217C24B2268E00FFFC87 /* PeopleViewController.swift */; };
 		FB18217F24B2442800FFFC87 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18217E24B2442800FFFC87 /* UIColorExtension.swift */; };
+		FB18DDF625ADE4BE00C23850 /* RealmService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DDF525ADE4BE00C23850 /* RealmService.swift */; };
+		FB18DDFA25ADE4FD00C23850 /* MChatRealm.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DDF925ADE4FD00C23850 /* MChatRealm.swift */; };
+		FB18DDFE25ADE50700C23850 /* MMessageRealm.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DDFD25ADE50700C23850 /* MMessageRealm.swift */; };
+		FB18DE0A25ADF18B00C23850 /* ManageRealmObjectService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DE0925ADF18B00C23850 /* ManageRealmObjectService.swift */; };
+		FB18DE1025AE065300C23850 /* ModelConverterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DE0F25AE065300C23850 /* ModelConverterService.swift */; };
 		FB207CB42520C544007AA232 /* MessageError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB207CB32520C544007AA232 /* MessageError.swift */; };
 		FB21A1B624E55F6C000A2E91 /* ActiveChatsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB21A1B524E55F6C000A2E91 /* ActiveChatsCell.swift */; };
 		FB21A1B824E595CF000A2E91 /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB21A1B724E595CF000A2E91 /* Protocols.swift */; };
@@ -277,6 +283,7 @@
 		FB007A6925A8C97F00A10E1F /* FirestoreSaveProfileAfterEditViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreSaveProfileAfterEditViewModel.swift; sourceTree = "<group>"; };
 		FB007A6D25A8C9BD00A10E1F /* FirestoreSaveProfileAfterEditViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreSaveProfileAfterEditViewModelProtocol.swift; sourceTree = "<group>"; };
 		FB007A7225A8DB8C00A10E1F /* Box.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
+		FB007AA825ADD5FC00A10E1F /* RealmConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmConfig.swift; sourceTree = "<group>"; };
 		FB03C4CB258A4FF10000B8D3 /* CurrentPeopleDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentPeopleDataProvider.swift; sourceTree = "<group>"; };
 		FB03C4CF258A5B020000B8D3 /* CurrentPeopleDataDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentPeopleDataDelegate.swift; sourceTree = "<group>"; };
 		FB09107F24FA93E2006B72D5 /* UITextViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextViewExtension.swift; sourceTree = "<group>"; };
@@ -290,6 +297,11 @@
 		FB18217A24B2261F00FFFC87 /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		FB18217C24B2268E00FFFC87 /* PeopleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleViewController.swift; sourceTree = "<group>"; };
 		FB18217E24B2442800FFFC87 /* UIColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
+		FB18DDF525ADE4BE00C23850 /* RealmService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmService.swift; sourceTree = "<group>"; };
+		FB18DDF925ADE4FD00C23850 /* MChatRealm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MChatRealm.swift; sourceTree = "<group>"; };
+		FB18DDFD25ADE50700C23850 /* MMessageRealm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MMessageRealm.swift; sourceTree = "<group>"; };
+		FB18DE0925ADF18B00C23850 /* ManageRealmObjectService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageRealmObjectService.swift; sourceTree = "<group>"; };
+		FB18DE0F25AE065300C23850 /* ModelConverterService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelConverterService.swift; sourceTree = "<group>"; };
 		FB207CB32520C544007AA232 /* MessageError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageError.swift; sourceTree = "<group>"; };
 		FB21A1B524E55F6C000A2E91 /* ActiveChatsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveChatsCell.swift; sourceTree = "<group>"; };
 		FB21A1B724E595CF000A2E91 /* Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
@@ -552,14 +564,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		FB007A5125A8B46600A10E1F /* ViewModels */ = {
-			isa = PBXGroup;
-			children = (
-				FB007A7125A8D7E700A10E1F /* EditProfile */,
-			);
-			path = ViewModels;
-			sourceTree = "<group>";
-		};
 		FB007A5C25A8B78400A10E1F /* ViewModelProtocols */ = {
 			isa = PBXGroup;
 			children = (
@@ -570,14 +574,14 @@
 			path = ViewModelProtocols;
 			sourceTree = "<group>";
 		};
-		FB007A7125A8D7E700A10E1F /* EditProfile */ = {
+		FB007A7C25ACF4B000A10E1F /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
 				FB007A5225A8B4C100A10E1F /* EditProfileViewModel.swift */,
 				FB007A6125A8B90A00A10E1F /* EditProfileViewViewModel.swift */,
 				FB007A6925A8C97F00A10E1F /* FirestoreSaveProfileAfterEditViewModel.swift */,
 			);
-			path = EditProfile;
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 		FB18217824B225BD00FFFC87 /* AuthControllers */ = {
@@ -641,10 +645,12 @@
 				FBA2AA2D2552D7D000A471F6 /* MCellType.swift */,
 				FBB34008256D645900A597BF /* MTag.swift */,
 				FB21A1BA24E59705000A2E91 /* MChat.swift */,
+				FB18DDF925ADE4FD00C23850 /* MChatRealm.swift */,
 				FB78FEDB2577B3ED004DA53E /* MDislike.swift */,
 				FB8F2E912590010300022853 /* MDeeplinkTypes.swift */,
 				FBFFB86D25629E85007343ED /* MRecieptAppStrore.swift */,
 				FB15FCF22513A71F00B765D3 /* MMessage.swift */,
+				FB18DDFD25ADE50700C23850 /* MMessageRealm.swift */,
 				FBB33FAB256A84EB00A597BF /* MCollectionViewGalleryElement.swift */,
 				FB79DA4B2523577100A7AA56 /* MMediaItem.swift */,
 				FB79DA41252209E000A7AA56 /* MTypeOfListenerChanges.swift */,
@@ -935,6 +941,7 @@
 			isa = PBXGroup;
 			children = (
 				FB1062DB24B09F6C0012C4D4 /* EditProfileViewController.swift */,
+				FB007A7C25ACF4B000A10E1F /* ViewModels */,
 				FBA462A62597884100D3AEC2 /* View */,
 			);
 			path = EditProfileViewController;
@@ -967,6 +974,10 @@
 				FB8F2E9D259003C100022853 /* PushNotificationParser.swift */,
 				FBE5A0F625558C3400060D97 /* PopUpService.swift */,
 				FBFFB865255F15AC007343ED /* PurchasesService.swift */,
+				FB007AA825ADD5FC00A10E1F /* RealmConfig.swift */,
+				FB18DDF525ADE4BE00C23850 /* RealmService.swift */,
+				FB18DE0925ADF18B00C23850 /* ManageRealmObjectService.swift */,
+				FB18DE0F25AE065300C23850 /* ModelConverterService.swift */,
 				FBB3B25E2509011200440632 /* StorageService.swift */,
 				FBF293DC25065E2800F7B5F1 /* FirestoreService.swift */,
 				FBB3B268250F82B800440632 /* ListenerService.swift */,
@@ -1262,7 +1273,6 @@
 				FBB34001256D421C00A597BF /* Protocols */,
 				FBB26ED5254AFD420081CF2C /* DataProvider */,
 				FB21A1B924E596E3000A2E91 /* Models */,
-				FB007A5125A8B46600A10E1F /* ViewModels */,
 				FBEF609424A90DD60005F947 /* ViewControllers */,
 				FBB26EE3254C12420081CF2C /* View */,
 				FBEF608F24A908100005F947 /* Extension */,
@@ -1519,12 +1529,14 @@
 				FBA2AA2B2552D3F400A471F6 /* UniversalTableView.swift in Sources */,
 				FBB4F35F2512737400ACFE90 /* FirestoreError.swift in Sources */,
 				FBA2AA352552F84F00A471F6 /* UniversalButtonCell.swift in Sources */,
+				FB18DDF625ADE4BE00C23850 /* RealmService.swift in Sources */,
 				FBB33FB0256A86CA00A597BF /* CollectionViewInfoCell.swift in Sources */,
 				FB8C3D6A2535D71B00184FB5 /* InterestsSelectionViewController.swift in Sources */,
 				FB8F2E96259001AA00022853 /* DeeplinkManager.swift in Sources */,
 				FBD301A9257FF32300D38AE9 /* AuthView.swift in Sources */,
 				FB3351D52568521D007AFDDF /* MGallery.swift in Sources */,
 				FB207CB42520C544007AA232 /* MessageError.swift in Sources */,
+				FB18DDFA25ADE4FD00C23850 /* MChatRealm.swift in Sources */,
 				FB007A6225A8B90A00A10E1F /* EditProfileViewViewModel.swift in Sources */,
 				FBA94D1E24F55CBE000DA5D5 /* SectionHeader.swift in Sources */,
 				FB78FE882573CE57004DA53E /* LikeDislikePeopleButton.swift in Sources */,
@@ -1581,6 +1593,7 @@
 				FBEF607C24A602070005F947 /* AuthViewController.swift in Sources */,
 				FBB26EC3254843C60081CF2C /* AppSettingsViewController.swift in Sources */,
 				FB09108024FA93E2006B72D5 /* UITextViewExtension.swift in Sources */,
+				FB007AA925ADD5FC00A10E1F /* RealmConfig.swift in Sources */,
 				FB007A5325A8B4C100A10E1F /* EditProfileViewModel.swift in Sources */,
 				FB79DA7F252DE71900A7AA56 /* SectionsProfile.swift in Sources */,
 				FB007A6E25A8C9BE00A10E1F /* FirestoreSaveProfileAfterEditViewModelProtocol.swift in Sources */,
@@ -1633,6 +1646,7 @@
 				FBA462AC2597952000D3AEC2 /* EditProfileViewDelegate.swift in Sources */,
 				FBF6289524F678C300DCD4AC /* SectionsChats.swift in Sources */,
 				FBA2AA392552FCE300A471F6 /* MChatSettings.swift in Sources */,
+				FB18DE1025AE065300C23850 /* ModelConverterService.swift in Sources */,
 				FB8C3D8B25371AE900184FB5 /* MLabels.swift in Sources */,
 				FB79DA6E252C942B00A7AA56 /* MLocation.swift in Sources */,
 				FBB34009256D645900A597BF /* MTag.swift in Sources */,
@@ -1650,9 +1664,11 @@
 				FB79DA992530E86D00A7AA56 /* SectionEditPhotos.swift in Sources */,
 				FBB3D496255D597E00A3B832 /* MAps.swift in Sources */,
 				FB79DA8B252DF0D600A7AA56 /* MProfileSettings.swift in Sources */,
+				FB18DDFE25ADE50700C23850 /* MMessageRealm.swift in Sources */,
 				FB3727992541CAD600906FBE /* EditSearchSettingsViewController.swift in Sources */,
 				FBA2AA282550601A00A471F6 /* LikeDisklikeButton.swift in Sources */,
 				FB15FCF32513A71F00B765D3 /* MMessage.swift in Sources */,
+				FB18DE0A25ADF18B00C23850 /* ManageRealmObjectService.swift in Sources */,
 				FBB26EDB254B03760081CF2C /* RequestChatDataProvider.swift in Sources */,
 				FBB26EC72548452C0081CF2C /* MAppSettings.swift in Sources */,
 				FB8C3D6E2535D94D00184FB5 /* DateOfBirthViewController.swift in Sources */,
