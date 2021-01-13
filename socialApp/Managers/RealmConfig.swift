@@ -20,7 +20,7 @@ class RealmConfig {
                                             }
         })
         config.fileURL = config.fileURL!.deletingLastPathComponent().appendingPathComponent("flava.realm")
-        print(config.fileURL?.absoluteURL)
+        print(config.fileURL?.absoluteURL ?? "" )
         Realm.Configuration.defaultConfiguration = config
     }
 }

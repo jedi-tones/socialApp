@@ -34,6 +34,11 @@
 		FB18DDFE25ADE50700C23850 /* MMessageRealm.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DDFD25ADE50700C23850 /* MMessageRealm.swift */; };
 		FB18DE0A25ADF18B00C23850 /* ManageRealmObjectService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DE0925ADF18B00C23850 /* ManageRealmObjectService.swift */; };
 		FB18DE1025AE065300C23850 /* ModelConverterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DE0F25AE065300C23850 /* ModelConverterService.swift */; };
+		FB18DE1625AF386D00C23850 /* AdminPanelPresentor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DE1525AF386C00C23850 /* AdminPanelPresentor.swift */; };
+		FB18DE1E25AF393200C23850 /* AdminPanelViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DE1D25AF393200C23850 /* AdminPanelViewProtocol.swift */; };
+		FB18DE2225AF394900C23850 /* AdminPanelPresentorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DE2125AF394900C23850 /* AdminPanelPresentorProtocol.swift */; };
+		FB18DE2825AF408600C23850 /* ModuleBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DE2725AF408600C23850 /* ModuleBuilder.swift */; };
+		FB18DE2E25AF417500C23850 /* BuilderProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DE2D25AF417500C23850 /* BuilderProtocol.swift */; };
 		FB207CB42520C544007AA232 /* MessageError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB207CB32520C544007AA232 /* MessageError.swift */; };
 		FB21A1B624E55F6C000A2E91 /* ActiveChatsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB21A1B524E55F6C000A2E91 /* ActiveChatsCell.swift */; };
 		FB21A1B824E595CF000A2E91 /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB21A1B724E595CF000A2E91 /* Protocols.swift */; };
@@ -302,6 +307,11 @@
 		FB18DDFD25ADE50700C23850 /* MMessageRealm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MMessageRealm.swift; sourceTree = "<group>"; };
 		FB18DE0925ADF18B00C23850 /* ManageRealmObjectService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageRealmObjectService.swift; sourceTree = "<group>"; };
 		FB18DE0F25AE065300C23850 /* ModelConverterService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelConverterService.swift; sourceTree = "<group>"; };
+		FB18DE1525AF386C00C23850 /* AdminPanelPresentor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminPanelPresentor.swift; sourceTree = "<group>"; };
+		FB18DE1D25AF393200C23850 /* AdminPanelViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminPanelViewProtocol.swift; sourceTree = "<group>"; };
+		FB18DE2125AF394900C23850 /* AdminPanelPresentorProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminPanelPresentorProtocol.swift; sourceTree = "<group>"; };
+		FB18DE2725AF408600C23850 /* ModuleBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModuleBuilder.swift; sourceTree = "<group>"; };
+		FB18DE2D25AF417500C23850 /* BuilderProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuilderProtocol.swift; sourceTree = "<group>"; };
 		FB207CB32520C544007AA232 /* MessageError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageError.swift; sourceTree = "<group>"; };
 		FB21A1B524E55F6C000A2E91 /* ActiveChatsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveChatsCell.swift; sourceTree = "<group>"; };
 		FB21A1B724E595CF000A2E91 /* Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
@@ -613,12 +623,30 @@
 				FBB33FDB256C14E400A597BF /* AboutViewController */,
 				FBD301B92580245400D38AE9 /* ContactsViewController */,
 				FBB26EBB2546F3250081CF2C /* PeopleInfoViewController.swift */,
-				FBA462402593E06800D3AEC2 /* AdminPanelViewController.swift */,
 				FBD30163257D5A9800D38AE9 /* WebViewController.swift */,
 				FBD302412583CE8C00D38AE9 /* ScreenProtectViewController */,
 				FB78FEEF25784178004DA53E /* ReportViewController */,
 			);
 			path = MainControllers;
+			sourceTree = "<group>";
+		};
+		FB18DE1325AF382800C23850 /* Moduls */ = {
+			isa = PBXGroup;
+			children = (
+				FB18DE1425AF384400C23850 /* Admin Panel */,
+			);
+			path = Moduls;
+			sourceTree = "<group>";
+		};
+		FB18DE1425AF384400C23850 /* Admin Panel */ = {
+			isa = PBXGroup;
+			children = (
+				FB18DE1525AF386C00C23850 /* AdminPanelPresentor.swift */,
+				FBA462402593E06800D3AEC2 /* AdminPanelViewController.swift */,
+				FB18DE1D25AF393200C23850 /* AdminPanelViewProtocol.swift */,
+				FB18DE2125AF394900C23850 /* AdminPanelPresentorProtocol.swift */,
+			);
+			path = "Admin Panel";
 			sourceTree = "<group>";
 		};
 		FB21A1B424E55F53000A2E91 /* Cell */ = {
@@ -968,29 +996,30 @@
 			isa = PBXGroup;
 			children = (
 				FB61B54624FE7F22002761ED /* AuthService.swift */,
+				FB8F2E85258EC0F000022853 /* BackgroundTaskManager.swift */,
+				FB007A7225A8DB8C00A10E1F /* Box.swift */,
+				FB18DE2725AF408600C23850 /* ModuleBuilder.swift */,
 				FBB4F3572511526C00ACFE90 /* CryptoService.swift */,
+				FB28FEA32584E85C0011DC3A /* DataDelegateService.swift */,
+				FBF293DC25065E2800F7B5F1 /* FirestoreService.swift */,
 				FBE5A1052559C15100060D97 /* PushNotificationService.swift */,
 				FB454E4A255BEEED007D1E71 /* PushMessagingService.swift */,
 				FB8F2E9D259003C100022853 /* PushNotificationParser.swift */,
 				FBE5A0F625558C3400060D97 /* PopUpService.swift */,
 				FBFFB865255F15AC007343ED /* PurchasesService.swift */,
+				FBB3B268250F82B800440632 /* ListenerService.swift */,
+				FB79DA6A252C834C00A7AA56 /* LocationService.swift */,
 				FB007AA825ADD5FC00A10E1F /* RealmConfig.swift */,
 				FB18DDF525ADE4BE00C23850 /* RealmService.swift */,
 				FB18DE0925ADF18B00C23850 /* ManageRealmObjectService.swift */,
 				FB18DE0F25AE065300C23850 /* ModelConverterService.swift */,
 				FBB3B25E2509011200440632 /* StorageService.swift */,
-				FBF293DC25065E2800F7B5F1 /* FirestoreService.swift */,
-				FBB3B268250F82B800440632 /* ListenerService.swift */,
+				FBB33FC5256BD80900A597BF /* ScreenRecordingManager.swift */,
+				FB28FE9F258418410011DC3A /* ScreenProtectorManager.swift */,
 				FB8F2E95259001AA00022853 /* DeeplinkManager.swift */,
 				FB8F2E992590025100022853 /* DeeplinkNavigator.swift */,
 				FBF293D824FFB33300F7B5F1 /* Validators.swift */,
 				FB61A7FA251E6311005DCC78 /* UserDefaultsService.swift */,
-				FB79DA6A252C834C00A7AA56 /* LocationService.swift */,
-				FBB33FC5256BD80900A597BF /* ScreenRecordingManager.swift */,
-				FB28FE9F258418410011DC3A /* ScreenProtectorManager.swift */,
-				FB8F2E85258EC0F000022853 /* BackgroundTaskManager.swift */,
-				FB28FEA32584E85C0011DC3A /* DataDelegateService.swift */,
-				FB007A7225A8DB8C00A10E1F /* Box.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -1113,11 +1142,12 @@
 			isa = PBXGroup;
 			children = (
 				FB21A1B724E595CF000A2E91 /* Protocols.swift */,
+				FBD301AF257FF62500D38AE9 /* AuthViewControllerDelegate.swift */,
+				FB18DE2D25AF417500C23850 /* BuilderProtocol.swift */,
 				FBB34002256D423700A597BF /* TagsCollectionViewDelegate.swift */,
 				FB78FE872573CE57004DA53E /* LikeDislikePeopleButton.swift */,
 				FB78FF20257A6DBE004DA53E /* ReportPeopleButton.swift */,
 				FB78FEEB257840A3004DA53E /* ReportViewDelegate.swift */,
-				FBD301AF257FF62500D38AE9 /* AuthViewControllerDelegate.swift */,
 				FB03C4CF258A5B020000B8D3 /* CurrentPeopleDataDelegate.swift */,
 				FB8F2E89258FC8C900022853 /* MainTabBarDelegate.swift */,
 				FBA462AB2597952000D3AEC2 /* EditProfileViewDelegate.swift */,
@@ -1274,6 +1304,7 @@
 				FBB26ED5254AFD420081CF2C /* DataProvider */,
 				FB21A1B924E596E3000A2E91 /* Models */,
 				FBEF609424A90DD60005F947 /* ViewControllers */,
+				FB18DE1325AF382800C23850 /* Moduls */,
 				FBB26EE3254C12420081CF2C /* View */,
 				FBEF608F24A908100005F947 /* Extension */,
 				FBEF608024A6020A0005F947 /* Assets.xcassets */,
@@ -1532,6 +1563,7 @@
 				FB18DDF625ADE4BE00C23850 /* RealmService.swift in Sources */,
 				FBB33FB0256A86CA00A597BF /* CollectionViewInfoCell.swift in Sources */,
 				FB8C3D6A2535D71B00184FB5 /* InterestsSelectionViewController.swift in Sources */,
+				FB18DE1625AF386D00C23850 /* AdminPanelPresentor.swift in Sources */,
 				FB8F2E96259001AA00022853 /* DeeplinkManager.swift in Sources */,
 				FBD301A9257FF32300D38AE9 /* AuthView.swift in Sources */,
 				FB3351D52568521D007AFDDF /* MGallery.swift in Sources */,
@@ -1540,6 +1572,7 @@
 				FB007A6225A8B90A00A10E1F /* EditProfileViewViewModel.swift in Sources */,
 				FBA94D1E24F55CBE000DA5D5 /* SectionHeader.swift in Sources */,
 				FB78FE882573CE57004DA53E /* LikeDislikePeopleButton.swift in Sources */,
+				FB18DE2225AF394900C23850 /* AdminPanelPresentorProtocol.swift in Sources */,
 				FB8C3D3C2533961800184FB5 /* MSexuality.swift in Sources */,
 				FB79DA84252DED1700A7AA56 /* ProfileCell.swift in Sources */,
 				FBB33FF1256D202000A597BF /* SectionTagsCollectionView.swift in Sources */,
@@ -1622,6 +1655,7 @@
 				FB1062D824AE494A0012C4D4 /* OneLineTextField.swift in Sources */,
 				FBB26EB72546EC230081CF2C /* PeopleView.swift in Sources */,
 				FB8C3D98253A525500184FB5 /* SectionsRequests.swift in Sources */,
+				FB18DE1E25AF393200C23850 /* AdminPanelViewProtocol.swift in Sources */,
 				FBB26ECF254980500081CF2C /* MAuthType.swift in Sources */,
 				FBB3B267250D00D000440632 /* StorageError.swift in Sources */,
 				FB18217724B21F5100FFFC87 /* ChatsViewController.swift in Sources */,
@@ -1644,6 +1678,7 @@
 				FB03C4D0258A5B020000B8D3 /* CurrentPeopleDataDelegate.swift in Sources */,
 				FB61A76F251CB97D005DCC78 /* DataSourceError.swift in Sources */,
 				FBA462AC2597952000D3AEC2 /* EditProfileViewDelegate.swift in Sources */,
+				FB18DE2E25AF417500C23850 /* BuilderProtocol.swift in Sources */,
 				FBF6289524F678C300DCD4AC /* SectionsChats.swift in Sources */,
 				FBA2AA392552FCE300A471F6 /* MChatSettings.swift in Sources */,
 				FB18DE1025AE065300C23850 /* ModelConverterService.swift in Sources */,
@@ -1672,6 +1707,7 @@
 				FBB26EDB254B03760081CF2C /* RequestChatDataProvider.swift in Sources */,
 				FBB26EC72548452C0081CF2C /* MAppSettings.swift in Sources */,
 				FB8C3D6E2535D94D00184FB5 /* DateOfBirthViewController.swift in Sources */,
+				FB18DE2825AF408600C23850 /* ModuleBuilder.swift in Sources */,
 				FB1062DA24AE69250012C4D4 /* LoginViewController.swift in Sources */,
 				FB007A5925A8B78000A10E1F /* EditProfileViewModelProtocol.swift in Sources */,
 				FB007A6A25A8C97F00A10E1F /* FirestoreSaveProfileAfterEditViewModel.swift in Sources */,

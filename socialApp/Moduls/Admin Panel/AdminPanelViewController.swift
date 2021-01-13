@@ -11,6 +11,7 @@ import UIKit
 class AdminPanelViewController: UIViewController {
     
     private var collectionView: UICollectionView!
+    var presenter: AdminPanelPresentorProtocol!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,16 +20,25 @@ class AdminPanelViewController: UIViewController {
         setupCollectionView()
         setupConstraints()
     }
-}
-
-
-extension AdminPanelViewController {
+    
     private func setup(){
         navigationItem.title = "Админ панель"
         navigationController?.setNavigationBarHidden(false, animated: true)
     }
-    
-    //MARK: setupCollectionView
+}
+
+//MARK: - AdminPanelViewProtocol
+extension AdminPanelViewController: AdminPanelViewProtocol {
+    func showInfoPopUp(header: String, text: String) {
+        PopUpService.shared.bottomPopUp(header: header,
+                                        text: text,
+                                        image: nil,
+                                        okButtonText: "Ok") {}
+    }
+}
+
+//MARK:- setupCollectionView
+extension AdminPanelViewController {
     private func setupCollectionView() {
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: setupLayout())
         collectionView.backgroundColor = .myWhiteColor()
@@ -78,7 +88,8 @@ extension AdminPanelViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
         
-        guard let selected =  MAdminPanelSettings(rawValue: indexPath.item) else { return }
+        guard let selected =  MAdminPanelSettings(rawValue: indexPath.item),
+              let presenter = presenter else { return }
         
         switch selected {
         
@@ -87,37 +98,9 @@ extension AdminPanelViewController: UICollectionViewDelegate {
         case .settings:
             break
         case .backupAllUsers:
-            FirestoreService.shared.backupAllusers { result in
-                switch result {
-                
-                case .success(let peopleId):
-                    PopUpService.shared.bottomPopUp(header: "Backup complite",
-                                                    text: "complite \(peopleId.count) users",
-                                                    image: nil,
-                                                    okButtonText: "Ok") {}
-                case .failure(let error):
-                    PopUpService.shared.bottomPopUp(header: "Backup error",
-                                                    text: error.localizedDescription,
-                                                    image: nil,
-                                                    okButtonText: "Ok") {}
-                }
-            }
+            presenter.backupUsers()
         case .updateGeoHash:
-            FirestoreService.shared.updateGeoHashForAllUSer { result in
-                switch result {
-                
-                case .success(let peopleId):
-                    PopUpService.shared.bottomPopUp(header: "geoHash update complite",
-                                                    text: "complite \(peopleId.count) users",
-                                                    image: nil,
-                                                    okButtonText: "Ok") {}
-                case .failure(let error):
-                    PopUpService.shared.bottomPopUp(header: "Backup error",
-                                                    text: error.localizedDescription,
-                                                    image: nil,
-                                                    okButtonText: "Ok") {}
-                }
-            }
+            presenter.updateGeoHash()
         }
     }
 }

@@ -293,9 +293,9 @@ extension ProfileViewController: UICollectionViewDelegate {
                 navigationController?.pushViewController(aboutVC, animated: true)
                 
             case .adminPanel:
-                let aboutVC = AdminPanelViewController()
-                aboutVC.hidesBottomBarWhenPushed = true
-                navigationController?.pushViewController(aboutVC, animated: true)
+                let adminVC = ModuleBuilder.createAdminPanelModule()
+                adminVC.hidesBottomBarWhenPushed = true
+                navigationController?.pushViewController(adminVC, animated: true)
                 
             default:
                 break
