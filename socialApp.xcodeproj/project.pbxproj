@@ -614,7 +614,6 @@
 				FBA94D1F24F55D54000DA5D5 /* ChatsViewController */,
 				FB61A78B251E1342005DCC78 /* ChatViewController.swift */,
 				FBA2AA472553086D00A471F6 /* SetupChatMenu.swift */,
-				FB79DA81252DECEB00A7AA56 /* ProfileViewController */,
 				FB79DA9B2530E9A800A7AA56 /* EditPhotoViewController */,
 				FBB33FE6256C156F00A597BF /* PurchasesViewController */,
 				FBA462A32597882F00D3AEC2 /* EditProfileViewController */,
@@ -633,6 +632,7 @@
 		FB18DE1325AF382800C23850 /* Moduls */ = {
 			isa = PBXGroup;
 			children = (
+				FB18DE3725AF44F200C23850 /* Profile */,
 				FB18DE1425AF384400C23850 /* Admin Panel */,
 			);
 			path = Moduls;
@@ -647,6 +647,14 @@
 				FB18DE2125AF394900C23850 /* AdminPanelPresentorProtocol.swift */,
 			);
 			path = "Admin Panel";
+			sourceTree = "<group>";
+		};
+		FB18DE3725AF44F200C23850 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				FB79DA81252DECEB00A7AA56 /* ProfileViewController */,
+			);
+			path = Profile;
 			sourceTree = "<group>";
 		};
 		FB21A1B424E55F53000A2E91 /* Cell */ = {
