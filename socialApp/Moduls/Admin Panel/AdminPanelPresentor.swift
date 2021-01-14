@@ -10,10 +10,12 @@ import Foundation
 
 class AdminPanelPresentor: AdminPanelPresentorProtocol {
     
-    weak var view: AdminPanelViewProtocol!
+    private weak var view: AdminPanelViewProtocol!
+    private var router: RouterProfileProtocol!
     
-    required init(view: AdminPanelViewProtocol) {
+    required init(view: AdminPanelViewProtocol, router: RouterProfileProtocol) {
         self.view = view
+        self.router = router
     }
     
     func updateGeoHash() {

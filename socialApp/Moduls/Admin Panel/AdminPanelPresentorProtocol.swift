@@ -9,7 +9,7 @@
 import Foundation
 
 protocol AdminPanelPresentorProtocol: class {
-    init(view: AdminPanelViewProtocol)
+    init(view: AdminPanelViewProtocol, router: RouterProfileProtocol)
     func updateGeoHash()
     func backupUsers()
 }

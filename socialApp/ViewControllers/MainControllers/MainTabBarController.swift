@@ -14,6 +14,8 @@ class MainTabBarController: UITabBarController{
     
     private var isNewLogin: Bool
     private var dataDelegateService: DataDelegateService
+    private var routerProfile: RouterProfileProtocol?
+    private var profileNavController: UINavigationController?
     
     private weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     private weak var acceptChatsDelegate: AcceptChatListenerDelegate?
@@ -39,6 +41,7 @@ class MainTabBarController: UITabBarController{
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
+        setupRouters()
         setupControllers()
         
     }
@@ -71,6 +74,13 @@ extension MainTabBarController {
         
         tabBar.unselectedItemTintColor = .myLightGrayColor()
         tabBar.tintColor = .myLabelColor()
+    }
+    
+    private func setupRouters() {
+        profileNavController = generateNavigationControllerForRouter(image: #imageLiteral(resourceName: "profile"), title: nil, tag: 4,  isHidden: true)
+        let moduleBuilder = ModuleBuilder()
+        
+        routerProfile = RouterProfileService(navigationController: profileNavController, moduleBuilder: moduleBuilder)
     }
     
    
@@ -148,7 +158,9 @@ extension MainTabBarController: MainTabBarDelegate {
 extension MainTabBarController {
     
     private func setupControllers(){
-        guard let newCurrentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil in MainTabBarVC")}
+        guard let newCurrentPeopleDelegate = currentPeopleDelegate,
+              let routerProfile = routerProfile,
+              let profileNavController = profileNavController else { fatalError("currentPeopleDelegate is nil in MainTabBarVC")}
         
         
         dataDelegateService.loadData(currentPeople: newCurrentPeopleDelegate.currentPeople) {[unowned self] acceptChatsDelegate,
@@ -166,13 +178,6 @@ extension MainTabBarController {
             self.reportDelegate = reportsDelegate
             self.peopleDelegate = peopleDelegate
             
-            
-            let profileVC = ProfileViewController(currentPeopleDelegate: newCurrentPeopleDelegate,
-                                                  peopleListnerDelegate: peopleDelegate,
-                                                  likeDislikeDelegate: likeDislikeDelegate,
-                                                  acceptChatsDelegate: acceptChatsDelegate,
-                                                  requestChatsDelegate: requestChatsDelegate,
-                                                  reportsDelegate: reportsDelegate)
             
             let peopleVC = PeopleViewController(currentPeopleDelegate: newCurrentPeopleDelegate,
                                                 peopleDelegate: peopleDelegate,
@@ -202,14 +207,20 @@ extension MainTabBarController {
             
             acceptChatsDelegate.acceptChatCollectionViewDelegate = chatsVC
             
-            
+            routerProfile.initialViewController(currentPeopleDelegate: currentPeopleDelegate,
+                                                                peopleListnerDelegate: peopleDelegate,
+                                                                likeDislikeDelegate: likeDislikeDelegate,
+                                                                acceptChatsDelegate: acceptChatsDelegate,
+                                                                requestChatsDelegate: requestChatsDelegate,
+                                                                reportsDelegate: reportsDelegate)
             
             viewControllers = [
                 generateNavigationController(rootViewController: peopleVC, image: #imageLiteral(resourceName: "people"), title: nil, tag: 1, isHidden: true),
                 generateNavigationController(rootViewController: requsetsVC, image: #imageLiteral(resourceName: "request"), title: nil, tag: 2, isHidden: true),
                 generateNavigationController(rootViewController: chatsVC, image: #imageLiteral(resourceName: "chats"), title: nil, tag: 3),
-                generateNavigationController(rootViewController: profileVC, image: #imageLiteral(resourceName: "profile"), title: nil, tag: 4,  isHidden: true)
+                profileNavController
             ]
+            
             PopUpService.shared.dismisPopUp(name: MAnimamationName.loading.rawValue) {}
             //renew tabBar badge after load all VC
             renewBadge()
@@ -226,6 +237,35 @@ extension MainTabBarController {
                                               withoutBackImage: Bool = false) -> UIViewController {
         
         let navController = NavigationControllerWithComplition(rootViewController: rootViewController)
+        navController.tabBarItem.imageInsets = UIEdgeInsets(top: 15, left: 0, bottom: 0, right: 0)
+        navController.tabBarItem.image = image
+        navController.tabBarItem.tag = tag
+        navController.navigationItem.title = title
+        navController.navigationBar.isHidden = isHidden
+        
+        let appereance = navController.navigationBar.standardAppearance.copy()
+        appereance.shadowImage = UIImage()
+        appereance.shadowColor = .clear
+        appereance.backgroundImage = UIImage()
+        appereance.backgroundColor = .myWhiteColor()
+        
+        navController.navigationBar.standardAppearance = appereance
+        navController.navigationBar.prefersLargeTitles = false
+        navController.navigationBar.tintColor = .myLabelColor()
+        
+        navController.navigationBar.titleTextAttributes = [.font: UIFont.avenirBold(size: 16)]
+        navController.navigationBar.largeTitleTextAttributes = [.font: UIFont.avenirBold(size: 38)]
+        return navController
+    }
+    
+    //MARK: generateNavigationController
+    private func generateNavigationControllerForRouter(image: UIImage,
+                                                       title: String?,
+                                                       tag: Int,
+                                                       isHidden: Bool = false,
+                                                       withoutBackImage: Bool = false) -> UINavigationController {
+        
+        let navController = NavigationControllerWithComplition()
         navController.tabBarItem.imageInsets = UIEdgeInsets(top: 15, left: 0, bottom: 0, right: 0)
         navController.tabBarItem.image = image
         navController.tabBarItem.tag = tag

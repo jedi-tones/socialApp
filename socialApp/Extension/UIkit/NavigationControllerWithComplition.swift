@@ -16,6 +16,11 @@ public class NavigationControllerWithComplition: UINavigationController, UINavig
         super.init(rootViewController: rootViewController)
         delegate = self
     }
+    
+    init() {
+        super.init(rootViewController: UIViewController())
+        delegate = self
+    }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

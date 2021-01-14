@@ -10,11 +10,34 @@ import UIKit
 
 class ModuleBuilder: BuilderProtocol {
     
-    static func createAdminPanelModule() -> UIViewController {
+    func createProfileModule(currentPeopleDelegate: CurrentPeopleDataDelegate?,
+                             peopleListnerDelegate: PeopleListenerDelegate?,
+                             likeDislikeDelegate: LikeDislikeListenerDelegate?,
+                             acceptChatsDelegate: AcceptChatListenerDelegate?,
+                             requestChatsDelegate: RequestChatListenerDelegate?,
+                             reportsDelegate: ReportsListnerDelegate?,
+                             router: RouterProfileProtocol) -> UIViewController {
+        
+        let viewController = ProfileViewController()
+        let presenter = ProfilePresenter(view: viewController,
+                                         currentPeopleDelegate: currentPeopleDelegate,
+                                         peopleListnerDelegate: peopleListnerDelegate,
+                                         likeDislikeDelegate: likeDislikeDelegate,
+                                         acceptChatsDelegate: acceptChatsDelegate,
+                                         requestChatsDelegate: requestChatsDelegate,
+                                         reportsDelegate: reportsDelegate,
+                                         router: router)
+        viewController.presenter = presenter
+        return viewController
+    }
+    
+    
+    func createAdminPanelModule(router: RouterProfileProtocol) -> UIViewController {
         let viewController = AdminPanelViewController()
-        let presenter = AdminPanelPresentor(view: viewController)
+        let presenter = AdminPanelPresentor(view: viewController, router: router)
         viewController.presenter = presenter
         
         return viewController
     }
+
 }

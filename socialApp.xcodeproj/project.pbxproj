@@ -39,6 +39,12 @@
 		FB18DE2225AF394900C23850 /* AdminPanelPresentorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DE2125AF394900C23850 /* AdminPanelPresentorProtocol.swift */; };
 		FB18DE2825AF408600C23850 /* ModuleBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DE2725AF408600C23850 /* ModuleBuilder.swift */; };
 		FB18DE2E25AF417500C23850 /* BuilderProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DE2D25AF417500C23850 /* BuilderProtocol.swift */; };
+		FB18DE3D25AF47A700C23850 /* ProfilePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DE3C25AF47A700C23850 /* ProfilePresenter.swift */; };
+		FB18DE4125AF480100C23850 /* ProfilePresenterProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DE4025AF480100C23850 /* ProfilePresenterProtocol.swift */; };
+		FB18DE4525AF480F00C23850 /* ProfileViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DE4425AF480F00C23850 /* ProfileViewProtocol.swift */; };
+		FB18DE4925AF789500C23850 /* RouterProfileProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DE4825AF789400C23850 /* RouterProfileProtocol.swift */; };
+		FB18DE4D25AF792F00C23850 /* RouterMain.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DE4C25AF792F00C23850 /* RouterMain.swift */; };
+		FB18DE5125AF7A1400C23850 /* RouterProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DE5025AF7A1400C23850 /* RouterProfileService.swift */; };
 		FB207CB42520C544007AA232 /* MessageError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB207CB32520C544007AA232 /* MessageError.swift */; };
 		FB21A1B624E55F6C000A2E91 /* ActiveChatsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB21A1B524E55F6C000A2E91 /* ActiveChatsCell.swift */; };
 		FB21A1B824E595CF000A2E91 /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB21A1B724E595CF000A2E91 /* Protocols.swift */; };
@@ -312,6 +318,12 @@
 		FB18DE2125AF394900C23850 /* AdminPanelPresentorProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminPanelPresentorProtocol.swift; sourceTree = "<group>"; };
 		FB18DE2725AF408600C23850 /* ModuleBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModuleBuilder.swift; sourceTree = "<group>"; };
 		FB18DE2D25AF417500C23850 /* BuilderProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuilderProtocol.swift; sourceTree = "<group>"; };
+		FB18DE3C25AF47A700C23850 /* ProfilePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePresenter.swift; sourceTree = "<group>"; };
+		FB18DE4025AF480100C23850 /* ProfilePresenterProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePresenterProtocol.swift; sourceTree = "<group>"; };
+		FB18DE4425AF480F00C23850 /* ProfileViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewProtocol.swift; sourceTree = "<group>"; };
+		FB18DE4825AF789400C23850 /* RouterProfileProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouterProfileProtocol.swift; sourceTree = "<group>"; };
+		FB18DE4C25AF792F00C23850 /* RouterMain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouterMain.swift; sourceTree = "<group>"; };
+		FB18DE5025AF7A1400C23850 /* RouterProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouterProfileService.swift; sourceTree = "<group>"; };
 		FB207CB32520C544007AA232 /* MessageError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageError.swift; sourceTree = "<group>"; };
 		FB21A1B524E55F6C000A2E91 /* ActiveChatsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveChatsCell.swift; sourceTree = "<group>"; };
 		FB21A1B724E595CF000A2E91 /* Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
@@ -653,8 +665,19 @@
 			isa = PBXGroup;
 			children = (
 				FB79DA81252DECEB00A7AA56 /* ProfileViewController */,
+				FB18DE3C25AF47A700C23850 /* ProfilePresenter.swift */,
+				FB18DE4425AF480F00C23850 /* ProfileViewProtocol.swift */,
+				FB18DE4025AF480100C23850 /* ProfilePresenterProtocol.swift */,
 			);
 			path = Profile;
+			sourceTree = "<group>";
+		};
+		FB18DE5A25AF907800C23850 /* Routers */ = {
+			isa = PBXGroup;
+			children = (
+				FB18DE5025AF7A1400C23850 /* RouterProfileService.swift */,
+			);
+			path = Routers;
 			sourceTree = "<group>";
 		};
 		FB21A1B424E55F53000A2E91 /* Cell */ = {
@@ -1006,7 +1029,6 @@
 				FB61B54624FE7F22002761ED /* AuthService.swift */,
 				FB8F2E85258EC0F000022853 /* BackgroundTaskManager.swift */,
 				FB007A7225A8DB8C00A10E1F /* Box.swift */,
-				FB18DE2725AF408600C23850 /* ModuleBuilder.swift */,
 				FBB4F3572511526C00ACFE90 /* CryptoService.swift */,
 				FB28FEA32584E85C0011DC3A /* DataDelegateService.swift */,
 				FBF293DC25065E2800F7B5F1 /* FirestoreService.swift */,
@@ -1017,6 +1039,7 @@
 				FBFFB865255F15AC007343ED /* PurchasesService.swift */,
 				FBB3B268250F82B800440632 /* ListenerService.swift */,
 				FB79DA6A252C834C00A7AA56 /* LocationService.swift */,
+				FB18DE2725AF408600C23850 /* ModuleBuilder.swift */,
 				FB007AA825ADD5FC00A10E1F /* RealmConfig.swift */,
 				FB18DDF525ADE4BE00C23850 /* RealmService.swift */,
 				FB18DE0925ADF18B00C23850 /* ManageRealmObjectService.swift */,
@@ -1152,6 +1175,8 @@
 				FB21A1B724E595CF000A2E91 /* Protocols.swift */,
 				FBD301AF257FF62500D38AE9 /* AuthViewControllerDelegate.swift */,
 				FB18DE2D25AF417500C23850 /* BuilderProtocol.swift */,
+				FB18DE4825AF789400C23850 /* RouterProfileProtocol.swift */,
+				FB18DE4C25AF792F00C23850 /* RouterMain.swift */,
 				FBB34002256D423700A597BF /* TagsCollectionViewDelegate.swift */,
 				FB78FE872573CE57004DA53E /* LikeDislikePeopleButton.swift */,
 				FB78FF20257A6DBE004DA53E /* ReportPeopleButton.swift */,
@@ -1308,6 +1333,7 @@
 				FBEF607924A602070005F947 /* SceneDelegate.swift */,
 				FBA462B725994E5800D3AEC2 /* Sounds */,
 				FBA94D1C24F55AC2000DA5D5 /* Managers */,
+				FB18DE5A25AF907800C23850 /* Routers */,
 				FBB34001256D421C00A597BF /* Protocols */,
 				FBB26ED5254AFD420081CF2C /* DataProvider */,
 				FB21A1B924E596E3000A2E91 /* Models */,
@@ -1530,6 +1556,7 @@
 				FB79DA4925234EDA00A7AA56 /* DateExtension.swift in Sources */,
 				FBB3B265250ACA0700440632 /* MGender.swift in Sources */,
 				FB8C3D432533A22800184FB5 /* SelectionTableViewCell.swift in Sources */,
+				FB18DE4D25AF792F00C23850 /* RouterMain.swift in Sources */,
 				FBF293DD25065E2800F7B5F1 /* FirestoreService.swift in Sources */,
 				FBA462A02597882300D3AEC2 /* EditProfileView.swift in Sources */,
 				FBB3D4A3255DAD2500A3B832 /* MActionType.swift in Sources */,
@@ -1566,6 +1593,7 @@
 				FBEF609124A90AEC0005F947 /* UILabelExtension.swift in Sources */,
 				FBB3B25F2509011200440632 /* StorageService.swift in Sources */,
 				FBA2AA2B2552D3F400A471F6 /* UniversalTableView.swift in Sources */,
+				FB18DE4125AF480100C23850 /* ProfilePresenterProtocol.swift in Sources */,
 				FBB4F35F2512737400ACFE90 /* FirestoreError.swift in Sources */,
 				FBA2AA352552F84F00A471F6 /* UniversalButtonCell.swift in Sources */,
 				FB18DDF625ADE4BE00C23850 /* RealmService.swift in Sources */,
@@ -1635,10 +1663,12 @@
 				FBB26EC3254843C60081CF2C /* AppSettingsViewController.swift in Sources */,
 				FB09108024FA93E2006B72D5 /* UITextViewExtension.swift in Sources */,
 				FB007AA925ADD5FC00A10E1F /* RealmConfig.swift in Sources */,
+				FB18DE4925AF789500C23850 /* RouterProfileProtocol.swift in Sources */,
 				FB007A5325A8B4C100A10E1F /* EditProfileViewModel.swift in Sources */,
 				FB79DA7F252DE71900A7AA56 /* SectionsProfile.swift in Sources */,
 				FB007A6E25A8C9BE00A10E1F /* FirestoreSaveProfileAfterEditViewModelProtocol.swift in Sources */,
 				FBA2AA2E2552D7D000A471F6 /* MCellType.swift in Sources */,
+				FB18DE3D25AF47A700C23850 /* ProfilePresenter.swift in Sources */,
 				FBB26EE8254C12AC0081CF2C /* CountOfUnreadMessageLabel.swift in Sources */,
 				FB21A1BB24E59705000A2E91 /* MChat.swift in Sources */,
 				FBA462932594CB4700D3AEC2 /* FireStoreServiceExtensionAdmin.swift in Sources */,
@@ -1670,6 +1700,7 @@
 				FB8C3D94253A51BF00184FB5 /* RequestsViewController.swift in Sources */,
 				FBFFB854255ECFE9007343ED /* PurchasesViewController.swift in Sources */,
 				FBB26EEB254C2D440081CF2C /* MessagesDataProvider.swift in Sources */,
+				FB18DE5125AF7A1400C23850 /* RouterProfileService.swift in Sources */,
 				FBEF609324A90C840005F947 /* UIImageViewExtension.swift in Sources */,
 				FB37279025419CA400906FBE /* MSearchSettings.swift in Sources */,
 				FBA462452593E53700D3AEC2 /* MAdminPanelSettings.swift in Sources */,
@@ -1711,6 +1742,7 @@
 				FB3727992541CAD600906FBE /* EditSearchSettingsViewController.swift in Sources */,
 				FBA2AA282550601A00A471F6 /* LikeDisklikeButton.swift in Sources */,
 				FB15FCF32513A71F00B765D3 /* MMessage.swift in Sources */,
+				FB18DE4525AF480F00C23850 /* ProfileViewProtocol.swift in Sources */,
 				FB18DE0A25ADF18B00C23850 /* ManageRealmObjectService.swift in Sources */,
 				FBB26EDB254B03760081CF2C /* RequestChatDataProvider.swift in Sources */,
 				FBB26EC72548452C0081CF2C /* MAppSettings.swift in Sources */,
