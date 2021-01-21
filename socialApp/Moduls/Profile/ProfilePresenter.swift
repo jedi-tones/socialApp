@@ -8,31 +8,21 @@
 
 import UIKit
 
-class ProfilePresenter: ProfilePresenterProtocol { 
-    
+class ProfilePresenter: ProfilePresenterProtocol {
+   
     private weak var view: ProfileViewProtocol?
     private var router: RouterProfileProtocol?
     
-    weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
-    
-    private weak var peopleListnerDelegate: PeopleListenerDelegate?
-    private weak var likeDislikeDelegate: LikeDislikeListenerDelegate?
-    private weak var acceptChatsDelegate: AcceptChatListenerDelegate?
-    private weak var requestChatsDelegate: RequestChatListenerDelegate?
-    private weak var reportsDelegate: ReportsListnerDelegate?
+    var currentPeopleDelegate: CurrentPeopleDataDelegate?
     
     var dataSource: UICollectionViewDiffableDataSource<SectionsProfile, MProfileSettings>?
     
     required init(view: ProfileViewProtocol,
          currentPeopleDelegate: CurrentPeopleDataDelegate?,
-         peopleListnerDelegate: PeopleListenerDelegate?,
-         likeDislikeDelegate: LikeDislikeListenerDelegate?,
-         acceptChatsDelegate: AcceptChatListenerDelegate?,
-         requestChatsDelegate: RequestChatListenerDelegate?,
-         reportsDelegate: ReportsListnerDelegate?,
          router: RouterProfileProtocol) {
         self.view = view
         self.router = router
+        self.currentPeopleDelegate = currentPeopleDelegate
         setupNotification()
     }
     
@@ -127,8 +117,39 @@ class ProfilePresenter: ProfilePresenterProtocol {
             })
     }
     
+    func setupProfile() {
+        print("setup setupProfile")
+        router?.setupProfile()
+    }
+    
+    func showSetupSearch() {
+        print("setup showSetupSearch")
+        router?.showSetupSearch()
+    }
+    
+    func showAppSettings() {
+        print("setup showAppSettings")
+        router?.showAppSettings()
+    }
+    
+    func showContacts() {
+        print("setup showContacts")
+        router?.showContacts()
+    }
+    
+    func showAboutInformation() {
+        print("setup showAboutInformation")
+        router?.showAboutInformation()
+
+    }
+    
     func showAdminPanel() {
         router?.showAdminPanel()
+    }
+    
+    func showPremiumPurchases() {
+        guard let view = view else { return }
+        router?.showPremiumPurchases(viewController: view)
     }
     
     //MARK: updateSections
@@ -140,7 +161,7 @@ class ProfilePresenter: ProfilePresenterProtocol {
     }
     
     @objc private func tapPremiumCell() {
-        view?.tapPremiumCell()
+        showPremiumPurchases()
     }
     
 }

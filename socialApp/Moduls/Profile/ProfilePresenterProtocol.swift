@@ -15,11 +15,6 @@ protocol ProfilePresenterProtocol: class {
     
     init(view: ProfileViewProtocol,
          currentPeopleDelegate: CurrentPeopleDataDelegate?,
-         peopleListnerDelegate: PeopleListenerDelegate?,
-         likeDislikeDelegate: LikeDislikeListenerDelegate?,
-         acceptChatsDelegate: AcceptChatListenerDelegate?,
-         requestChatsDelegate: RequestChatListenerDelegate?,
-         reportsDelegate: ReportsListnerDelegate?,
          router: RouterProfileProtocol)
     
     func setupNotification()
@@ -33,6 +28,7 @@ protocol ProfilePresenterProtocol: class {
     func showContacts()
     func showAboutInformation()
     func showAdminPanel()
+    func showPremiumPurchases()
     
     
     

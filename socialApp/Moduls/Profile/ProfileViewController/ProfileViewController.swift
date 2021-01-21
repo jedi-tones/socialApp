@@ -156,41 +156,23 @@ extension ProfileViewController: UICollectionViewDelegate {
         case .settings:
             let firstIndexOfSettingsInProfileSettings = 2
             guard let cell = MProfileSettings(rawValue: indexPath.item + firstIndexOfSettingsInProfileSettings) else { fatalError("unknown cell")}
-            guard let currentPeopleDelegate = presenter.currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil on ProfilePresenter")}
             
             switch cell {
             
             case .setupProfile:
-                let vc = EditProfileViewController(currentPeopleDelegate: currentPeopleDelegate)
-                vc.hidesBottomBarWhenPushed = true
-                navigationController?.pushViewController(vc, animated: true)
+                presenter.setupProfile()
                 
             case .setupSearch:
-                let vc = EditSearchSettingsViewController(currentPeopleDelegate: currentPeopleDelegate,
-                                                          peopleListnerDelegate: peopleListnerDelegate,
-                                                          likeDislikeDelegate: likeDislikeDelegate,
-                                                          acceptChatsDelegate: acceptChatsDelegate,
-                                                          reportsDelegate: reportsDelegate)
-                vc.hidesBottomBarWhenPushed = true
-                navigationController?.pushViewController(vc, animated: true)
+                presenter.showSetupSearch()
                 
             case .appSettings:
-                let vc = AppSettingsViewController(currentPeopleDelegate: currentPeopleDelegate,
-                                                   acceptChatDelegate: acceptChatsDelegate,
-                                                   requestChatDelegate: requestChatsDelegate,
-                                                   likeDislikeDelegate: likeDislikeDelegate)
-                vc.hidesBottomBarWhenPushed = true
-                navigationController?.pushViewController(vc, animated: true)
+                presenter.showAppSettings()
                 
             case .contacts:
-                let contactsVC = ContactsViewController()
-                contactsVC.hidesBottomBarWhenPushed = true
-                navigationController?.pushViewController(contactsVC, animated: true)
+                presenter.showContacts()
                 
             case .aboutInformation:
-                let aboutVC = AboutViewController()
-                aboutVC.hidesBottomBarWhenPushed = true
-                navigationController?.pushViewController(aboutVC, animated: true)
+                presenter.showAboutInformation()
                 
             case .adminPanel:
                 presenter.showAdminPanel()
@@ -209,13 +191,6 @@ extension ProfileViewController {
         presenter.refreshProfile()
     }
     
-    func tapPremiumCell() {
-        guard let currentPeopleDelegate = presenter.currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil on ProfilePresenter")}
-        
-        let purchasVC = PurchasesViewController(currentPeopleDelegate: currentPeopleDelegate)
-        purchasVC.modalPresentationStyle = .fullScreen
-        present(purchasVC, animated: true, completion: nil)
-    }
 }
 //MARK: setupConstraints
 extension ProfileViewController {

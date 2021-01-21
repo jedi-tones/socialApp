@@ -77,10 +77,13 @@ extension MainTabBarController {
     }
     
     private func setupRouters() {
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("CurrentPeople is nil")}
         profileNavController = generateNavigationControllerForRouter(image: #imageLiteral(resourceName: "profile"), title: nil, tag: 4,  isHidden: true)
         let moduleBuilder = ModuleBuilder()
         
         routerProfile = RouterProfileService(navigationController: profileNavController, moduleBuilder: moduleBuilder)
+        routerProfile?.currentPeopleDelegate = currentPeopleDelegate
+        routerProfile?.initialViewController()
     }
     
    
@@ -159,7 +162,6 @@ extension MainTabBarController {
     
     private func setupControllers(){
         guard let newCurrentPeopleDelegate = currentPeopleDelegate,
-              let routerProfile = routerProfile,
               let profileNavController = profileNavController else { fatalError("currentPeopleDelegate is nil in MainTabBarVC")}
         
         
@@ -178,6 +180,11 @@ extension MainTabBarController {
             self.reportDelegate = reportsDelegate
             self.peopleDelegate = peopleDelegate
             
+            routerProfile?.peopleListnerDelegate = peopleDelegate
+            routerProfile?.likeDislikeDelegate = likeDislikeDelegate
+            routerProfile?.acceptChatsDelegate = acceptChatsDelegate
+            routerProfile?.requestChatsDelegate = requestChatsDelegate
+            routerProfile?.reportsDelegate = reportsDelegate
             
             let peopleVC = PeopleViewController(currentPeopleDelegate: newCurrentPeopleDelegate,
                                                 peopleDelegate: peopleDelegate,
@@ -207,12 +214,7 @@ extension MainTabBarController {
             
             acceptChatsDelegate.acceptChatCollectionViewDelegate = chatsVC
             
-            routerProfile.initialViewController(currentPeopleDelegate: currentPeopleDelegate,
-                                                                peopleListnerDelegate: peopleDelegate,
-                                                                likeDislikeDelegate: likeDislikeDelegate,
-                                                                acceptChatsDelegate: acceptChatsDelegate,
-                                                                requestChatsDelegate: requestChatsDelegate,
-                                                                reportsDelegate: reportsDelegate)
+            
             
             viewControllers = [
                 generateNavigationController(rootViewController: peopleVC, image: #imageLiteral(resourceName: "people"), title: nil, tag: 1, isHidden: true),

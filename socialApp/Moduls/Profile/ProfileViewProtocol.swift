@@ -8,9 +8,8 @@
 
 import UIKit
 
-protocol ProfileViewProtocol: class {
+protocol ProfileViewProtocol:  UIViewController {
     var collectionView: UICollectionView! { get set }
     
-    func tapPremiumCell()
     func showPopUpMessage(header: String, text: String)
 }

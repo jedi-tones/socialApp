@@ -9,29 +9,30 @@
 import UIKit
 
 class RouterProfileService: RouterProfileProtocol {
+    
+    var currentPeopleDelegate: CurrentPeopleDataDelegate?
+    
+    weak var peopleListnerDelegate: PeopleListenerDelegate?
+    weak var likeDislikeDelegate: LikeDislikeListenerDelegate?
+    weak var acceptChatsDelegate: AcceptChatListenerDelegate?
+    weak var requestChatsDelegate: RequestChatListenerDelegate?
+    weak var reportsDelegate: ReportsListnerDelegate?
+    
     var navigationController: UINavigationController?
     var moduleBuilder: BuilderProtocol?
     
-    init(navigationController: UINavigationController?, moduleBuilder: BuilderProtocol?) {
+    init(navigationController: UINavigationController?,
+         moduleBuilder: BuilderProtocol?) {
         self.navigationController = navigationController
         self.moduleBuilder = moduleBuilder
+        
     }
     
-    func initialViewController(currentPeopleDelegate: CurrentPeopleDataDelegate?,
-                               peopleListnerDelegate: PeopleListenerDelegate?,
-                               likeDislikeDelegate: LikeDislikeListenerDelegate?,
-                               acceptChatsDelegate: AcceptChatListenerDelegate?,
-                               requestChatsDelegate: RequestChatListenerDelegate?,
-                               reportsDelegate: ReportsListnerDelegate) {
-        
+    func initialViewController() {
+        guard let currentPeopleDelegate =  currentPeopleDelegate else { fatalError("Current people is nil")}
         if let navigationController = navigationController {
             guard let profileViewController = moduleBuilder?.createProfileModule(
                     currentPeopleDelegate: currentPeopleDelegate,
-                    peopleListnerDelegate: peopleListnerDelegate,
-                    likeDislikeDelegate: likeDislikeDelegate,
-                    acceptChatsDelegate: acceptChatsDelegate,
-                    requestChatsDelegate: requestChatsDelegate,
-                    reportsDelegate: reportsDelegate,
                     router: self) else { return }
             navigationController.viewControllers = [profileViewController]
         }
@@ -49,5 +50,52 @@ class RouterProfileService: RouterProfileProtocol {
             navigationController.pushViewController(adminPanelViewController, animated: true)
         }
     }
-       
+    
+    func setupProfile() {
+        let vc = EditProfileViewController(currentPeopleDelegate: currentPeopleDelegate)
+        vc.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func showSetupSearch() {
+                let vc = EditSearchSettingsViewController(currentPeopleDelegate: currentPeopleDelegate,
+                                                          peopleListnerDelegate: peopleListnerDelegate,
+                                                          likeDislikeDelegate: likeDislikeDelegate,
+                                                          acceptChatsDelegate: acceptChatsDelegate,
+                                                          reportsDelegate: reportsDelegate)
+                vc.hidesBottomBarWhenPushed = true
+                navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func showAppSettings() {
+        let vc = AppSettingsViewController(currentPeopleDelegate: currentPeopleDelegate,
+                                           acceptChatDelegate: acceptChatsDelegate,
+                                           requestChatDelegate: requestChatsDelegate,
+                                           likeDislikeDelegate: likeDislikeDelegate)
+        vc.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func showContacts() {
+        let contactsVC = ContactsViewController()
+        contactsVC.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(contactsVC, animated: true)
+    }
+    
+    func showAboutInformation() {
+        let aboutVC = AboutViewController()
+        aboutVC.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(aboutVC, animated: true)
+    }
+    
+    func showPremiumPurchases(viewController: UIViewController) {
+        
+        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil on ProfilePresenter")}
+        
+        let purchasVC = PurchasesViewController(currentPeopleDelegate: currentPeopleDelegate)
+        purchasVC.modalPresentationStyle = .fullScreen
+        viewController.present(purchasVC, animated: true, completion: nil)
+        
+    }
+    
 }

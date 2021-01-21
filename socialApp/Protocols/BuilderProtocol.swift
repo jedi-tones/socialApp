@@ -10,11 +10,6 @@ import UIKit
 
 protocol BuilderProtocol {
     func createProfileModule(currentPeopleDelegate: CurrentPeopleDataDelegate?,
-                             peopleListnerDelegate: PeopleListenerDelegate?,
-                             likeDislikeDelegate: LikeDislikeListenerDelegate?,
-                             acceptChatsDelegate: AcceptChatListenerDelegate?,
-                             requestChatsDelegate: RequestChatListenerDelegate?,
-                             reportsDelegate: ReportsListnerDelegate?,
                              router: RouterProfileProtocol) -> UIViewController
     
     func createAdminPanelModule(router: RouterProfileProtocol) -> UIViewController

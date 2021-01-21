@@ -11,21 +11,11 @@ import UIKit
 class ModuleBuilder: BuilderProtocol {
     
     func createProfileModule(currentPeopleDelegate: CurrentPeopleDataDelegate?,
-                             peopleListnerDelegate: PeopleListenerDelegate?,
-                             likeDislikeDelegate: LikeDislikeListenerDelegate?,
-                             acceptChatsDelegate: AcceptChatListenerDelegate?,
-                             requestChatsDelegate: RequestChatListenerDelegate?,
-                             reportsDelegate: ReportsListnerDelegate?,
                              router: RouterProfileProtocol) -> UIViewController {
         
         let viewController = ProfileViewController()
         let presenter = ProfilePresenter(view: viewController,
                                          currentPeopleDelegate: currentPeopleDelegate,
-                                         peopleListnerDelegate: peopleListnerDelegate,
-                                         likeDislikeDelegate: likeDislikeDelegate,
-                                         acceptChatsDelegate: acceptChatsDelegate,
-                                         requestChatsDelegate: requestChatsDelegate,
-                                         reportsDelegate: reportsDelegate,
                                          router: router)
         viewController.presenter = presenter
         return viewController
