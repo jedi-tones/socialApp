@@ -653,8 +653,8 @@
 		FB18DE1425AF384400C23850 /* Admin Panel */ = {
 			isa = PBXGroup;
 			children = (
-				FB18DE1525AF386C00C23850 /* AdminPanelPresentor.swift */,
 				FBA462402593E06800D3AEC2 /* AdminPanelViewController.swift */,
+				FB18DE1525AF386C00C23850 /* AdminPanelPresentor.swift */,
 				FB18DE1D25AF393200C23850 /* AdminPanelViewProtocol.swift */,
 				FB18DE2125AF394900C23850 /* AdminPanelPresentorProtocol.swift */,
 			);
@@ -801,6 +801,15 @@
 				FBB33FF0256D202000A597BF /* SectionTagsCollectionView.swift */,
 			);
 			path = Sections;
+			sourceTree = "<group>";
+		};
+		FB5F525625BACE6D00EC19AF /* ModuleBuilder */ = {
+			isa = PBXGroup;
+			children = (
+				FB18DE2725AF408600C23850 /* ModuleBuilder.swift */,
+				FB18DE2D25AF417500C23850 /* BuilderProtocol.swift */,
+			);
+			path = ModuleBuilder;
 			sourceTree = "<group>";
 		};
 		FB61B54524FE6921002761ED /* UIkit */ = {
@@ -1044,7 +1053,6 @@
 				FB007AA825ADD5FC00A10E1F /* RealmConfig.swift */,
 				FB18DDF525ADE4BE00C23850 /* RealmService.swift */,
 				FB18DE0925ADF18B00C23850 /* ManageRealmObjectService.swift */,
-				FB18DE2725AF408600C23850 /* ModuleBuilder.swift */,
 				FB18DE0F25AE065300C23850 /* ModelConverterService.swift */,
 				FBB3B25E2509011200440632 /* StorageService.swift */,
 				FBB33FC5256BD80900A597BF /* ScreenRecordingManager.swift */,
@@ -1176,7 +1184,6 @@
 			children = (
 				FB21A1B724E595CF000A2E91 /* Protocols.swift */,
 				FBD301AF257FF62500D38AE9 /* AuthViewControllerDelegate.swift */,
-				FB18DE2D25AF417500C23850 /* BuilderProtocol.swift */,
 				FBB34002256D423700A597BF /* TagsCollectionViewDelegate.swift */,
 				FB78FE872573CE57004DA53E /* LikeDislikePeopleButton.swift */,
 				FB78FF20257A6DBE004DA53E /* ReportPeopleButton.swift */,
@@ -1332,6 +1339,7 @@
 				FBEF607724A602070005F947 /* AppDelegate.swift */,
 				FBEF607924A602070005F947 /* SceneDelegate.swift */,
 				FBA462B725994E5800D3AEC2 /* Sounds */,
+				FB5F525625BACE6D00EC19AF /* ModuleBuilder */,
 				FBA94D1C24F55AC2000DA5D5 /* Managers */,
 				FB18DE5A25AF907800C23850 /* Routers */,
 				FBB34001256D421C00A597BF /* Protocols */,

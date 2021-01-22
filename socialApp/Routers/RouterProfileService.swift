@@ -52,22 +52,25 @@ class RouterProfileService: RouterProfileProtocol {
     }
     
     func setupProfile() {
+        //need change to MVP
         let vc = EditProfileViewController(currentPeopleDelegate: currentPeopleDelegate)
         vc.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(vc, animated: true)
     }
     
     func showSetupSearch() {
-                let vc = EditSearchSettingsViewController(currentPeopleDelegate: currentPeopleDelegate,
-                                                          peopleListnerDelegate: peopleListnerDelegate,
-                                                          likeDislikeDelegate: likeDislikeDelegate,
-                                                          acceptChatsDelegate: acceptChatsDelegate,
-                                                          reportsDelegate: reportsDelegate)
-                vc.hidesBottomBarWhenPushed = true
-                navigationController?.pushViewController(vc, animated: true)
+        //need change to MVP
+        let vc = EditSearchSettingsViewController(currentPeopleDelegate: currentPeopleDelegate,
+                                                  peopleListnerDelegate: peopleListnerDelegate,
+                                                  likeDislikeDelegate: likeDislikeDelegate,
+                                                  acceptChatsDelegate: acceptChatsDelegate,
+                                                  reportsDelegate: reportsDelegate)
+        vc.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     func showAppSettings() {
+        //need change to MVP
         let vc = AppSettingsViewController(currentPeopleDelegate: currentPeopleDelegate,
                                            acceptChatDelegate: acceptChatsDelegate,
                                            requestChatDelegate: requestChatsDelegate,
@@ -77,20 +80,21 @@ class RouterProfileService: RouterProfileProtocol {
     }
     
     func showContacts() {
+        //need change to MVP
         let contactsVC = ContactsViewController()
         contactsVC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(contactsVC, animated: true)
     }
     
     func showAboutInformation() {
+        //need change to MVP
         let aboutVC = AboutViewController()
         aboutVC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(aboutVC, animated: true)
     }
     
     func showPremiumPurchases(viewController: UIViewController) {
-        
-        guard let currentPeopleDelegate = currentPeopleDelegate else { fatalError("currentPeopleDelegate is nil on ProfilePresenter")}
+        //need change to MVP
         
         let purchasVC = PurchasesViewController(currentPeopleDelegate: currentPeopleDelegate)
         purchasVC.modalPresentationStyle = .fullScreen

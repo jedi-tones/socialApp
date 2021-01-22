@@ -13,8 +13,7 @@ class ProfilePresenter: ProfilePresenterProtocol {
     private weak var view: ProfileViewProtocol?
     private var router: RouterProfileProtocol?
     
-    var currentPeopleDelegate: CurrentPeopleDataDelegate?
-    
+    weak var currentPeopleDelegate: CurrentPeopleDataDelegate?
     var dataSource: UICollectionViewDiffableDataSource<SectionsProfile, MProfileSettings>?
     
     required init(view: ProfileViewProtocol,
@@ -163,5 +162,4 @@ class ProfilePresenter: ProfilePresenterProtocol {
     @objc private func tapPremiumCell() {
         showPremiumPurchases()
     }
-    
 }

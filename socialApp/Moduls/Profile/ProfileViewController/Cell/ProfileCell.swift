@@ -13,23 +13,22 @@ class ProfileCell: UICollectionViewCell {
     
     static let reuseID = "ProfileCell"
     
-    let profileImage = UIImageView()
-    let profileName = UILabel(labelText: "",
-                              textFont: .avenirBold(size: 24),
-                              aligment: .left,
-                              linesCount: 0)
-    let info = UILabel(labelText: "",
-                       textFont: .avenirRegular(size: 16),
-                       textColor: .myGrayColor(),
-                       aligment: .left,
-                       linesCount: 0)
-    let infoPremium = UILabel(labelText: "",
-                              textFont: .avenirBold(size: 16),
-                              textColor: .mySecondSatColor(),
-                              aligment: .left,
-                              linesCount: 0)
-   
-   
+    private let profileImage = UIImageView()
+    private let profileName = UILabel(labelText: "",
+                                      textFont: .avenirBold(size: 24),
+                                      aligment: .left,
+                                      linesCount: 0)
+    private let info = UILabel(labelText: "",
+                               textFont: .avenirRegular(size: 16),
+                               textColor: .myGrayColor(),
+                               aligment: .left,
+                               linesCount: 0)
+    private let infoPremium = UILabel(labelText: "",
+                                      textFont: .avenirBold(size: 16),
+                                      textColor: .mySecondSatColor(),
+                                      aligment: .left,
+                                      linesCount: 0)
+    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -63,11 +62,6 @@ class ProfileCell: UICollectionViewCell {
         }
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-    
-    }
-    
     private func setupConstraints(){
         addSubview(profileImage)
         addSubview(profileName)
@@ -80,8 +74,6 @@ class ProfileCell: UICollectionViewCell {
         infoPremium.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-           
-            
             profileImage.topAnchor.constraint(equalTo: topAnchor),
             profileImage.leadingAnchor.constraint(equalTo: leadingAnchor),
             profileImage.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.4),

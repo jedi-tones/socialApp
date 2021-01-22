@@ -12,7 +12,9 @@ class SettingsCell: UICollectionViewCell {
     
     static let reuseID = "SettingsCell"
     
-    let settingslabel = UILabel(labelText: "", textFont: .avenirBold(size: 16),textColor: .myLabelColor())
+    private let settingslabel = UILabel(labelText: "",
+                                        textFont: .avenirBold(size: 16),
+                                        textColor: .myLabelColor())
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -46,9 +48,9 @@ class SettingsCell: UICollectionViewCell {
     }
     
     private func setupConstraints(){
-
+        
         addSubview(settingslabel)
-
+        
         settingslabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             settingslabel.centerYAnchor.constraint(equalTo: centerYAnchor),

@@ -12,7 +12,7 @@ class PremiumCell: UICollectionViewCell {
     
     static let reuseID = "PremiumCell"
     
-    let scrollInfoCollectionView = CollectionViewInfoGallery(elements: MPremiumInfo.shared.elements,
+    private let scrollInfoCollectionView = CollectionViewInfoGallery(elements: MPremiumInfo.shared.elements,
                                                              header: "Flava premium")
     
     override init(frame: CGRect) {

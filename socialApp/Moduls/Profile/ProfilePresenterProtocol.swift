@@ -29,8 +29,5 @@ protocol ProfilePresenterProtocol: class {
     func showAboutInformation()
     func showAdminPanel()
     func showPremiumPurchases()
-    
-    
-    
-    
+
 }
