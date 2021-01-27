@@ -15,10 +15,6 @@ class ProfileViewController: UIViewController, ProfileViewProtocol {
     var collectionView: UICollectionView!
     var presenter: ProfilePresenterProtocol!
     
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
@@ -35,7 +31,6 @@ class ProfileViewController: UIViewController, ProfileViewProtocol {
     
     private func setup() {
         view.backgroundColor = .myWhiteColor()
-        
         navigationItem.backButtonTitle = ""
         navigationItem.largeTitleDisplayMode = .never
         refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
@@ -155,7 +150,9 @@ extension ProfileViewController: UICollectionViewDelegate {
             
         case .settings:
             let firstIndexOfSettingsInProfileSettings = 2
-            guard let cell = MProfileSettings(rawValue: indexPath.item + firstIndexOfSettingsInProfileSettings) else { fatalError("unknown cell")}
+            guard let cell = MProfileSettings(rawValue: indexPath.item + firstIndexOfSettingsInProfileSettings) else {
+                fatalError("unknown cell")
+            }
             
             switch cell {
             
@@ -181,7 +178,6 @@ extension ProfileViewController: UICollectionViewDelegate {
             }
             collectionView.deselectItem(at: indexPath, animated: true)
         }
-        
     }
 }
 
@@ -190,8 +186,8 @@ extension ProfileViewController {
     @objc private func refresh() {
         presenter.refreshProfile()
     }
-    
 }
+
 //MARK: setupConstraints
 extension ProfileViewController {
     private func setupConstraints() {

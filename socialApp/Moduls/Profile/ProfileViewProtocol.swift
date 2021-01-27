@@ -10,6 +10,5 @@ import UIKit
 
 protocol ProfileViewProtocol:  UIViewController {
     var collectionView: UICollectionView! { get set }
-    
     func showPopUpMessage(header: String, text: String)
 }

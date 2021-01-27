@@ -16,7 +16,6 @@ class PurchasesService: NSObject {
     static let productNotificationIdentifier = "PurchasesServiceProductIdentifier"
     private override init() { }
     
-    
     var products: [SKProduct] = []
     
     private func refreshReceipt(){
