@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol RouterMain {
+protocol RouterMainProtocol {
     var navigationController: UINavigationController? { get set }
     var moduleBuilder: BuilderProtocol? { get set }
 }

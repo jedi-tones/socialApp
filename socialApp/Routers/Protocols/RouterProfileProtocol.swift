@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol RouterProfileProtocol: RouterMain {
+protocol RouterProfileProtocol: RouterMainProtocol {
     var currentPeopleDelegate: CurrentPeopleDataDelegate? { get set }
     var peopleListnerDelegate: PeopleListenerDelegate? { get set }
     var likeDislikeDelegate: LikeDislikeListenerDelegate? { get set }

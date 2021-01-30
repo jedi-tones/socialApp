@@ -43,7 +43,7 @@
 		FB18DE4125AF480100C23850 /* ProfilePresenterProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DE4025AF480100C23850 /* ProfilePresenterProtocol.swift */; };
 		FB18DE4525AF480F00C23850 /* ProfileViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DE4425AF480F00C23850 /* ProfileViewProtocol.swift */; };
 		FB18DE4925AF789500C23850 /* RouterProfileProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DE4825AF789400C23850 /* RouterProfileProtocol.swift */; };
-		FB18DE4D25AF792F00C23850 /* RouterMain.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DE4C25AF792F00C23850 /* RouterMain.swift */; };
+		FB18DE4D25AF792F00C23850 /* RouterMainProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DE4C25AF792F00C23850 /* RouterMainProtocol.swift */; };
 		FB18DE5125AF7A1400C23850 /* RouterProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB18DE5025AF7A1400C23850 /* RouterProfileService.swift */; };
 		FB207CB42520C544007AA232 /* MessageError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB207CB32520C544007AA232 /* MessageError.swift */; };
 		FB21A1B624E55F6C000A2E91 /* ActiveChatsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB21A1B524E55F6C000A2E91 /* ActiveChatsCell.swift */; };
@@ -322,7 +322,7 @@
 		FB18DE4025AF480100C23850 /* ProfilePresenterProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePresenterProtocol.swift; sourceTree = "<group>"; };
 		FB18DE4425AF480F00C23850 /* ProfileViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewProtocol.swift; sourceTree = "<group>"; };
 		FB18DE4825AF789400C23850 /* RouterProfileProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouterProfileProtocol.swift; sourceTree = "<group>"; };
-		FB18DE4C25AF792F00C23850 /* RouterMain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouterMain.swift; sourceTree = "<group>"; };
+		FB18DE4C25AF792F00C23850 /* RouterMainProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouterMainProtocol.swift; sourceTree = "<group>"; };
 		FB18DE5025AF7A1400C23850 /* RouterProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouterProfileService.swift; sourceTree = "<group>"; };
 		FB207CB32520C544007AA232 /* MessageError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageError.swift; sourceTree = "<group>"; };
 		FB21A1B524E55F6C000A2E91 /* ActiveChatsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveChatsCell.swift; sourceTree = "<group>"; };
@@ -676,8 +676,7 @@
 			isa = PBXGroup;
 			children = (
 				FB18DE5025AF7A1400C23850 /* RouterProfileService.swift */,
-				FB18DE4825AF789400C23850 /* RouterProfileProtocol.swift */,
-				FB18DE4C25AF792F00C23850 /* RouterMain.swift */,
+				FBB1319F25C5A5DD00410E56 /* Protocols */,
 			);
 			path = Routers;
 			sourceTree = "<group>";
@@ -1073,6 +1072,15 @@
 				FB21A1B424E55F53000A2E91 /* Cell */,
 			);
 			path = ChatsViewController;
+			sourceTree = "<group>";
+		};
+		FBB1319F25C5A5DD00410E56 /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				FB18DE4825AF789400C23850 /* RouterProfileProtocol.swift */,
+				FB18DE4C25AF792F00C23850 /* RouterMainProtocol.swift */,
+			);
+			path = Protocols;
 			sourceTree = "<group>";
 		};
 		FBB26ED5254AFD420081CF2C /* DataProvider */ = {
@@ -1564,7 +1572,7 @@
 				FB79DA4925234EDA00A7AA56 /* DateExtension.swift in Sources */,
 				FBB3B265250ACA0700440632 /* MGender.swift in Sources */,
 				FB8C3D432533A22800184FB5 /* SelectionTableViewCell.swift in Sources */,
-				FB18DE4D25AF792F00C23850 /* RouterMain.swift in Sources */,
+				FB18DE4D25AF792F00C23850 /* RouterMainProtocol.swift in Sources */,
 				FBF293DD25065E2800F7B5F1 /* FirestoreService.swift in Sources */,
 				FBA462A02597882300D3AEC2 /* EditProfileView.swift in Sources */,
 				FBB3D4A3255DAD2500A3B832 /* MActionType.swift in Sources */,
