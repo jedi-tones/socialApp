@@ -53,7 +53,7 @@ class EditProfileViewController: UIViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        editProfileView.prepareForReuse()
+       // editProfileView.prepareForReuse()
     }
 
     private func setupVC() {

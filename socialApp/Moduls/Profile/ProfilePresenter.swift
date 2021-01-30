@@ -117,27 +117,22 @@ class ProfilePresenter: ProfilePresenterProtocol {
     }
     
     func setupProfile() {
-        print("setup setupProfile")
         router?.setupProfile()
     }
     
     func showSetupSearch() {
-        print("setup showSetupSearch")
         router?.showSetupSearch()
     }
     
     func showAppSettings() {
-        print("setup showAppSettings")
         router?.showAppSettings()
     }
     
     func showContacts() {
-        print("setup showContacts")
         router?.showContacts()
     }
     
     func showAboutInformation() {
-        print("setup showAboutInformation")
         router?.showAboutInformation()
 
     }

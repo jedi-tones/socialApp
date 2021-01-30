@@ -87,6 +87,7 @@ class ChatsViewController: UIViewController {
         
         let searchController = UISearchController(searchResultsController: nil)
         searchController.obscuresBackgroundDuringPresentation = false
+       
         searchController.searchBar.delegate = self
         searchController.searchBar.backgroundColor = .myWhiteColor()
         searchController.searchBar.barTintColor = .myWhiteColor()
@@ -310,10 +311,13 @@ extension ChatsViewController {
     private func renewDataSource(searchText: String?) {
         guard let sortedAcceptChats = acceptChatDelegate?.sortedAcceptChats else { fatalError("Can't get sorted accept chats")}
         //check empty to show emptyView
-        checkAcceptChatsIsEmpty()
+        //but don't check if renewDataSource initiate searchBar
+        if searchText == nil {
+            checkAcceptChatsIsEmpty()
+        }
         
         let filtredAcceptChats = sortedAcceptChats.filter { acceptChat -> Bool in
-            acceptChat.contains(element: searchText)
+            acceptChat.contains(element: searchText) || acceptChat.friendId == acceptChatDelegate?.requestChatsCountName
         }
         
         let newChats = filtredAcceptChats.filter { filtredAcceptChat -> Bool in
@@ -376,7 +380,7 @@ extension ChatsViewController: UISearchBarDelegate {
         renewDataSource(searchText: searchText)
     }
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        renewDataSource(searchText: nil)
+        renewDataSource(searchText: "")
     }
 }
 

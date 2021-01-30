@@ -51,6 +51,7 @@ class GalleryView: UIView {
                      showPrivate: Bool,
                      showProtectButton: Bool,
                      complition:(()->Void)?) {
+        prepareReuseScrollView()
         //add profile image
         if let url = URL(string: profileImage) {
             let imageView = GalleryImageView(galleryImage: nil,

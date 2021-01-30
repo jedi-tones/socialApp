@@ -8,7 +8,6 @@
 
 import UIKit
 
-
 extension UIScrollView {
     func updateContentView(bottomOffset: CGFloat = 45) {
         let bottomOffset:CGFloat = bottomOffset

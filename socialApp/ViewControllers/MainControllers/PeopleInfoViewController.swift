@@ -64,7 +64,6 @@ class PeopleInfoViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         peopleView.setNeedsLayout()
-        
     }
     
     private func setupNavigationBar() {

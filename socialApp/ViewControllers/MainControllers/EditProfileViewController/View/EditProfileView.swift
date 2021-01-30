@@ -126,7 +126,7 @@ class EditProfileView: UIView {
                                       showPrivate: true,
                                       showProtectButton: true,
                                       complition: {
-                                        self.gelleryScrollView.layoutSubviews()
+                                        self.gelleryScrollView.setNeedsLayout()
         })
         
         nameTextField.text = viewModel.displayName
