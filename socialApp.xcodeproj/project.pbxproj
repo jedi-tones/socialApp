@@ -1828,7 +1828,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.02.30;
+				MARKETING_VERSION = 1.02.31;
 				PRODUCT_BUNDLE_IDENTIFIER = "art.jedi-tones.flava.MyNotificationService";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1851,7 +1851,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.02.30;
+				MARKETING_VERSION = 1.02.31;
 				PRODUCT_BUNDLE_IDENTIFIER = "art.jedi-tones.flava.MyNotificationService";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1995,7 +1995,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.02.30;
+				MARKETING_VERSION = 1.02.31;
 				PRODUCT_BUNDLE_IDENTIFIER = "art.jedi-tones.flava";
 				PRODUCT_NAME = Flava;
 				SWIFT_VERSION = 5.0;
@@ -2020,7 +2020,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.02.30;
+				MARKETING_VERSION = 1.02.31;
 				PRODUCT_BUNDLE_IDENTIFIER = "art.jedi-tones.flava";
 				PRODUCT_NAME = Flava;
 				SWIFT_VERSION = 5.0;
