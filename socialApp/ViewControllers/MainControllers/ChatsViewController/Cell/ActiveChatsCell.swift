@@ -13,6 +13,7 @@ import SDWebImage
 class ActiveChatsCell: UICollectionViewCell, SelfConfiguringCell {
     static var reuseID: String = "ActiveChatCell"
     
+    
     private let frendImage = UIImageView(image: #imageLiteral(resourceName: "advertLogo"), contentMode: .scaleAspectFill)
     private let frendName = UILabel(labelText: "", textFont: .avenirRegular(size: 12), textColor: .myGrayColor())
     private let lastMessage = UILabel(labelText: "", textFont: .avenirRegular(size: 14), textColor: .myGrayColor(), linesCount: 2)

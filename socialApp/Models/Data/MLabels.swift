@@ -28,8 +28,8 @@ enum MLabels: String {
     case emptyAcceptChatText = "Сейчас их нет, продолжай лайкать, ведь твои люди рядом"
     case emptyAcceptChatButton = "Открыть больше людей"
     
-    case emptyRequestChatHeader = "Люди которым ты нравишься, появятся тут"
-    case emptyRequestChatText = "Flava это небольшое сообщество. Может занять некоторое время, что бы тебя нашли"
+    case emptyRequestChatHeader = "Люди, которым ты нравишься, появятся тут"
+    case emptyRequestChatText = "Flava это небольшое сообщество. Может занять некоторое время, чтобы тебя нашли"
     case emptyRequestChatButton = "Найстройки поиска"
     
     case haveRequestShowLabel1 = "Переходи на Flava Premium, что бы увидеть "
@@ -48,9 +48,9 @@ enum MLabels: String {
     case contactsEmailHeader = """
                             Хочешь сообщить о нарушении правил?
                             Либо знаешь как сделать Flava еще лучше?
-                            Пиши к нам на почту:
+                            Пиши нам на почту:
                             """
-    case contactsVersionHeader = "Что бы ускорить рассмотрение заявки, укажи версию программы:"
+    case contactsVersionHeader = "Чтобы ускорить рассмотрение заявки, укажи версию программы:"
     
     case reportHeader = "Выбери вид жалобы и опишите причину, пользователь не узнает об этом"
     case reportSubHeaderFriend = "Пара будет разорвана, чат удален, пользователь больше не будет отображаться в результатах поиска."

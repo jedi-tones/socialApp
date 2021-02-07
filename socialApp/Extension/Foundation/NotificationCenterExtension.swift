@@ -98,5 +98,4 @@ extension NotificationCenter {
                                                name: NSNotification.Name("coordinatesIsUpdate"),
                                                object: nil)
     }
-    
 }
