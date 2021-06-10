@@ -66,7 +66,7 @@ class AuthService {
                     signOut(currentPeopleDelegate: currentPeopleDelegate) { result in
                         switch result {
                         case .success(_):
-                            Apphud.logout()
+                            PurchasesService.shared.apphudLogout()
                             currentPeopleDelegate.deletePeople()
                             let rootViewController = makeRootVC(viewController: AuthViewController(currentPeopleDelegate: currentPeopleDelegate),
                                                                 withNavContoller: true)
@@ -166,12 +166,27 @@ class AuthService {
         authController.performRequests()
     }
     
+    //MARK: - createAplleIDRequest
+    private func createAplleIDRequest() ->ASAuthorizationAppleIDRequest {
+        
+        let appleIDAuthProvider = ASAuthorizationAppleIDProvider()
+        let request = appleIDAuthProvider.createRequest()
+        request.requestedScopes = [.fullName, .email ]
+        
+        let nonce = CryptoService.shared.randomNonceString()
+        request.nonce = CryptoService.shared.sha256(nonce)
+        currentNonce = nonce
+        
+        return request
+    }
+    
     //MARK: - getCredentialApple
     //after complite auth get token and push to FirebaseAuth
     func didCompleteWithAuthorizationApple(authorization: ASAuthorization,
                                            complition: @escaping (Result<OAuthCredential,Error>) -> Void) {
         
         if let authCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
+            
             
             guard let nonce = currentNonce else { fatalError("No login request was sent")}
             
@@ -314,21 +329,10 @@ class AuthService {
     }
 }
 
-//MARK: -  appleIDRequest
+//MARK: -  createAplleIDRequest
 extension AuthService {
     
-    private func createAplleIDRequest() ->ASAuthorizationAppleIDRequest {
-        
-        let appleIDAuthProvider = ASAuthorizationAppleIDProvider()
-        let request = appleIDAuthProvider.createRequest()
-        request.requestedScopes = [.fullName, .email ]
-        
-        let nonce = CryptoService.shared.randomNonceString()
-        request.nonce = CryptoService.shared.sha256(nonce)
-        currentNonce = nonce
-        
-        return request
-    }
+  
 }
 
 extension AuthService {

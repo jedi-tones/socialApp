@@ -9,8 +9,9 @@
 import Foundation
 import RealmSwift
 
-class RealmConfig {
+final class RealmConfig {
     static let shared = RealmConfig()
+    private init() { }
     
     func setDefaultRealm() {
         var config = Realm.Configuration(schemaVersion: 1,

@@ -72,7 +72,7 @@ extension AppSettingsViewController {
         guard let likeDislikeDelegate = likeDislikeDelegate else { fatalError("likeDislikeDelegate is nil on AppSettingsVC")}
         
         
-        Apphud.logout()
+        PurchasesService.shared.apphudLogout()
         PushMessagingService.shared.logOutUnsabscribe(currentUserID: currentPeopleDelegate.currentPeople.senderId,
                                                       acceptChats: acceptChatDelegate.acceptChats)
         
@@ -250,7 +250,7 @@ extension AppSettingsViewController {
                         switch result {
                         case .success(_):
                             
-                            Apphud.logout()
+                            PurchasesService.shared.apphudLogout()
                             currentPeopleDelegate.deletePeople()
                             //clear data in Realm
                             ManageRealmObjectService.shared.logoutClearRealmData { result in

@@ -9,7 +9,6 @@
 import UIKit
 
 class ModuleBuilder: BuilderProtocol {
-    
     func createProfileModule(currentPeopleDelegate: CurrentPeopleDataDelegate?,
                              router: RouterProfileProtocol) -> UIViewController {
         
@@ -21,7 +20,6 @@ class ModuleBuilder: BuilderProtocol {
         return viewController
     }
     
-    
     func createAdminPanelModule(router: RouterProfileProtocol) -> UIViewController {
         let viewController = AdminPanelViewController()
         let presenter = AdminPanelPresentor(view: viewController, router: router)
@@ -29,5 +27,4 @@ class ModuleBuilder: BuilderProtocol {
         
         return viewController
     }
-
 }

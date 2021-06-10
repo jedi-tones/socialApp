@@ -51,7 +51,6 @@ class PeopleCell: UICollectionViewCell, PeopleConfigurationCell {
 //MARK: setupConstraints
 extension PeopleCell {
     private func setupConstraints() {
-        
         addSubview(peopleView)
         peopleView.translatesAutoresizingMaskIntoConstraints = false
         

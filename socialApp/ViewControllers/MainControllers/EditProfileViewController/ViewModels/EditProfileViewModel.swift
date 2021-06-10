@@ -25,7 +25,6 @@ class EditProfileViewModel: EditProfileViewModelProtocol {
         self.currentPeopleDelegate = currentPeopleDelegate
     }
     
-    
     func editProfileViewViewModel() -> EditProfileViewViewModelProtocol {
         let editProfileViewViewModel = EditProfileViewViewModel(currentPeople: currentPeople.value)
         return editProfileViewViewModel

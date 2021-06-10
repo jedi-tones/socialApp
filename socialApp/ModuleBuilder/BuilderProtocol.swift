@@ -13,5 +13,4 @@ protocol BuilderProtocol {
                              router: RouterProfileProtocol) -> UIViewController
     
     func createAdminPanelModule(router: RouterProfileProtocol) -> UIViewController
-    
 }

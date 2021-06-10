@@ -150,7 +150,6 @@ class PeopleView: UIView {
             .paragraphStyle : paragraph
         ]
         
-        
         advertLabel.attributedText = NSMutableAttributedString(string: value.advert, attributes: attributes)
         
         //setup info

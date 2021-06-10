@@ -133,39 +133,48 @@ extension PurchasesViewController {
     
     //MARK: updateProduct
     @objc private func updateProduct(){
-      
+//        guard
+//            let monthProduct = PurchasesService.shared.products.filter({ $0.productIdentifier == MPurchases.oneMonth.rawValue }).first
+//        else { fatalError("Can't get month product") }
+        print("My log \(PurchasesService.shared.apphudProducts)")
         guard
-            let monthProduct = PurchasesService.shared.products.filter({ $0.productIdentifier == MPurchases.oneMonth.rawValue }).first
+            let monthApphudProduct = PurchasesService.shared.apphudProducts.first(where: {$0.productId == MPurchases.oneMonth.rawValue })
         else { fatalError("Can't get month product") }
         
-        PurchasesService.shared.products.forEach { product in
-            switch product.productIdentifier {
+        guard
+            let monthPrice = monthApphudProduct.skProduct?.price
+        else { fatalError("Can't get month price") }
+        
+        PurchasesService.shared.apphudProducts.forEach { product in
+            guard let skProduct = product.skProduct else { fatalError("Can't get skProduct from apphudproduct") }
+            
+            switch product.productId {
             case MPurchases.sevenDays.rawValue:
                 sevenDayButton.setup(header: "Неделя",
-                                     product: product,
+                                     product: skProduct,
                                      monthCount: 0,
-                                     basePricePerMonth: monthProduct.price,
+                                     basePricePerMonth: monthPrice,
                                      backgroundColor: .mySecondSatColor(),
                                      selectBackground: .mySecondColor())
             case MPurchases.oneMonth.rawValue:
                 oneMonthButton.setup(header: "Месяц",
-                                     product: product,
+                                     product: skProduct,
                                      monthCount: 1,
-                                     basePricePerMonth: monthProduct.price,
+                                     basePricePerMonth: monthPrice,
                                      backgroundColor: .mySecondSatColor(),
                                      selectBackground: .mySecondColor())
             case MPurchases.threeMonth.rawValue:
                 threeMonthButton.setup(header: "Три месяца",
-                                       product: product,
+                                       product: skProduct,
                                        monthCount: 3,
-                                       basePricePerMonth: monthProduct.price,
+                                       basePricePerMonth: monthPrice,
                                        backgroundColor: .mySecondSatColor(),
                                        selectBackground: .mySecondColor())
             case MPurchases.oneYear.rawValue:
                 oneYearButton.setup(header: "Год",
-                                    product: product,
+                                    product: skProduct,
                                     monthCount: 12,
-                                    basePricePerMonth: monthProduct.price,
+                                    basePricePerMonth: monthPrice,
                                     backgroundColor: .mySecondSatColor(),
                                     selectBackground: .mySecondColor())
             default:

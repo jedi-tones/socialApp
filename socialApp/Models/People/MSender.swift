@@ -10,7 +10,7 @@ import MessageKit
 
 struct MSender: SenderType {
     private let adminID = "Admin"
-    private let adminDisplayName = "Команда Chi"
+    private let adminDisplayName = "Команда Flava"
     
     var senderId: String
     var displayName: String

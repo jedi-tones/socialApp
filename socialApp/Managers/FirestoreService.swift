@@ -210,8 +210,8 @@ class FirestoreService {
         var imageWithPrivate: [String : Any] = [:]
         for image in currentPeople.gallery {
             if image.value.isPrivate {
-                imageWithPrivate[image.key] = [ MGalleryPhotoProperty.CodingKeys.isPrivate.rawValue : false,
-                                                MGalleryPhotoProperty.CodingKeys.index.rawValue : image.value.index]
+                imageWithPrivate[image.key] = [MGalleryPhotoProperty.CodingKeys.isPrivate.rawValue : false,
+                                               MGalleryPhotoProperty.CodingKeys.index.rawValue : image.value.index]
             }
         }
         
@@ -471,10 +471,12 @@ class FirestoreService {
         let clLocation = CLLocationCoordinate2D(latitude: latitude,
                                                 longitude: longitude)
         let geohash = GFUtils.geoHash(forLocation: clLocation, withPrecision: 20)
-        usersReference.document(userID).setData([MPeople.CodingKeys.location.rawValue : [MLocation.longitude.rawValue:longitude,
-                                                                                         MLocation.latitude.rawValue:latitude],
-                                                 MPeople.CodingKeys.geohash.rawValue : geohash],
-                                                merge: true) { error in
+        usersReference.document(userID).setData(
+            [MPeople.CodingKeys.location.rawValue : [MLocation.longitude.rawValue:longitude,
+                                                     MLocation.latitude.rawValue:latitude],
+             MPeople.CodingKeys.geohash.rawValue : geohash],
+            merge: true
+        ) { error in
             if let error = error {
                 complition(.failure(error))
             } else {

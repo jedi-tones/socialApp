@@ -90,10 +90,8 @@ extension DataDelegateService {
     
     //MARK: setupApphud
     private func setupApphud() {
-        Apphud.start(apiKey: "app_LDXecjNbEuvUBtpd3J9kw75A6cH14n",
-                     userID: currentPeopleID,
-                     observerMode: false)
-     //   Apphud.start(apiKey: "app_LDXecjNbEuvUBtpd3J9kw75A6cH14n")
+        PurchasesService.shared.apphudUpdateUserID(id: currentPeopleID)
+        PurchasesService.shared.getProductsFromApphud()
     }
     
     private func updateFCMKey() {

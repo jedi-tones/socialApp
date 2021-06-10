@@ -145,6 +145,7 @@ struct MPeople: Hashable, Codable, SenderType {
         geohash = String(MLocation.geohash.defaultValue)
         distance = 0
     }
+    
     //MARK: documentSnapshot
     // for get document from Firestore
     init?(documentSnap: DocumentSnapshot){
@@ -372,7 +373,7 @@ struct MPeople: Hashable, Codable, SenderType {
         self.senderId = senderId
     }
     
-    //for init UserDefaults
+    //MARK: init UserDefaults
     init?(data: [String : Any]){
         
         guard let displayName = data["displayName"] as? String else { return nil }

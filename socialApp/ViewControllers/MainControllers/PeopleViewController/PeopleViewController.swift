@@ -408,8 +408,6 @@ extension PeopleViewController {
 extension PeopleViewController: PeopleButtonTappedDelegate {
     
     func timeTapped() {
-        
-        
         PopUpService.shared.bottomPopUp(header: "Хочешь видеть время последней активности пользователя?",
                                         text: "Последняя активность, безлимитные лайки и многое другое с подпиской Flava Premium",
                                         image: nil,

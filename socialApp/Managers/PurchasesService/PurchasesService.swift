@@ -17,12 +17,12 @@ class PurchasesService: NSObject {
     private override init() { }
     
     var products: [SKProduct] = []
+    var apphudProducts: [ApphudProduct] = []
     
     private func refreshReceipt(){
         let request = SKReceiptRefreshRequest(receiptProperties: nil)
         request.delegate = self
         request.start()
-        
     }
     
     public func setupPurchases(complition: @escaping(Bool) -> Void) {
@@ -33,8 +33,12 @@ class PurchasesService: NSObject {
             complition(false)
         }
     }
-    
+
     public func getProducts() {
+        getProductsStoreKit()
+    }
+    
+    private func getProductsStoreKit() {
         let identifieres: Set = [
             MPurchases.sevenDays.rawValue,
             MPurchases.oneMonth.rawValue,
@@ -47,7 +51,6 @@ class PurchasesService: NSObject {
         productRequest.start()
     }
     
-    
     public func purches(product identifier: MPurchases) {
         guard let product = products.filter({$0.productIdentifier == identifier.rawValue}).first else { return }
         let payment = SKPayment(product: product)
@@ -57,97 +60,6 @@ class PurchasesService: NSObject {
     public func restorePurchases() {
         SKPaymentQueue.default().restoreCompletedTransactions()
     }
-    
-    
-    //MARK: check subscribtion
-    public func checkSubscribtion(currentPeople: MPeople, isRestore:Bool = false, complition: @escaping (Result<MPeople,Error>) -> Void) {
-      
-        restorePurchasesWithApphud { result in
-            switch result {
-            
-            case .success(_):
-                var isGoldMember = false
-                var goldMemberDate:Date?
-                var goldMemberPurches:MPurchases?
-                
-                if Apphud.hasActiveSubscription() {
-                    isGoldMember = true
-                    if let subscribtion = Apphud.subscription() {
-                        goldMemberDate = subscribtion.expiresDate
-                        goldMemberPurches = MPurchases(rawValue: subscribtion.productId)
-                    }
-                } else if isRestore {
-                    PopUpService.shared.showInfo(text: "Активные подписки не найдены")
-                }
-                
-                //if status don't change, go to complition
-                guard currentPeople.isGoldMember != isGoldMember ||
-                      currentPeople.goldMemberDate != goldMemberDate ||
-                      currentPeople.goldMemberPurches != goldMemberPurches else {
-                    complition(.success((currentPeople)))
-                    return
-                }
-                
-                //if is not premium user, change premium settings to defaults
-                if !isGoldMember && !currentPeople.isTestUser {
-                    print("\n CHANGE TO DEFAULT")
-                    FirestoreService.shared.setDefaultPremiumSettings(currentPeople: currentPeople) { _ in }
-                }
-                
-                //if satus change, save to firestore
-                FirestoreService.shared.saveIsGoldMember(id: currentPeople.senderId,
-                                                         isGoldMember: isGoldMember,
-                                                         goldMemberDate: goldMemberDate,
-                                                         goldMemberPurches: goldMemberPurches) { result in
-                    switch result {
-                    
-                    case .success(let updatedPeople):
-                        //if is restore, show popUp
-                        complition(.success(updatedPeople))
-                        
-                        if isRestore, isGoldMember {
-                            PopUpService.shared.showInfo(text: "Flava premium восстановлен")
-                        }
-                        
-                    case .failure(let error):
-                        complition(.failure(error))
-                    }
-                }
-                
-            case .failure(let error):
-                PopUpService.shared.showInfo(text: "Не удалось проверить подписку")
-                complition(.failure(error))
-            }
-        }
-    }
-}
-
-//MARK: purchases with apphud
-extension PurchasesService {
-    
-    public func purcheWithApphud(product identifier: MPurchases, complition: @escaping (Result<ApphudPurchaseResult, Error>) -> Void) {
-        guard let product = products.filter({$0.productIdentifier == identifier.rawValue}).first else {
-            complition(.failure(PurchasesError.unknownProduct))
-            return }
-        Apphud.purchase(product) { result in
-            complition(.success(result))
-        }
-    }
-    
-    public func restorePurchasesWithApphud(complition: @escaping(Result<(), Error>)-> Void) {
-        Apphud.restorePurchases { (subscristions, nonRenewPurches, error) in
-            if let error = error {
-                complition(.failure(error))
-            } else {
-                complition(.success(()))
-            }
-        }
-    }
-    
-    public func checkActiveSubscribtionWithApphud() -> Bool {
-        Apphud.hasActiveSubscription()
-    }
-    
 }
 
 //MARK: paymentQueue func
@@ -218,7 +130,6 @@ extension PurchasesService: SKProductsRequestDelegate {
     }
     
     func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
-        
         products = response.products
         if !products.isEmpty {
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: PurchasesService.productNotificationIdentifier), object: nil)
@@ -236,7 +147,9 @@ extension PurchasesService {
                    let urlString = "https://buy.itunes.apple.com/verifyReceipt"
                #endif
    
-        guard let receiptURL = Bundle.main.appStoreReceiptURL, let receiptString = try? Data(contentsOf: receiptURL).base64EncodedString() , let url = URL(string: urlString) else {
+        guard let receiptURL = Bundle.main.appStoreReceiptURL,
+              let receiptString = try? Data(contentsOf: receiptURL).base64EncodedString(),
+              let url = URL(string: urlString) else {
             refreshReceipt()
             return
         }

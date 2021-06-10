@@ -149,8 +149,7 @@ class ProfilePresenter: ProfilePresenterProtocol {
     //MARK: updateSections
     @objc private func updateSections() {
         guard var snapshot = dataSource?.snapshot() else { return }
-        snapshot.reloadSections([ .profile, .premium])
-        
+        snapshot.reloadSections([.profile, .premium])
         dataSource?.apply(snapshot,animatingDifferences: true)
     }
     

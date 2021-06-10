@@ -51,7 +51,6 @@ extension FirestoreService {
         //The longitude of  GeoPoint in the range [-180, 180].
         //with large search area, need search without geohash
         if radiusSearch <= 1000 {
-            
             searchPeopleWithGeoHash(radiusSearch: radiusSearch,
                                     usersID: usersID,
                                     minRange: minRange,

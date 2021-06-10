@@ -25,6 +25,7 @@ class ScreenRecordingManager {
     func removeListner() {
         NotificationCenter.default.removeObserver(self)
     }
+    
     @objc private func captureStart() {
         
         if UIScreen.main.isCaptured {

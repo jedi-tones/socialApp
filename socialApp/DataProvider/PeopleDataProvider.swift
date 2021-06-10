@@ -28,8 +28,6 @@ class PeopleDataProvider: PeopleListenerDelegate {
         }
     }
     
-    
-    
     init(userID: String) {
         self.userID = userID
         setup()

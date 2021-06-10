@@ -19,7 +19,6 @@ enum MProfileSettings: Int, CollectionCellModel {
     case aboutInformation
     case adminPanel
     
-    
     func description() -> String  {
         switch self {
         
